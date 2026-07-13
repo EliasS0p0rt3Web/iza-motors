@@ -1,78 +1,134 @@
-﻿ <!-- TIPO DE ENTREGA  -->
-<section class="delivery-section border-top" id="envios">
+﻿@* Views/Shared/_LogisticaDespacho.cshtml
+   Adaptado a Iza Motors sin quitar la lógica responsive original.
+   Se conservan: #envios, #modalLogistica, #modalMapaTienda,
+   .modal-scroll-area, .delivery-card y .modal-delivery-card.
+*@
+
+<!-- MODALIDADES DE ATENCIÓN IZA MOTORS -->
+<section class="delivery-section iza-attention-section border-top"
+         id="envios"
+         style="scroll-margin-top: 90px;">
+
     <div class="container">
         <div class="row g-5 align-items-center">
 
             <div class="col-lg-4 text-center text-lg-start">
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3 fw-800 d-none d-md-inline-block">LOGÍSTICA Y TRANSPORTE</span>
-                <h2 class="fw-800 text-dark display-6">Información sobre tu entrega</h2>
-                <p class="text-muted">
-                    Queremos que tu pedido llegue intacto. El aluminio y el vidrio son materiales delicados, por eso adaptamos nuestros despachos según el tamaño de tu compra.
+                <span class="badge rounded-pill iza-attention-badge px-3 py-2 mb-3 fw-800 d-none d-md-inline-block">
+                    ATENCIÓN Y SERVICIO AUTOMOTRIZ
+                </span>
+
+                <h2 class="fw-800 text-dark display-6">Modalidades de atención</h2>
+
+                <p class="text-muted mb-0">
+                    Agenda tu visita, confirma el ingreso de tu vehículo y recibe
+                    información clara durante el diagnóstico, reparación y entrega.
                 </p>
 
+                <!-- MÓVIL: se conserva el botón que abre el modal -->
                 <div class="d-block d-md-none mt-4">
-                    <button type="button" class="btn btn-outline-dark w-100 shadow-sm py-3 mt-4" data-bs-toggle="modal" data-bs-target="#modalLogistica">
-                        <i class="bi bi-truck me-2"></i> VER MODALIDADES Y COSTOS
+                    <button type="button"
+                            class="btn iza-mobile-attention-btn w-100 shadow-sm py-3"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalLogistica">
+                        <i class="bi bi-car-front-fill me-2"></i>
+                        VER MODALIDADES DE ATENCIÓN
                     </button>
                 </div>
 
-                <div class="mt-4 p-3 rounded-4 bg-warning bg-opacity-10 border border-warning border-opacity-20 text-start d-none d-lg-block">
+                <!-- ESCRITORIO -->
+                <div class="iza-attention-note mt-4 p-3 text-start d-none d-lg-block">
                     <p class="mb-0 small text-dark">
-                        <strong><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Cuidado Esencial:</strong> En proyectos de vidrio (exhibidoras), recomendamos encarecidamente transporte privado para evitar roturas.
+                        <strong>
+                            <i class="bi bi-file-earmark-check-fill text-danger me-2"></i>
+                            Recomendación:
+                        </strong>
+                        Lleva la Tarjeta de Propiedad y el SOAT vigente para facilitar
+                        la validación y recepción del vehículo.
                     </p>
                 </div>
             </div>
 
+            <!-- TABLET Y ESCRITORIO -->
             <div class="col-lg-8 d-none d-md-block">
                 <div class="row g-4">
 
                     <div class="col-md-6">
-                        <div class="delivery-card">
+                        <div class="delivery-card iza-attention-card">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="delivery-icon train"><i class="bi bi-train-front"></i></div>
-                                <h5 class="fw-bold m-0">Entrega en Estación</h5>
+                                <div class="delivery-icon train iza-icon-red">
+                                    <i class="bi bi-calendar2-check-fill"></i>
+                                </div>
+                                <h5 class="fw-bold m-0">Atención con cita</h5>
                             </div>
-                            <span class="price-tag text-success mb-3">Costo: S/ 3.00</span>
+
+                            <span class="price-tag iza-status-tag mb-3">Reserva gratuita</span>
+
                             <ul class="delivery-list">
-                                <li><i class="bi bi-check2-circle text-success"></i> Accesorios y piezas pequeñas.</li>
-                                <li><i class="bi bi-check2-circle text-success"></i> Tubos o rieles de <strong>máximo 2.10 metros</strong>.</li>
-                                <li><i class="bi bi-x-circle text-danger"></i> <strong>No varillas largas (3m+)</strong> ni vidrios.</li>
+                                <li><i class="bi bi-check2-circle text-danger"></i> Selecciona fecha y horario disponible.</li>
+                                <li><i class="bi bi-check2-circle text-danger"></i> Agiliza la recepción y validación por placa.</li>
+                                <li><i class="bi bi-check2-circle text-danger"></i> Recibe confirmación y seguimiento por correo.</li>
                             </ul>
+
+                            <a href="#cotizar" class="btn iza-card-action mt-auto">
+                                <i class="bi bi-calendar-plus me-2"></i> Agendar cita
+                            </a>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="delivery-card">
+                        <div class="delivery-card iza-attention-card">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="delivery-icon truck"><i class="bi bi-truck"></i></div>
-                                <h5 class="fw-bold m-0">Envío a Domicilio</h5>
+                                <div class="delivery-icon truck iza-icon-dark">
+                                    <i class="bi bi-lightning-charge-fill"></i>
+                                </div>
+                                <h5 class="fw-bold m-0">Atención sin cita</h5>
                             </div>
-                            <span class="price-tag text-primary mb-3">Según movilidad</span>
+
+                            <span class="price-tag iza-status-tag mb-3">Según disponibilidad</span>
+
                             <ul class="delivery-list">
-                                <li><i class="bi bi-info-circle text-primary"></i> Para varillas largas (3m a 6m) o vitrinas.</li>
-                                <li><i class="bi bi-info-circle text-primary"></i> Trae tu vehículo o <strong>te recomendamos uno de confianza</strong>.</li>
-                                <li><i class="bi bi-info-circle text-primary"></i> Flete directo con el transportista.</li>
+                                <li><i class="bi bi-info-circle text-dark"></i> El personal verificará la capacidad del taller.</li>
+                                <li><i class="bi bi-info-circle text-dark"></i> Puede registrarse como atención de emergencia.</li>
+                                <li><i class="bi bi-info-circle text-dark"></i> El tiempo dependerá de las bahías disponibles.</li>
                             </ul>
+
+                            <a href="https://wa.me/51921726629?text=Hola%20Iza%20Motors,%20necesito%20consultar%20la%20disponibilidad%20del%20taller"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn iza-card-action iza-card-action-outline mt-auto">
+                                <i class="bi bi-whatsapp me-2"></i> Consultar disponibilidad
+                            </a>
                         </div>
                     </div>
 
                     <div class="col-12">
-                        <div class="delivery-card highlight">
+                        <div class="delivery-card highlight iza-delivery-highlight">
                             <div class="row align-items-center g-3">
                                 <div class="col-md-8 text-start">
                                     <div class="d-flex align-items-center gap-3 mb-2">
-                                        <div class="delivery-icon shop"><i class="bi bi-geo-alt-fill"></i></div>
-                                        <h5 class="fw-bold m-0">Recojo en Tienda (Mercado Cantagallo)</h5>
+                                        <div class="delivery-icon shop iza-icon-red-soft">
+                                            <i class="bi bi-key-fill"></i>
+                                        </div>
+                                        <h5 class="fw-bold m-0">Entrega y recojo del vehículo</h5>
                                     </div>
-                                    <span class="price-tag text-dark mb-2 fw-bold">¡Totalmente Gratis! (S/ 0.00)</span>
-                                    <p class="small text-muted mb-0">Tenemos 2 talleres especializados: Uno para cortes/accesorios y otro para vitrinas/melamine.</p>
+
+                                    <span class="price-tag iza-status-tag mb-2 fw-bold">
+                                        Atención coordinada en el taller
+                                    </span>
+
+                                    <p class="small text-muted mb-0">
+                                        Cuando el servicio finalice recibirás una notificación.
+                                        Antes de la entrega se revisarán el resumen del servicio,
+                                        los repuestos utilizados y el saldo correspondiente.
+                                    </p>
                                 </div>
+
                                 <div class="col-md-4 text-md-end">
                                     <button type="button"
-                                            class="btn btn-success rounded-pill px-4 text-white fw-bold w-100 shadow-sm py-2"
+                                            class="btn iza-location-btn rounded-pill px-4 text-white fw-bold w-100 shadow-sm py-2"
                                             data-bs-toggle="modal"
                                             data-bs-target="#modalMapaTienda">
-                                        <i class="bi bi-map me-2"></i> VER UBICACIÓN
+                                        <i class="bi bi-geo-alt-fill me-2"></i> VER UBICACIÓN
                                     </button>
                                 </div>
                             </div>
@@ -81,99 +137,150 @@
 
                 </div>
             </div>
-
         </div>
     </div>
 </section>
 
-<!-- MODAL ENTREGA MOVILES -->
-<div class="modal fade" id="modalLogistica" tabindex="-1" aria-labelledby="modalLogisticaLabel" aria-hidden="true">
+<!-- MODAL RESPONSIVE PARA MÓVILES -->
+<div class="modal fade"
+     id="modalLogistica"
+     tabindex="-1"
+     aria-labelledby="modalLogisticaLabel"
+     aria-hidden="true">
+
     <div class="modal-dialog modal-dialog-centered px-3">
         <div class="modal-content border-0 rounded-4 shadow-lg">
 
-            <div class="modal-header bg-dark text-white rounded-top-4 py-3">
+            <div class="modal-header iza-modal-header text-white rounded-top-4 py-3">
                 <h5 class="modal-title fw-bold" id="modalLogisticaLabel">
-                    <i class="bi bi-shield-check text-success me-2"></i> Opciones de Entrega Segura
+                    <i class="bi bi-car-front-fill me-2"></i> Modalidades de atención
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body bg-light p-3 modal-scroll-area">
 
-                <div class="p-3 rounded-4 bg-warning bg-opacity-10 border border-warning border-opacity-20 text-center mb-3">
+                <div class="iza-mobile-note p-3 text-center mb-3">
                     <p class="mb-0 small text-dark fw-semibold">
-                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Productos de aluminio y vidrio requieren cuidado estricto. En exhibidoras sugerimos movilidad privada.
+                        <i class="bi bi-file-earmark-check-fill text-danger me-2"></i>
+                        Para una recepción más rápida, ten a la mano la Tarjeta de
+                        Propiedad y el SOAT vigente.
                     </p>
                 </div>
 
                 <div class="delivery-card modal-delivery-card mb-3 bg-white border shadow-sm">
                     <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="delivery-icon train"><i class="bi bi-train-front"></i></div>
-                        <h6 class="fw-bold m-0 text-dark">Entrega en Estación</h6>
+                        <div class="delivery-icon train iza-icon-red">
+                            <i class="bi bi-calendar2-check-fill"></i>
+                        </div>
+                        <h6 class="fw-bold m-0 text-dark">Atención con cita</h6>
                     </div>
-                    <span class="price-tag text-success mb-3">Costo: S/ 3.00</span>
+
+                    <span class="price-tag iza-status-tag mb-3">Reserva gratuita</span>
+
                     <ul class="delivery-list ps-0 mt-2">
-                        <li><i class="bi bi-check2-circle text-success"></i> Accesorios y piezas pequeñas.</li>
-                        <li><i class="bi bi-check2-circle text-success"></i> Tubos o rieles de <strong>máximo 2.10 metros</strong>.</li>
-                        <li><i class="bi bi-x-circle text-danger"></i> <strong>No varillas largas (3m+)</strong> ni vidrios.</li>
+                        <li><i class="bi bi-check2-circle text-danger"></i> Elige fecha y horario disponible.</li>
+                        <li><i class="bi bi-check2-circle text-danger"></i> Recibe confirmación por correo.</li>
+                        <li><i class="bi bi-check2-circle text-danger"></i> Consulta posteriormente el estado de la cita.</li>
                     </ul>
+
+                    <a href="#cotizar"
+                       class="btn iza-card-action w-100 mt-2"
+                       data-bs-dismiss="modal">
+                        <i class="bi bi-calendar-plus me-2"></i> Agendar cita
+                    </a>
                 </div>
 
                 <div class="delivery-card modal-delivery-card mb-3 bg-white border shadow-sm">
                     <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="delivery-icon truck"><i class="bi bi-truck"></i></div>
-                        <h6 class="fw-bold m-0 text-dark">Envío a Domicilio</h6>
+                        <div class="delivery-icon truck iza-icon-dark">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <h6 class="fw-bold m-0 text-dark">Atención sin cita</h6>
                     </div>
-                    <span class="price-tag text-primary mb-3">Según flete / movilidad</span>
+
+                    <span class="price-tag iza-status-tag mb-3">Según disponibilidad</span>
+
                     <ul class="delivery-list ps-0 mt-2">
-                        <li><i class="bi bi-info-circle text-primary"></i> Para varillas largas (3m a 6m) o vitrinas.</li>
-                        <li><i class="bi bi-info-circle text-primary"></i> Trae tu vehículo o <strong>te recomendamos uno de confianza</strong>.</li>
-                        <li><i class="bi bi-info-circle text-primary"></i> Flete directo con el transportista.</li>
+                        <li><i class="bi bi-info-circle text-dark"></i> Se verificará la capacidad actual del taller.</li>
+                        <li><i class="bi bi-info-circle text-dark"></i> Puede registrarse como atención de emergencia.</li>
+                        <li><i class="bi bi-info-circle text-dark"></i> El tiempo dependerá de las bahías disponibles.</li>
                     </ul>
+
+                    <a href="https://wa.me/51921726629?text=Hola%20Iza%20Motors,%20necesito%20consultar%20la%20disponibilidad%20del%20taller"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="btn iza-card-action iza-card-action-outline w-100 mt-2">
+                        <i class="bi bi-whatsapp me-2"></i> Consultar disponibilidad
+                    </a>
                 </div>
 
-                <div class="delivery-card modal-delivery-card highlight bg-white shadow-sm">
+                <div class="delivery-card modal-delivery-card highlight iza-delivery-highlight bg-white shadow-sm">
                     <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="delivery-icon shop"><i class="bi bi-geo-alt-fill"></i></div>
-                        <h6 class="fw-bold m-0 text-dark">Recojo en Tienda (Gratis)</h6>
+                        <div class="delivery-icon shop iza-icon-red-soft">
+                            <i class="bi bi-key-fill"></i>
+                        </div>
+                        <h6 class="fw-bold m-0 text-dark">Entrega del vehículo</h6>
                     </div>
-                    <span class="price-tag text-dark mb-2 fw-bold">S/ 0.00</span>
-                    <p class="small text-muted mb-3">Tenemos 2 talleres especializados en el Mercado Cantagallo: Uno para cortes/accesorios y otro para vitrinas/melamine.</p>
+
+                    <span class="price-tag iza-status-tag mb-2 fw-bold">Recojo en el taller</span>
+
+                    <p class="small text-muted mb-3">
+                        Recibirás una notificación cuando el servicio esté listo.
+                        La entrega se confirma después de revisar el resumen final
+                        y el saldo pendiente.
+                    </p>
 
                     <button type="button"
-                            class="btn btn-success rounded-pill px-4 text-white fw-bold w-100 shadow-sm py-2"
+                            class="btn iza-location-btn rounded-pill px-4 text-white fw-bold w-100 shadow-sm py-2"
                             data-bs-toggle="modal"
                             data-bs-target="#modalMapaTienda">
-                        <i class="bi bi-geo-alt-fill me-2"></i> VER MAPA EN TIEMPO REAL
+                        <i class="bi bi-geo-alt-fill me-2"></i> VER UBICACIÓN DEL TALLER
                     </button>
                 </div>
 
             </div>
 
             <div class="modal-footer bg-light py-2">
-                <button type="button" class="btn btn-secondary w-100 rounded-3" data-bs-dismiss="modal">Entendido, cerrar</button>
+                <button type="button"
+                        class="btn btn-secondary w-100 rounded-3"
+                        data-bs-dismiss="modal">
+                    Entendido, cerrar
+                </button>
             </div>
-
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalMapaTienda" tabindex="-1" aria-labelledby="modalMapaTiendaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg px-3">
-        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background: #ffffff;">
+<!-- MODAL DEL MAPA -->
+<div class="modal fade"
+     id="modalMapaTienda"
+     tabindex="-1"
+     aria-labelledby="modalMapaTiendaLabel"
+     aria-hidden="true">
 
-            <div class="modal-header bg-success text-white py-3 border-0">
+    <div class="modal-dialog modal-dialog-centered modal-lg px-3">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background:#fff;">
+
+            <div class="modal-header iza-map-header text-white py-3 border-0">
                 <h5 class="modal-title fw-bold" id="modalMapaTiendaLabel">
-                    <i class="bi bi-geo-alt-fill me-2"></i> Talleres E&E Aluminios - Mercado Cantagallo
+                    <i class="bi bi-geo-alt-fill me-2"></i> Iza Motors - Sede Santa Anita
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body p-0 border-0" style="height: 400px; position: relative;">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243.8768998593328!2d-77.017568573208!3d-12.04142826305837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8ace521e461%3A0x3484a1bd43098fa4!2sCentro%20Ferretero%20Canta%20Gallo!5e0!3m2!1ses-419!2spe!4v1779819768908!5m2!1ses-419!2spe"
+            <div class="modal-body p-0 border-0" style="height:400px; position:relative;">
+                @* Sustituye luego esta búsqueda por el enlace exacto de la sede. *@
+                <iframe src="https://www.google.com/maps?q=Iza+Motors+Santa+Anita+Lima+Peru&output=embed"
                         width="100%"
                         height="100%"
-                        style="border:0; display: block;"
+                        style="border:0; display:block;"
                         allowfullscreen=""
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade">
@@ -181,17 +288,222 @@
             </div>
 
             <div class="modal-footer bg-light justify-content-between py-2 border-top">
-                <p class="small text-muted mb-0 d-none d-sm-block">📍 Encuéntranos en el sector comercial del mercado.</p>
+                <p class="small text-muted mb-0 d-none d-sm-block">
+                    📍 Consulta la ubicación del taller antes de acercarte.
+                </p>
+
                 <div class="d-flex gap-2 w-100 w-sm-auto justify-content-end">
-                    <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3" data-bs-dismiss="modal">Cerrar</button>
-                    <a href="https://wa.me/51921726629?text=Hola%20bro,%20estoy%20viendo%20el%20mapa%20pero%20no%20me%20ubico%20bien,%20¿me%20das%20una%20referencia?"
+                    <button type="button"
+                            class="btn btn-secondary btn-sm rounded-3 px-3"
+                            data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+
+                    <a href="https://wa.me/51921726629?text=Hola%20Iza%20Motors,%20estoy%20viendo%20el%20mapa%20y%20necesito%20una%20referencia%20para%20llegar"
                        target="_blank"
-                       class="btn btn-success btn-sm rounded-3 px-3">
-                        <i class="bi bi-whatsapp me-1"></i> Preguntar Referencia
+                       rel="noopener noreferrer"
+                       class="btn iza-location-btn btn-sm rounded-3 px-3 text-white">
+                        <i class="bi bi-whatsapp me-1"></i> Pedir referencia
                     </a>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
+
+<style>
+    /* ============================================================
+           MODALIDADES DE ATENCIÓN — IZA MOTORS
+           Se conserva la lógica responsive original.
+           ============================================================ */
+
+    .iza-attention-section {
+        background: radial-gradient(circle at 8% 20%, rgba(237,28,36,.045), transparent 26%), #ffffff;
+    }
+
+    .iza-attention-badge {
+        color: #ed1c24;
+        background: rgba(237,28,36,.08);
+        border: 1px solid rgba(237,28,36,.12);
+    }
+
+    .iza-attention-note,
+    .iza-mobile-note {
+        background: #fff5f5;
+        border: 1px solid rgba(237,28,36,.18);
+        border-radius: 14px;
+    }
+
+    .iza-attention-card {
+        border-color: #e5e5e5;
+        background: #fafafa;
+    }
+
+        .iza-attention-card:hover {
+            border-color: rgba(237,28,36,.45);
+            box-shadow: 0 15px 35px rgba(20,20,20,.08);
+        }
+
+    .iza-icon-red {
+        color: #ed1c24 !important;
+        background: #ffe9ea !important;
+    }
+
+    .iza-icon-red-soft {
+        color: #ed1c24 !important;
+        background: #fff0f0 !important;
+    }
+
+    .iza-icon-dark {
+        color: #fff !important;
+        background: #202020 !important;
+    }
+
+    .iza-status-tag {
+        color: #242424 !important;
+        background: #fff !important;
+        border: 1px solid #e5e5e5;
+    }
+
+    .iza-delivery-highlight {
+        background: #fff7f7 !important;
+        border: 2px solid rgba(237,28,36,.55) !important;
+    }
+
+        .iza-delivery-highlight:hover {
+            border-color: #ed1c24 !important;
+            box-shadow: 0 15px 35px rgba(237,28,36,.10) !important;
+        }
+
+    .iza-card-action,
+    .iza-location-btn,
+    .iza-mobile-attention-btn {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff !important;
+        background: #ed1c24;
+        border: 1px solid #ed1c24;
+        border-radius: 6px;
+        font-size: .85rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+    }
+
+        .iza-card-action:hover,
+        .iza-location-btn:hover,
+        .iza-mobile-attention-btn:hover {
+            color: #fff !important;
+            background: #c81018;
+            border-color: #c81018;
+            transform: translateY(-2px);
+        }
+
+    .iza-card-action-outline {
+        color: #202020 !important;
+        background: #fff;
+        border-color: #cfcfcf;
+    }
+
+        .iza-card-action-outline:hover {
+            color: #fff !important;
+            background: #202020;
+            border-color: #202020;
+        }
+
+    .iza-modal-header,
+    .iza-map-header {
+        background: #171717;
+    }
+
+    #modalLogistica .modal-content {
+        max-height: 84vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #modalLogistica .modal-scroll-area {
+        max-height: calc(84vh - 122px);
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+
+    .modal-backdrop {
+        z-index: 10040 !important;
+        background-color: rgba(15,15,15,.72);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+    }
+
+    .modal.fade {
+        z-index: 10050 !important;
+    }
+
+    @@media (min-width: 768px) and (max-width: 991.98px) {
+        .iza-attention-card {
+            padding: 1.6rem;
+        }
+
+            .iza-attention-card .delivery-list li {
+                font-size: .86rem;
+            }
+    }
+
+    @@media (max-width: 767.98px) {
+        .iza-attention-section {
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .iza-mobile-attention-btn {
+            min-height: 52px;
+            border-radius: 8px;
+        }
+
+        #modalLogistica .modal-dialog,
+        #modalMapaTienda .modal-dialog {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .modal-delivery-card {
+            padding: 1.1rem !important;
+            border-radius: 16px !important;
+        }
+
+            .modal-delivery-card .delivery-icon {
+                width: 43px !important;
+                min-width: 43px !important;
+                height: 43px !important;
+                margin-bottom: 0 !important;
+                font-size: 1.2rem !important;
+            }
+
+            .modal-delivery-card .delivery-list li {
+                font-size: .82rem !important;
+                line-height: 1.42 !important;
+            }
+
+        #modalMapaTienda .modal-body {
+            height: 330px !important;
+        }
+    }
+
+    @@media (max-width: 420px) {
+        #modalLogistica .modal-dialog,
+        #modalMapaTienda .modal-dialog {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }
+
+        .iza-mobile-note {
+            padding: .9rem !important;
+        }
+
+        #modalMapaTienda .modal-body {
+            height: 290px !important;
+        }
+    }
+</style>

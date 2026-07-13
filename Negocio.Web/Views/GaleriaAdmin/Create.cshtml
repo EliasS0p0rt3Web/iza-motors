@@ -1,75 +1,490 @@
 ﻿@{
-    ViewData["Title"] = "Subir foto - Galería";
+    ViewData["Title"] = "Registrar servicio realizado";
     Layout = "_LayoutSistema";
 }
 
-<h3 class="mb-4">📸 Nueva imagen a la Galería</h3>
+<div class="iza-gallery-page">
 
-<div class="card p-4 shadow-sm" style="max-width: 600px;">
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
-
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Título del Trabajo</label>
-            <input name="titulo" class="form-control" placeholder="Ej: Vitrina LED 3 niveles" required />
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <span class="iza-page-eyebrow">GALERÍA ADMINISTRATIVA</span>
+            <h2 class="fw-bold mb-1">Nuevo servicio realizado</h2>
+            <p class="text-muted mb-0">
+                Publica una fotografía de un servicio o trabajo realizado por Iza Motors.
+            </p>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Categoría</label>
-            <select id="selectCategoria" class="form-select" onchange="gestionarCategoria(this.value)" required>
-                <option value="">-- Seleccione una opción --</option>
-                <option value="Exhibidora">Exhibidoras Vidrio y LED</option>
-                <option value="Cortina">Tubos y Cortinas</option>
-                <option value="Pasamanos">Pasamanos de Seguridad</option>
-                <option value="Riel">Rieles Hoteleros</option>
-                <option value="Ducha">Barras de Ducha</option>
-                <option value="Otro">Otro (Escribir personalizado)</option>
-            </select>
+        <a asp-action="Index" class="btn btn-outline-secondary iza-back-btn">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver a la galería
+        </a>
+    </div>
 
-            <input type="text" id="inputCategoriaManual" class="form-control mt-2"
-                   placeholder="Escribe la nueva categoría..." style="display:none;" />
+    <div class="row g-4">
 
-            <input type="hidden" id="finalCategoria" name="categoria" required />
+        <div class="col-12 col-xl-7">
+            <div class="card border-0 shadow-sm iza-form-card">
+                <div class="card-body p-4 p-lg-5">
+
+                    <form asp-action="Create"
+                          method="post"
+                          enctype="multipart/form-data"
+                          id="formGaleria"
+                          novalidate>
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger"
+                             role="alert">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="titulo" class="form-label fw-bold">
+                                Título del servicio
+                            </label>
+
+                            <input type="text"
+                                   id="titulo"
+                                   name="titulo"
+                                   class="form-control iza-control"
+                                   maxlength="150"
+                                   placeholder="Ej.: Mantenimiento completo del sistema de frenos"
+                                   required />
+
+                            <div class="form-text">
+                                Utiliza un título breve, claro y relacionado con el trabajo realizado.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="selectCategoria" class="form-label fw-bold">
+                                Categoría
+                            </label>
+
+                            <select id="selectCategoria"
+                                    class="form-select iza-control"
+                                    onchange="gestionarCategoria(this.value)"
+                                    required>
+
+                                <option value="">-- Seleccione una categoría --</option>
+                                <option value="Mantenimiento preventivo">Mantenimiento preventivo</option>
+                                <option value="Sistema de frenos">Sistema de frenos</option>
+                                <option value="Motor">Motor y reparación mecánica</option>
+                                <option value="Suspensión">Suspensión y dirección</option>
+                                <option value="Diagnóstico electrónico">Diagnóstico electrónico</option>
+                                <option value="Cambio de aceite">Cambio de aceite y filtros</option>
+                                <option value="Repuestos">Instalación de repuestos</option>
+                                <option value="Servicio general">Servicio automotriz general</option>
+                                <option value="Otro">Otra categoría</option>
+                            </select>
+
+                            <input type="text"
+                                   id="inputCategoriaManual"
+                                   class="form-control iza-control mt-2"
+                                   maxlength="100"
+                                   placeholder="Escribe la nueva categoría"
+                                   style="display:none;" />
+
+                            <input type="hidden"
+                                   id="finalCategoria"
+                                   name="categoria" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="descripcion" class="form-label fw-bold">
+                                Descripción del trabajo
+                                <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+
+                            <textarea id="descripcion"
+                                      name="descripcion"
+                                      class="form-control iza-control"
+                                      rows="4"
+                                      maxlength="1000"
+                                      placeholder="Describe brevemente el diagnóstico, servicio o repuestos instalados."></textarea>
+
+                            <div class="d-flex justify-content-between form-text">
+                                <span>Evita incluir información personal del cliente.</span>
+                                <span id="contadorDescripcion">0 / 1000</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="imagen" class="form-label fw-bold">
+                                Fotografía del servicio
+                            </label>
+
+                            <div class="iza-upload-box">
+                                <input type="file"
+                                       id="imagen"
+                                       name="imagen"
+                                       class="form-control iza-control"
+                                       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                       required />
+
+                                <div class="form-text mt-2">
+                                    Formatos permitidos: JPG, JPEG, PNG y WEBP. Tamaño máximo: 5 MB.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                            <button type="submit"
+                                    class="btn iza-primary-btn flex-grow-1"
+                                    id="btnGuardar">
+
+                                <i class="bi bi-cloud-arrow-up-fill me-2"></i>
+                                Guardar y publicar
+                            </button>
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary iza-secondary-btn">
+
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Descripción (Opcional)</label>
-            <textarea name="descripcion" class="form-control" rows="2" placeholder="Detalle extra del trabajo..."></textarea>
+        <div class="col-12 col-xl-5">
+            <div class="card border-0 shadow-sm iza-preview-card">
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold mb-0">Vista previa</h5>
+                        <span class="badge iza-preview-badge">PUBLICACIÓN WEB</span>
+                    </div>
+
+                    <div class="iza-image-preview" id="contenedorPreview">
+                        <div class="iza-preview-placeholder" id="previewPlaceholder">
+                            <i class="bi bi-image"></i>
+                            <p class="mb-0">La imagen seleccionada aparecerá aquí.</p>
+                        </div>
+
+                        <img id="imagenPreview"
+                             src=""
+                             alt="Vista previa de la fotografía"
+                             class="d-none" />
+                    </div>
+
+                    <div class="iza-preview-content">
+                        <span id="previewCategoria" class="iza-category-chip">
+                            Categoría del servicio
+                        </span>
+
+                        <h5 id="previewTitulo" class="fw-bold mt-3 mb-2">
+                            Título del servicio
+                        </h5>
+
+                        <p id="previewDescripcion" class="text-muted mb-0">
+                            La descripción del trabajo aparecerá en esta sección.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="alert iza-help-alert mt-4 mb-0">
+                <div class="d-flex gap-3">
+                    <i class="bi bi-shield-check"></i>
+                    <div>
+                        <strong>Recomendación de privacidad</strong>
+                        <p class="mb-0 mt-1">
+                            Evita publicar placas, documentos, rostros o datos personales sin autorización.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Foto del Trabajo</label>
-            <input type="file" name="imagen" class="form-control" accept="image/*" required />
-        </div>
-
-        <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-success" onclick="sincronizarCategoria()">💾 Guardar y Publicar</button>
-            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-        </div>
-    </form>
+    </div>
 </div>
 
+<style>
+    .iza-gallery-page {
+        --iza-red: #ed1c24;
+        --iza-red-dark: #c81018;
+        --iza-dark: #171717;
+        padding-bottom: 2rem;
+    }
+
+    .iza-page-eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--iza-red);
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+    }
+
+    .iza-form-card,
+    .iza-preview-card {
+        overflow: hidden;
+        border-radius: 16px;
+    }
+
+    .iza-control {
+        min-height: 48px;
+        border-color: #dedede;
+        border-radius: 8px;
+    }
+
+    textarea.iza-control {
+        min-height: 120px;
+    }
+
+    .iza-control:focus {
+        border-color: var(--iza-red);
+        box-shadow: 0 0 0 .22rem rgba(237, 28, 36, .12);
+    }
+
+    .iza-upload-box {
+        padding: 18px;
+        background: #fafafa;
+        border: 1px dashed #d3d3d3;
+        border-radius: 10px;
+    }
+
+    .iza-primary-btn {
+        min-height: 49px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: var(--iza-red);
+        border: 1px solid var(--iza-red);
+        border-radius: 7px;
+        font-weight: 800;
+    }
+
+        .iza-primary-btn:hover,
+        .iza-primary-btn:focus {
+            color: #fff;
+            background: var(--iza-red-dark);
+            border-color: var(--iza-red-dark);
+        }
+
+    .iza-secondary-btn,
+    .iza-back-btn {
+        min-height: 49px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-weight: 700;
+    }
+
+    .iza-preview-badge {
+        color: var(--iza-red);
+        background: rgba(237, 28, 36, .08);
+    }
+
+    .iza-image-preview {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background: #f1f1f1;
+        border-radius: 12px;
+    }
+
+        .iza-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .iza-preview-placeholder {
+        width: 100%;
+        height: 100%;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        color: #8c8c8c;
+        text-align: center;
+    }
+
+        .iza-preview-placeholder i {
+            font-size: 2.8rem;
+            color: #b2b2b2;
+        }
+
+    .iza-preview-content {
+        padding-top: 20px;
+    }
+
+    .iza-category-chip {
+        display: inline-flex;
+        padding: 6px 10px;
+        color: #fff;
+        background: var(--iza-red);
+        border-radius: 5px;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .iza-help-alert {
+        color: #393939;
+        background: #fff7f7;
+        border: 1px solid rgba(237, 28, 36, .18);
+        border-radius: 12px;
+    }
+
+        .iza-help-alert i {
+            color: var(--iza-red);
+            font-size: 1.5rem;
+        }
+
+    @@media (max-width: 575.98px) {
+        .iza-form-card .card-body,
+        .iza-preview-card .card-body {
+            padding: 1.25rem !important;
+        }
+
+        .iza-primary-btn,
+        .iza-secondary-btn,
+        .iza-back-btn {
+            width: 100%;
+        }
+    }
+</style>
+
 <script>
-    function gestionarCategoria(valor) {
-        const inputManual = document.getElementById('inputCategoriaManual');
-        if (valor === 'Otro') {
-            inputManual.style.display = 'block';
-            inputManual.required = true;
-        } else {
-            inputManual.style.display = 'none';
-            inputManual.required = false;
-        }
-    }
+    (() => {
+        "use strict";
 
-    function sincronizarCategoria() {
-        const select = document.getElementById('selectCategoria');
-        const inputManual = document.getElementById('inputCategoriaManual');
-        const campoFinal = document.getElementById('finalCategoria');
+        const form = document.getElementById("formGaleria");
+        const selectCategoria = document.getElementById("selectCategoria");
+        const categoriaManual = document.getElementById("inputCategoriaManual");
+        const categoriaFinal = document.getElementById("finalCategoria");
+        const titulo = document.getElementById("titulo");
+        const descripcion = document.getElementById("descripcion");
+        const contadorDescripcion = document.getElementById("contadorDescripcion");
+        const imagenInput = document.getElementById("imagen");
+        const imagenPreview = document.getElementById("imagenPreview");
+        const previewPlaceholder = document.getElementById("previewPlaceholder");
+        const previewCategoria = document.getElementById("previewCategoria");
+        const previewTitulo = document.getElementById("previewTitulo");
+        const previewDescripcion = document.getElementById("previewDescripcion");
+        const btnGuardar = document.getElementById("btnGuardar");
 
-        // Si eligió 'Otro', el valor final es lo que escribió en el input
-        if (select.value === 'Otro') {
-            campoFinal.value = inputManual.value;
-        } else {
-            campoFinal.value = select.value;
+        window.gestionarCategoria = function (valor) {
+            const esOtro = valor === "Otro";
+
+            categoriaManual.style.display = esOtro ? "block" : "none";
+            categoriaManual.required = esOtro;
+
+            if (!esOtro) {
+                categoriaManual.value = "";
+            }
+
+            actualizarCategoriaPreview();
+        };
+
+        function obtenerCategoria() {
+            return selectCategoria.value === "Otro"
+                ? categoriaManual.value.trim()
+                : selectCategoria.value;
         }
-    }
+
+        function actualizarCategoriaPreview() {
+            previewCategoria.textContent =
+                obtenerCategoria() || "Categoría del servicio";
+        }
+
+        function actualizarTextoPreview() {
+            previewTitulo.textContent =
+                titulo.value.trim() || "Título del servicio";
+
+            previewDescripcion.textContent =
+                descripcion.value.trim() ||
+                "La descripción del trabajo aparecerá en esta sección.";
+
+            contadorDescripcion.textContent =
+                `${descripcion.value.length} / 1000`;
+        }
+
+        function cargarPreviewImagen(file) {
+            if (!file) {
+                imagenPreview.src = "";
+                imagenPreview.classList.add("d-none");
+                previewPlaceholder.classList.remove("d-none");
+                return;
+            }
+
+            const tiposPermitidos = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!tiposPermitidos.includes(file.type)) {
+                imagenInput.value = "";
+                alert("Solo se permiten imágenes JPG, JPEG, PNG o WEBP.");
+                cargarPreviewImagen(null);
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                imagenInput.value = "";
+                alert("La imagen no puede superar los 5 MB.");
+                cargarPreviewImagen(null);
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = event => {
+                imagenPreview.src = event.target.result;
+                imagenPreview.classList.remove("d-none");
+                previewPlaceholder.classList.add("d-none");
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        titulo.addEventListener("input", actualizarTextoPreview);
+        descripcion.addEventListener("input", actualizarTextoPreview);
+        selectCategoria.addEventListener("change", actualizarCategoriaPreview);
+        categoriaManual.addEventListener("input", actualizarCategoriaPreview);
+
+        imagenInput.addEventListener("change", event => {
+            cargarPreviewImagen(event.target.files?.[0] ?? null);
+        });
+
+        form.addEventListener("submit", event => {
+            const valorCategoria = obtenerCategoria();
+
+            if (!valorCategoria) {
+                event.preventDefault();
+                selectCategoria.focus();
+                alert("Debe seleccionar o escribir una categoría.");
+                return;
+            }
+
+            categoriaFinal.value = valorCategoria;
+
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                form.classList.add("was-validated");
+                return;
+            }
+
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+        });
+
+        actualizarTextoPreview();
+        actualizarCategoriaPreview();
+    })();
 </script>

@@ -1,34 +1,137 @@
 ﻿@model List<Negocio.Web.Models.Entities.TrabajoMarketing>
 
+<section class="iza-projects-section py-5 border-bottom"
+         id="trabajos-reales"
+         style="scroll-margin-top: 90px;">
 
-<section class="py-5 bg-white border-bottom" id="trabajos-reales" style="scroll-margin-top: 70px;">
     <div class="container">
-        <div class="text-center mt-3 mb-4">
-            <h2 class="display-5 fw-bold text-dark mb-2 d-none d-md-block">NUESTROS PROYECTOS</h2>
-            <h3 class="fw-bold text-dark mb-2 d-md-none">NUESTROS PROYECTOS</h3> <div class="mx-auto bg-success" style="width: 80px; height: 3px; border-radius: 2px;"></div>
+
+        <!-- ENCABEZADO -->
+        <div class="text-center mb-5">
+
+            <span class="iza-projects-eyebrow">
+                EXPERIENCIA IZA MOTORS
+            </span>
+
+            <h2 class="display-5 fw-bold text-dark mb-3 d-none d-md-block">
+                SERVICIOS Y PROYECTOS REALIZADOS
+            </h2>
+
+            <h3 class="fw-bold text-dark mb-3 d-md-none">
+                SERVICIOS REALIZADOS
+            </h3>
+
+            <p class="text-muted mx-auto mb-0"
+               style="max-width: 650px;">
+                Conoce algunos de los servicios automotrices, reparaciones
+                y trabajos realizados por el equipo técnico de Iza Motors.
+            </p>
+
+            <div class="iza-projects-line"></div>
         </div>
 
-        <div class="swiper">
+        <!-- CARRUSEL -->
+        <div class="swiper iza-projects-swiper">
+
             <div class="swiper-wrapper">
-                @if (Model != null)
+
+                @if (Model != null && Model.Any())
                 {
                     @foreach (var item in Model)
                     {
                         <div class="swiper-slide">
-                            <div class="trabajo-item-card" onclick="abrirModalInteres('@item.Titulo', '@item.ImagenUrl')" style="cursor:pointer;">
-                                <div class="trabajo-img-wrapper">
-                                    <img src="@item.ImagenUrl" alt="@item.Titulo" class="img-fluid">
-                                    <div class="trabajo-overlay"><span>@item.Categoria</span></div>
-                                </div>
-                                <div class="p-3 text-center">
-                                    <h6 class="fw-bold">@item.Titulo</h6>
-                                </div>
+
+                            <article class="trabajo-item-card iza-project-card"
+                                     onclick="abrirModalInteres(
+                                                '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(item.Titulo ?? string.Empty))',
+                                                '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(item.ImagenUrl ?? string.Empty))'
+                                             )"
+                                     role="button"
+                                     tabindex="0">
+
+                                <div class="trabajo-img-wrapper iza-project-image">
+
+                                    <img src="@item.ImagenUrl"
+                                         alt="@item.Titulo"
+                                         class="img-fluid"
+                                         loading="lazy">
+
+                                    <div class="trabajo-overlay iza-project-overlay">
+                                        <span>
+                                            @(string.IsNullOrWhiteSpace(item.Categoria)
+                                                                                ? "Servicio automotriz"
+                                                                                : item.Categoria)
+                                </span>
                             </div>
+
+                                    <div class="iza-project-zoom">
+                                        <i class="bi bi-zoom-in"></i>
+                                    </div>
+                                </div>
+
+                                <div class="iza-project-info">
+
+                                    <h6 class="fw-bold mb-2">
+                                        @item.Titulo
+                                    </h6>
+
+                                    <p class="mb-0">
+                                        Ver detalle del servicio
+                                        <i class="bi bi-arrow-right ms-1"></i>
+                                    </p>
+
+                                </div>
+                            </article>
+
                         </div>
-                    }
+                                }
                 }
+                else
+                {
+                    <div class="swiper-slide">
+                        <div class="iza-project-empty">
+
+                            <div class="iza-project-empty-icon">
+                                <i class="bi bi-car-front-fill"></i>
+                            </div>
+
+                            <h5 class="fw-bold">
+                                Próximamente nuevos trabajos
+                            </h5>
+
+                            <p class="text-muted mb-0">
+                                Estamos preparando evidencias de nuestros
+                                servicios automotrices realizados.
+                            </p>
+
+                        </div>
+                    </div>
+                }
+
             </div>
+
             <div class="swiper-pagination position-relative mt-4"></div>
         </div>
+
+        <!-- ACCIONES -->
+        <div class="text-center mt-5">
+
+            <a href="#cotizar"
+               class="btn iza-project-primary-btn">
+
+                <i class="bi bi-calendar2-check-fill me-2"></i>
+                Agendar servicio
+            </a>
+
+            <a asp-controller="ProductoPublic"
+               asp-action="Index"
+               class="btn iza-project-secondary-btn ms-md-2 mt-2 mt-md-0">
+
+                <i class="bi bi-gear-wide-connected me-2"></i>
+                Ver repuestos
+            </a>
+
+        </div>
+
     </div>
 </section>

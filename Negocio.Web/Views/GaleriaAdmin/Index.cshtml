@@ -1,86 +1,805 @@
 ﻿@model List<Negocio.Web.Models.Entities.TrabajoMarketing>
 
 @{
-    ViewData["Title"] = "Galería de Trabajos";
+    ViewData["Title"] = "Servicios y trabajos publicados";
     Layout = "_LayoutSistema";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="m-0">📸 Galería de Trabajos Publicados</h3>
-    <a asp-action="Create" class="btn btn-success">➕ Nueva foto</a>
+<div class="iza-gallery-admin">
+
+    @if (TempData["Exito"] is string mensajeExito)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @mensajeExito
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
+    @if (TempData["Error"] is string mensajeError)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @mensajeError
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+
+        <div>
+            <span class="iza-page-eyebrow">GALERÍA ADMINISTRATIVA</span>
+            <h2 class="fw-bold mb-1">Servicios y trabajos publicados</h2>
+            <p class="text-muted mb-0">
+                Administra las fotografías que se muestran en la página pública de Iza Motors.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn iza-new-service-btn">
+            <i class="bi bi-plus-lg me-2"></i>
+            Nuevo servicio
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="iza-empty-gallery">
+            <div class="iza-empty-icon">
+                <i class="bi bi-images"></i>
+            </div>
+
+            <h4 class="fw-bold">Todavía no hay servicios publicados</h4>
+
+            <p class="text-muted">
+                Registra el primer trabajo realizado para que aparezca en la galería pública.
+            </p>
+
+            <a asp-action="Create" class="btn iza-new-service-btn">
+                <i class="bi bi-cloud-arrow-up-fill me-2"></i>
+                Publicar primer servicio
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div class="iza-gallery-count">
+                <i class="bi bi-images me-2"></i>
+                @Model.Count publicación@(Model.Count == 1 ? "" : "es")
+            </div>
+
+            <div class="iza-filter-box">
+                <i class="bi bi-search"></i>
+                <input type="search"
+                       id="buscarPublicacion"
+                       placeholder="Buscar por título o categoría..."
+                       autocomplete="off" />
+            </div>
+        </div>
+
+        <div class="row g-4" id="contenedorPublicaciones">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-sm-6 col-xl-4 col-xxl-3 iza-gallery-column"
+                     data-search="@($"{item.Titulo} {item.Categoria}".ToLowerInvariant())">
+
+                    <article class="card h-100 border-0 shadow-sm iza-admin-card">
+
+                        <div class="iza-admin-image">
+                            <img src="@item.ImagenUrl"
+                                 alt="@item.Titulo"
+                                 loading="lazy" />
+
+                            <span class="iza-admin-category">
+                                @item.Categoria
+                            </span>
+
+                            <span class="iza-publication-status @(item.Activo ? "is-public" : "is-hidden")">
+                                <i class="bi @(item.Activo ? "bi-globe2" : "bi-eye-slash-fill")"></i>
+                                @(item.Activo ? "Público" : "Oculto")
+                            </span>
+                        </div>
+
+                        <div class="card-body d-flex flex-column p-3 p-lg-4">
+
+                            <h5 class="card-title fw-bold mb-2">
+                                @item.Titulo
+                            </h5>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Descripcion))
+                            {
+                                <p class="iza-card-description text-muted mb-3">
+                                    @item.Descripcion
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="iza-card-description text-muted fst-italic mb-3">
+                                    Sin descripción registrada.
+                                </p>
+                            }
+
+                            <div class="iza-card-date mb-3">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                Publicado el @item.FechaCreacion.ToString("dd/MM/yyyy")
+                            </div>
+
+                            <div class="mt-auto d-grid gap-2">
+
+                                <button type="button"
+                                        class="btn iza-edit-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal"
+                                        data-id="@item.Id"
+                                        data-titulo="@item.Titulo"
+                                        data-categoria="@item.Categoria"
+                                        data-descripcion="@item.Descripcion">
+
+                                    <i class="bi bi-pencil-square me-2"></i>
+                                    Editar publicación
+                                </button>
+
+                                <div class="d-flex gap-2">
+
+                                    <form asp-action="Toggle"
+                                          method="post"
+                                          class="flex-fill">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@item.Id" />
+
+                                        <button type="submit"
+                                                class="btn w-100 @(item.Activo ? "iza-hide-btn" : "iza-show-btn")">
+
+                                            <i class="bi @(item.Activo ? "bi-eye-slash" : "bi-eye") me-1"></i>
+                                            @(item.Activo ? "Ocultar" : "Mostrar")
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="Delete"
+                                          method="post"
+                                          class="iza-delete-form"
+                                          onsubmit="return confirmarEliminacion('@item.Titulo');">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@item.Id" />
+
+                                        <button type="submit"
+                                                class="btn iza-delete-btn"
+                                                title="Eliminar publicación"
+                                                aria-label="Eliminar @item.Titulo">
+
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </article>
+                </div>
+            }
+
+        </div>
+
+        <div id="sinResultados" class="iza-empty-search d-none">
+            <i class="bi bi-search"></i>
+            <h5 class="fw-bold mt-3">No se encontraron publicaciones</h5>
+            <p class="text-muted mb-0">
+                Prueba escribiendo otro título o categoría.
+            </p>
+        </div>
+    }
 </div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">No hay fotos en el catálogo.</div>
-}
-else
-{
-    <div class="row g-4">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-4 col-lg-3">
-                <div class="card h-100 shadow-sm border-0" style="border-radius: 14px; overflow: hidden;">
-                    <div style="position: relative;">
-                        <img src="@item.ImagenUrl" class="card-img-top" style="height: 180px; object-fit: cover;">
-                        <span class="badge bg-primary position-absolute" style="bottom: 10px; right: 10px;">@item.Categoria</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title mb-1 fw-bold">@item.Titulo</h6>
-                        <span class="badge mb-3 align-self-start @(item.Activo ? "bg-success" : "bg-secondary")">
-                            @(item.Activo ? "Público en Web" : "Oculto")
-                        </span>
-                        <div class="mt-auto d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                    data-bs-toggle="modal" data-bs-target="#editModal"
-                                    data-id="@item.Id" data-titulo="@item.Titulo"
-                                    data-categoria="@item.Categoria" data-descripcion="@item.Descripcion">
-                                <i class="bi bi-pencil"></i>
-                            </button>
 
-                            <form asp-action="Toggle" method="post" class="flex-fill">
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button class="btn btn-sm w-100 @(item.Activo ? "btn-outline-warning" : "btn-outline-success")">
-                                    @(item.Activo ? "Ocultar" : "Mostrar")
-                                </button>
-                            </form>
-                            <form asp-action="Delete" method="post" onsubmit="return confirm('¿Eliminar?');">
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                            </form>
+<!-- MODAL DE EDICIÓN -->
+<div class="modal fade"
+     id="editModal"
+     tabindex="-1"
+     aria-labelledby="editModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg iza-edit-modal">
+
+            <form asp-action="Edit"
+                  method="post"
+                  enctype="multipart/form-data"
+                  id="formEditarGaleria">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header iza-modal-header">
+                    <div>
+                        <span class="iza-modal-eyebrow">GALERÍA IZA MOTORS</span>
+                        <h5 class="modal-title fw-bold" id="editModalLabel">
+                            Editar servicio realizado
+                        </h5>
+                    </div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar">
+                    </button>
+                </div>
+
+                <div class="modal-body p-4">
+
+                    <input type="hidden"
+                           name="id"
+                           id="editId" />
+
+                    <div class="mb-3">
+                        <label for="editTitulo" class="form-label fw-bold">
+                            Título del servicio
+                        </label>
+
+                        <input name="titulo"
+                               id="editTitulo"
+                               class="form-control iza-control"
+                               maxlength="150"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoriaSelect" class="form-label fw-bold">
+                            Categoría
+                        </label>
+
+                        <select id="editCategoriaSelect"
+                                class="form-select iza-control">
+
+                            <option value="">-- Seleccione una categoría --</option>
+                            <option value="Mantenimiento preventivo">Mantenimiento preventivo</option>
+                            <option value="Sistema de frenos">Sistema de frenos</option>
+                            <option value="Motor">Motor y reparación mecánica</option>
+                            <option value="Suspensión">Suspensión y dirección</option>
+                            <option value="Diagnóstico electrónico">Diagnóstico electrónico</option>
+                            <option value="Cambio de aceite">Cambio de aceite y filtros</option>
+                            <option value="Repuestos">Instalación de repuestos</option>
+                            <option value="Servicio general">Servicio automotriz general</option>
+                            <option value="Otro">Otra categoría</option>
+                        </select>
+
+                        <input type="text"
+                               id="editCategoriaManual"
+                               class="form-control iza-control mt-2"
+                               maxlength="100"
+                               placeholder="Escribe la categoría"
+                               style="display:none;" />
+
+                        <input type="hidden"
+                               name="categoria"
+                               id="editCategoria" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDescripcion" class="form-label fw-bold">
+                            Descripción
+                        </label>
+
+                        <textarea name="descripcion"
+                                  id="editDescripcion"
+                                  class="form-control iza-control"
+                                  rows="4"
+                                  maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="mb-0">
+                        <label for="editImagen" class="form-label fw-bold">
+                            Reemplazar fotografía
+                            <span class="text-muted fw-normal">(opcional)</span>
+                        </label>
+
+                        <input type="file"
+                               id="editImagen"
+                               name="imagen"
+                               class="form-control iza-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+                        <div class="form-text">
+                            Déjalo vacío para conservar la imagen actual. Máximo 5 MB.
                         </div>
                     </div>
-                </div>
-            </div>
-        }
-    </div>
-}
 
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="Edit" method="post" enctype="multipart/form-data">
-                <div class="modal-header"><h5 class="modal-title">Editar Trabajo</h5></div>
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="editId" />
-                    <div class="mb-3"><label>Título</label><input name="titulo" id="editTitulo" class="form-control" required /></div>
-                    <div class="mb-3"><label>Categoría</label><input name="categoria" id="editCategoria" class="form-control" /></div>
-                    <div class="mb-3"><label>Descripción</label><textarea name="descripcion" id="editDescripcion" class="form-control"></textarea></div>
-                    <div class="mb-3"><label>Imagen (dejar vacío para mantener actual)</label><input type="file" name="imagen" class="form-control" accept="image/*" /></div>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button"
+                            class="btn btn-outline-secondary iza-modal-cancel-btn"
+                            data-bs-dismiss="modal">
+
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="btn iza-save-btn"
+                            id="btnGuardarEdicion">
+
+                        <i class="bi bi-check2-circle me-2"></i>
+                        Guardar cambios
+                    </button>
+                </div>
+
             </form>
         </div>
     </div>
 </div>
 
+
+<style>
+    .iza-gallery-admin {
+        --iza-red: #ed1c24;
+        --iza-red-dark: #c81018;
+        --iza-dark: #171717;
+        padding-bottom: 2rem;
+    }
+
+    .iza-page-eyebrow,
+    .iza-modal-eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--iza-red);
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+    }
+
+    .iza-new-service-btn {
+        min-height: 49px;
+        padding-inline: 22px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: var(--iza-red);
+        border: 1px solid var(--iza-red);
+        border-radius: 7px;
+        font-weight: 800;
+    }
+
+        .iza-new-service-btn:hover,
+        .iza-new-service-btn:focus {
+            color: #fff;
+            background: var(--iza-red-dark);
+            border-color: var(--iza-red-dark);
+        }
+
+    .iza-gallery-count {
+        color: #4c4c4c;
+        font-size: .9rem;
+        font-weight: 700;
+    }
+
+    .iza-filter-box {
+        width: min(100%, 360px);
+        min-height: 45px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: #fff;
+        border: 1px solid #dedede;
+        border-radius: 8px;
+    }
+
+        .iza-filter-box i {
+            color: #8c8c8c;
+        }
+
+        .iza-filter-box input {
+            width: 100%;
+            border: 0;
+            outline: 0;
+            color: #242424;
+            background: transparent;
+            font-size: .88rem;
+        }
+
+    .iza-admin-card {
+        overflow: hidden;
+        border-radius: 14px;
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+        .iza-admin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, .10) !important;
+        }
+
+    .iza-admin-image {
+        position: relative;
+        width: 100%;
+        height: 210px;
+        overflow: hidden;
+        background: #efefef;
+    }
+
+        .iza-admin-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .45s ease;
+        }
+
+    .iza-admin-card:hover .iza-admin-image img {
+        transform: scale(1.05);
+    }
+
+    .iza-admin-category {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        max-width: calc(100% - 24px);
+        padding: 6px 10px;
+        overflow: hidden;
+        color: #fff;
+        background: var(--iza-red);
+        border-radius: 5px;
+        font-size: .66rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-overflow: ellipsis;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .iza-publication-status {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 6px 9px;
+        color: #fff;
+        border-radius: 5px;
+        font-size: .67rem;
+        font-weight: 800;
+    }
+
+        .iza-publication-status.is-public {
+            background: #198754;
+        }
+
+        .iza-publication-status.is-hidden {
+            background: #555;
+        }
+
+    .iza-card-description {
+        display: -webkit-box;
+        overflow: hidden;
+        font-size: .86rem;
+        line-height: 1.5;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+
+    .iza-card-date {
+        color: #838383;
+        font-size: .76rem;
+    }
+
+    .iza-edit-btn,
+    .iza-hide-btn,
+    .iza-show-btn,
+    .iza-delete-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-size: .82rem;
+        font-weight: 750;
+    }
+
+    .iza-edit-btn {
+        color: #222;
+        background: #f2f2f2;
+        border: 1px solid #dedede;
+    }
+
+        .iza-edit-btn:hover {
+            color: #fff;
+            background: #222;
+            border-color: #222;
+        }
+
+    .iza-hide-btn {
+        color: #8a5c00;
+        background: #fff7df;
+        border: 1px solid #efd68a;
+    }
+
+        .iza-hide-btn:hover {
+            color: #fff;
+            background: #b67c00;
+            border-color: #b67c00;
+        }
+
+    .iza-show-btn {
+        color: #146c43;
+        background: #eaf8f1;
+        border: 1px solid #a8ddc3;
+    }
+
+        .iza-show-btn:hover {
+            color: #fff;
+            background: #198754;
+            border-color: #198754;
+        }
+
+    .iza-delete-btn {
+        width: 44px;
+        color: var(--iza-red);
+        background: #fff;
+        border: 1px solid rgba(237, 28, 36, .35);
+    }
+
+        .iza-delete-btn:hover {
+            color: #fff;
+            background: var(--iza-red);
+            border-color: var(--iza-red);
+        }
+
+    .iza-empty-gallery,
+    .iza-empty-search {
+        min-height: 360px;
+        padding: 45px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        background: #fff;
+        border: 1px dashed #d2d2d2;
+        border-radius: 14px;
+    }
+
+    .iza-empty-icon {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--iza-red);
+        background: rgba(237, 28, 36, .08);
+        border-radius: 50%;
+        font-size: 2rem;
+    }
+
+    .iza-empty-search i {
+        color: #a6a6a6;
+        font-size: 2.2rem;
+    }
+
+    .iza-edit-modal {
+        overflow: hidden;
+        border-radius: 14px;
+    }
+
+    .iza-modal-header {
+        padding: 1.25rem 1.5rem;
+        background: #fafafa;
+        border-bottom: 1px solid #e7e7e7;
+    }
+
+    .iza-control {
+        min-height: 47px;
+        border-color: #dedede;
+        border-radius: 8px;
+    }
+
+    textarea.iza-control {
+        min-height: 110px;
+    }
+
+    .iza-control:focus {
+        border-color: var(--iza-red);
+        box-shadow: 0 0 0 .22rem rgba(237, 28, 36, .12);
+    }
+
+    .iza-save-btn,
+    .iza-modal-cancel-btn {
+        min-height: 46px;
+        padding-inline: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-weight: 800;
+    }
+
+    .iza-save-btn {
+        color: #fff;
+        background: var(--iza-red);
+        border: 1px solid var(--iza-red);
+    }
+
+        .iza-save-btn:hover {
+            color: #fff;
+            background: var(--iza-red-dark);
+            border-color: var(--iza-red-dark);
+        }
+
+    @@media (max-width: 575.98px) {
+        .iza-new-service-btn,
+        .iza-filter-box {
+            width: 100%;
+        }
+
+        .iza-admin-image {
+            height: 240px;
+        }
+
+        .iza-modal-cancel-btn,
+        .iza-save-btn {
+            width: 100%;
+        }
+
+        #editModal .modal-footer {
+            flex-direction: column-reverse;
+        }
+    }
+</style>
+
 <script>
-    var editModal = document.getElementById('editModal');
-    editModal.addEventListener('show.bs.modal', function (event) {
-        var btn = event.relatedTarget;
-        document.getElementById('editId').value = btn.dataset.id;
-        document.getElementById('editTitulo').value = btn.dataset.titulo;
-        document.getElementById('editCategoria').value = btn.dataset.categoria;
-        document.getElementById('editDescripcion').value = btn.dataset.descripcion;
-    });
+    (() => {
+        "use strict";
+
+        const editModal = document.getElementById("editModal");
+        const formEditar = document.getElementById("formEditarGaleria");
+        const editCategoriaSelect = document.getElementById("editCategoriaSelect");
+        const editCategoriaManual = document.getElementById("editCategoriaManual");
+        const editCategoriaFinal = document.getElementById("editCategoria");
+        const editImagen = document.getElementById("editImagen");
+        const btnGuardarEdicion = document.getElementById("btnGuardarEdicion");
+        const buscador = document.getElementById("buscarPublicacion");
+        const columnas = document.querySelectorAll(".iza-gallery-column");
+        const sinResultados = document.getElementById("sinResultados");
+
+        const categoriasPredefinidas = new Set(
+            Array.from(editCategoriaSelect?.options ?? [])
+                .map(option => option.value)
+                .filter(value => value && value !== "Otro")
+        );
+
+        function configurarCategoriaEdicion(categoria) {
+            if (!editCategoriaSelect) return;
+
+            if (categoriasPredefinidas.has(categoria)) {
+                editCategoriaSelect.value = categoria;
+                editCategoriaManual.value = "";
+                editCategoriaManual.style.display = "none";
+                editCategoriaManual.required = false;
+            } else {
+                editCategoriaSelect.value = "Otro";
+                editCategoriaManual.value = categoria || "";
+                editCategoriaManual.style.display = "block";
+                editCategoriaManual.required = true;
+            }
+
+            editCategoriaFinal.value = categoria || "";
+        }
+
+        editCategoriaSelect?.addEventListener("change", () => {
+            const esOtro = editCategoriaSelect.value === "Otro";
+
+            editCategoriaManual.style.display = esOtro ? "block" : "none";
+            editCategoriaManual.required = esOtro;
+
+            if (!esOtro) {
+                editCategoriaManual.value = "";
+                editCategoriaFinal.value = editCategoriaSelect.value;
+            }
+        });
+
+        editCategoriaManual?.addEventListener("input", () => {
+            editCategoriaFinal.value = editCategoriaManual.value.trim();
+        });
+
+        editModal?.addEventListener("show.bs.modal", event => {
+            const button = event.relatedTarget;
+
+            document.getElementById("editId").value =
+                button.dataset.id || "";
+
+            document.getElementById("editTitulo").value =
+                button.dataset.titulo || "";
+
+            document.getElementById("editDescripcion").value =
+                button.dataset.descripcion || "";
+
+            configurarCategoriaEdicion(
+                button.dataset.categoria || ""
+            );
+
+            editImagen.value = "";
+        });
+
+        formEditar?.addEventListener("submit", event => {
+            const categoria = editCategoriaSelect.value === "Otro"
+                ? editCategoriaManual.value.trim()
+                : editCategoriaSelect.value;
+
+            if (!categoria) {
+                event.preventDefault();
+                alert("Debe seleccionar o escribir una categoría.");
+                return;
+            }
+
+            const file = editImagen.files?.[0];
+
+            if (file) {
+                const tiposPermitidos = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp"
+                ];
+
+                if (!tiposPermitidos.includes(file.type)) {
+                    event.preventDefault();
+                    alert("Solo se permiten imágenes JPG, JPEG, PNG o WEBP.");
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    event.preventDefault();
+                    alert("La imagen no puede superar los 5 MB.");
+                    return;
+                }
+            }
+
+            editCategoriaFinal.value = categoria;
+            btnGuardarEdicion.disabled = true;
+            btnGuardarEdicion.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+        });
+
+        buscador?.addEventListener("input", () => {
+            const termino = buscador.value.trim().toLowerCase();
+            let visibles = 0;
+
+            columnas.forEach(columna => {
+                const coincide =
+                    columna.dataset.search.includes(termino);
+
+                columna.classList.toggle("d-none", !coincide);
+
+                if (coincide) {
+                    visibles++;
+                }
+            });
+
+            sinResultados?.classList.toggle(
+                "d-none",
+                visibles > 0
+            );
+        });
+
+        window.confirmarEliminacion = function (titulo) {
+            return confirm(
+                `¿Estás seguro de eliminar "${titulo}"? ` +
+                "La publicación y su imagen se eliminarán permanentemente."
+            );
+        };
+    })();
 </script>

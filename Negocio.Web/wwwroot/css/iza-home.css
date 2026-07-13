@@ -1531,3 +1531,478 @@ body.iza-home .skeleton-text-price {
         transition-duration: 0.01ms !important;
     }
 }
+body.iza-home .work-flow-minimal {
+    background: radial-gradient( circle at 50% 0%, rgba(237, 28, 36, 0.10), transparent 38% ), #111111;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+body.iza-home .minimal-step-card {
+    padding: 1.6rem;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
+    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+}
+
+    body.iza-home .minimal-step-card:hover {
+        background: rgba(255, 255, 255, 0.055);
+        border-color: rgba(237, 28, 36, 0.55);
+        transform: translateY(-4px);
+    }
+
+    body.iza-home .minimal-step-card .step-num {
+        font-family: "Oswald", sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+body.iza-home .iza-step-highlight {
+    background: rgba(237, 28, 36, 0.06);
+    border-color: rgba(237, 28, 36, 0.38);
+}
+
+    body.iza-home .iza-step-highlight:hover {
+        background: rgba(237, 28, 36, 0.10);
+        border-color: #ed1c24;
+    }
+
+body.iza-home .work-flow-minimal .btn-danger {
+    background: #ed1c24;
+    border-color: #ed1c24;
+}
+
+    body.iza-home .work-flow-minimal .btn-danger:hover {
+        background: #c81018;
+        border-color: #c81018;
+    }
+
+/* ============================================================
+   PREGUNTAS FRECUENTES — IZA MOTORS
+   ============================================================ */
+
+body.iza-home .iza-faq-section {
+    position: relative;
+    padding: 6rem 0;
+    overflow: hidden;
+    background: radial-gradient( circle at 15% 10%, rgba(237, 28, 36, 0.045), transparent 25% ), #f7f7f7;
+}
+
+body.iza-home .iza-section-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #ed1c24;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+body.iza-home .iza-title-line {
+    width: 48px;
+    height: 3px;
+    margin: 20px auto 0;
+    background: #ed1c24;
+    border-radius: 999px;
+}
+
+body.iza-home .iza-faq .accordion-item {
+    margin-bottom: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e2e2e2 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.045);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+    body.iza-home .iza-faq .accordion-item:hover {
+        border-color: rgba(237, 28, 36, 0.4) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.075);
+        transform: translateY(-2px);
+    }
+
+body.iza-home .iza-faq .accordion-button {
+    min-height: 76px;
+    padding: 17px 22px;
+    display: flex;
+    align-items: center;
+    color: #171717;
+    background: #ffffff;
+    border: none;
+    border-radius: 10px !important;
+    font-size: 1rem;
+    font-weight: 750;
+    box-shadow: none !important;
+}
+
+    body.iza-home .iza-faq .accordion-button:not(.collapsed) {
+        color: #ed1c24;
+        background: #fff6f6;
+        border-bottom: 1px solid #ececec;
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+
+    body.iza-home .iza-faq .accordion-button::after {
+        width: 17px;
+        height: 17px;
+        background-size: 17px;
+    }
+
+body.iza-home .iza-faq-icon {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    margin-right: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ed1c24;
+    background: rgba(237, 28, 36, 0.08);
+    border-radius: 50%;
+    font-size: 1.12rem;
+}
+
+body.iza-home .iza-faq .accordion-button:not(.collapsed)
+.iza-faq-icon {
+    color: #ffffff;
+    background: #ed1c24;
+}
+
+body.iza-home .iza-faq .accordion-body {
+    padding: 20px 24px 23px 81px;
+    color: #555555;
+    background: #ffffff;
+    font-size: 0.94rem;
+    line-height: 1.7;
+}
+
+body.iza-home .iza-faq-actions {
+    margin-top: 38px;
+    padding: 28px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e3e3e3;
+    border-radius: 12px;
+}
+
+    body.iza-home .iza-faq-actions p {
+        margin-bottom: 18px;
+        color: #222222;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+body.iza-home .iza-faq-btn-primary,
+body.iza-home .iza-faq-btn-outline {
+    min-height: 48px;
+    padding: 0 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+body.iza-home .iza-faq-btn-primary {
+    color: #ffffff !important;
+    background: #ed1c24;
+    border: 1px solid #ed1c24;
+}
+
+    body.iza-home .iza-faq-btn-primary:hover {
+        color: #ffffff !important;
+        background: #c81018;
+        border-color: #c81018;
+    }
+
+body.iza-home .iza-faq-btn-outline {
+    color: #161616 !important;
+    background: #ffffff;
+    border: 1px solid #cfcfcf;
+}
+
+    body.iza-home .iza-faq-btn-outline:hover {
+        color: #ffffff !important;
+        background: #161616;
+        border-color: #161616;
+    }
+
+@media (max-width: 767px) {
+    body.iza-home .iza-faq-section {
+        padding: 4rem 0;
+    }
+
+    body.iza-home .iza-faq .accordion-button {
+        min-height: 68px;
+        padding: 14px 15px;
+        font-size: 0.91rem;
+        line-height: 1.35;
+    }
+
+    body.iza-home .iza-faq-icon {
+        width: 37px;
+        min-width: 37px;
+        height: 37px;
+        margin-right: 11px;
+        font-size: 1rem;
+    }
+
+    body.iza-home .iza-faq .accordion-body {
+        padding: 17px 18px 20px;
+        font-size: 0.88rem;
+    }
+
+    body.iza-home .iza-faq-actions {
+        padding: 23px 18px;
+    }
+
+    body.iza-home .iza-faq-btn-primary,
+    body.iza-home .iza-faq-btn-outline {
+        width: 100%;
+    }
+}
+
+/* ============================================================
+   PROYECTOS Y SERVICIOS REALIZADOS — IZA MOTORS
+   ============================================================ */
+
+body.iza-home .iza-projects-section {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient( circle at 85% 0%, rgba(237, 28, 36, 0.045), transparent 26% ), #ffffff;
+}
+
+body.iza-home .iza-projects-eyebrow {
+    display: block;
+    margin-bottom: 9px;
+    color: #ed1c24;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+body.iza-home .iza-projects-line {
+    width: 54px;
+    height: 3px;
+    margin: 21px auto 0;
+    background: #ed1c24;
+    border-radius: 999px;
+}
+
+body.iza-home .iza-project-card {
+    height: 100%;
+    overflow: hidden;
+    background: #ffffff !important;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+    body.iza-home .iza-project-card:hover {
+        border-color: rgba(237, 28, 36, 0.45);
+        box-shadow: 0 17px 34px rgba(0, 0, 0, 0.1);
+        transform: translateY(-6px);
+    }
+
+body.iza-home .iza-project-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background: #efefef !important;
+}
+
+    body.iza-home .iza-project-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+        transition: transform 0.55s ease;
+    }
+
+body.iza-home .iza-project-card:hover
+.iza-project-image img {
+    transform: scale(1.07);
+}
+
+body.iza-home .iza-project-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 180deg, transparent 45%, rgba(0, 0, 0, 0.72) 100% );
+    pointer-events: none;
+}
+
+body.iza-home .iza-project-overlay {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+    z-index: 3;
+    padding: 0;
+    text-align: left;
+    background: transparent !important;
+}
+
+    body.iza-home .iza-project-overlay span {
+        display: inline-flex;
+        padding: 7px 12px;
+        color: #ffffff !important;
+        background: #ed1c24 !important;
+        border-radius: 4px;
+        font-size: 0.68rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.08em;
+        text-shadow: none !important;
+        text-transform: uppercase;
+    }
+
+body.iza-home .iza-project-zoom {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 3;
+    width: 39px;
+    height: 39px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.62);
+    border-radius: 50%;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateY(-7px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+body.iza-home .iza-project-card:hover
+.iza-project-zoom {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body.iza-home .iza-project-info {
+    padding: 19px 20px 21px;
+    text-align: left;
+}
+
+    body.iza-home .iza-project-info h6 {
+        color: #171717;
+        font-size: 1rem;
+        line-height: 1.35;
+    }
+
+    body.iza-home .iza-project-info p {
+        color: #ed1c24;
+        font-size: 0.78rem;
+        font-weight: 750;
+    }
+
+body.iza-home .iza-project-empty {
+    min-height: 310px;
+    padding: 40px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    background: #fafafa;
+    border: 1px dashed #d4d4d4;
+    border-radius: 12px;
+}
+
+body.iza-home .iza-project-empty-icon {
+    width: 66px;
+    height: 66px;
+    margin-bottom: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ed1c24;
+    background: rgba(237, 28, 36, 0.08);
+    border-radius: 50%;
+    font-size: 1.8rem;
+}
+
+body.iza-home .iza-projects-swiper
+.swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: #bcbcbc;
+    opacity: 1;
+}
+
+body.iza-home .iza-projects-swiper
+.swiper-pagination-bullet-active {
+    width: 24px;
+    background: #ed1c24;
+    border-radius: 999px;
+}
+
+body.iza-home .iza-project-primary-btn,
+body.iza-home .iza-project-secondary-btn {
+    min-height: 49px;
+    padding: 0 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+body.iza-home .iza-project-primary-btn {
+    color: #ffffff !important;
+    background: #ed1c24;
+    border: 1px solid #ed1c24;
+}
+
+    body.iza-home .iza-project-primary-btn:hover {
+        color: #ffffff !important;
+        background: #c81018;
+        border-color: #c81018;
+    }
+
+body.iza-home .iza-project-secondary-btn {
+    color: #171717 !important;
+    background: #ffffff;
+    border: 1px solid #cccccc;
+}
+
+    body.iza-home .iza-project-secondary-btn:hover {
+        color: #ffffff !important;
+        background: #171717;
+        border-color: #171717;
+    }
+
+@media (max-width: 767px) {
+    body.iza-home .iza-projects-section {
+        padding-top: 4rem !important;
+        padding-bottom: 4rem !important;
+    }
+
+    body.iza-home .iza-project-image {
+        height: 280px;
+    }
+
+    body.iza-home .iza-project-zoom {
+        opacity: 1;
+        transform: none;
+    }
+
+    body.iza-home .iza-project-info {
+        padding: 16px 17px 18px;
+        text-align: center;
+    }
+
+    body.iza-home .iza-project-primary-btn,
+    body.iza-home .iza-project-secondary-btn {
+        width: 100%;
+    }
+}

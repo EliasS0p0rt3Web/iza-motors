@@ -46,10 +46,7 @@ wwwroot\img\productos\e7498b9f-9ad4-417d-b186-1fcf7da72407.webp
 wwwroot\img\productos\terminales_1_pulgada.jpg
 wwwroot\img\productos\tubo-acero-mini.webp
 wwwroot\img\productos\tubo-aluminio-mini.webp
-wwwroot\img\trabajos\1c407153-1720-4459-bbf0-34acb7b738bd.jpeg
-wwwroot\img\trabajos\1fb58938-df93-4636-8b80-013a3b564603.jpg
-wwwroot\img\trabajos\21dfab60-95c6-4828-b65f-ceb863449c04.jpg
-wwwroot\img\trabajos\83a4af48-db16-47c1-9f09-dc02b8e5c4d4.jpg
+wwwroot\img\trabajos\a7a5efb9921b4520a9a9d8a7eba7dc25.png
 wwwroot\img\trabajos\b9cf76aa-a6c7-441f-9151-32d713e3864c.jpeg
 wwwroot\js\cotizacion-core.js
 wwwroot\js\cotizacion-cortina.js
