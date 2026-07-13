@@ -13,7 +13,7 @@ builder.Services.AddControllersWithViews();
 
 // 🔐 REQUIRED FOR SESSION (ESTO FALTABA)
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddScoped<RielCortinaService>();
+
 
 // 🔥 ESTE ES EL QUE FALTA PARA EL GMAIL
 builder.Services.AddScoped<EmailService>();
@@ -53,7 +53,7 @@ builder.Services.AddDbContext<NegocioDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<VentaService>();
-builder.Services.AddScoped<TornilloService>();
+
 
 
 

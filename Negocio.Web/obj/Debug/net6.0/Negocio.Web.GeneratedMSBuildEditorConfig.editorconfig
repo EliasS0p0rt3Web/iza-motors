@@ -56,22 +56,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxfRGlyZWNjaW9uZXNQZXJmaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/CotizacionDucha/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ290aXphY2lvbkR1Y2hhXEluZGV4LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/CotizacionPasamanos/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ290aXphY2lvblBhc2FtYW5vc1xJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/CotizacionRiel/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ290aXphY2lvblJpZWxcSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/Cotizacion/TuboCortinas.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ290aXphY2lvblxUdWJvQ29ydGluYXMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/GaleriaAdmin/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2FsZXJpYUFkbWluXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -102,10 +86,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/HomePublic/_ComoTrabajamos.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVB1YmxpY1xfQ29tb1RyYWJhamFtb3MuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/HomePublic/_CotizadorCategorias.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVB1YmxpY1xfQ290aXphZG9yQ2F0ZWdvcmlhcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Eliat/Desktop/IZA_MOTORS/Negocio.Web/Negocio.Web/Views/HomePublic/_FaqPublico.cshtml]

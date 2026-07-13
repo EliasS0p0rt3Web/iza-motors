@@ -12,14 +12,10 @@ namespace Negocio.Web.Controllers
     public class VentaController : Controller
     {
         private readonly NegocioDbContext _context;
-        private readonly RielCortinaService _rielService;
-        private readonly TornilloService _tornilloService;
 
-        public VentaController(NegocioDbContext context, RielCortinaService rielService, TornilloService tornilloService)
+        public VentaController(NegocioDbContext context)
         {
             _context = context;
-            _rielService = rielService;
-            _tornilloService = tornilloService;
         }
 
         // =========================
@@ -609,117 +605,6 @@ namespace Negocio.Web.Controllers
         public IActionResult SeleccionTipoVenta()
         {
             return View();
-        }
-
-        // =========================================
-        // RIEL CORTINA - GET (Inicializa Fechas)
-        // =========================================
-        public IActionResult RielCortina()
-        {
-            // ⚡ Capturamos la hora oficial de Perú exacta y segura para Azure
-            var zonaPeru = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
-            var ahoraPeru = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaPeru);
-
-            var vm = new RielCortinaViewModel
-            {
-                Fecha = ahoraPeru.Date,
-                Dia = ahoraPeru.ToString("dddd", new CultureInfo("es-PE")).ToUpper()
-            };
-
-            return View(vm);
-        }
-
-        // =========================================
-        // RIEL CORTINA - POST (Envía Fechas al Service)
-        // =========================================
-        [HttpPost]
-        public async Task<IActionResult> RielCortina(RielCortinaViewModel vm)
-        {
-            if (!vm.AccesorioAparte)
-            {
-                ModelState.Remove(nameof(vm.TipoUnera));
-                ModelState.Remove(nameof(vm.CantidadUneraExtra));
-            }
-
-            if (!ModelState.IsValid)
-                return View(vm);
-
-            try
-            {
-                // 🔥 Agregamos vm.Fecha y vm.Dia al final de los parámetros del Service
-                var resultado = await _rielService.RegistrarVentaRielAsync(
-                    vm.Metros,
-                    vm.TipoCruce,
-                    vm.AccesorioAparte,
-                    vm.TipoUnera,
-                    vm.CantidadUneraExtra ?? 0,
-                    vm.Precio,
-                    vm.Destino,
-                    vm.Fecha, // ⚡ NUEVO
-                    vm.Dia    // ⚡ NUEVO
-                );
-
-                return View("ResultadoRiel", resultado);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(vm);
-            }
-        }
-
-
-        [HttpGet]
-        public IActionResult Tornillos()
-        {
-            // ⚡ Hora oficial de Perú segura para la nube
-            var zonaPeru = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
-            var ahoraPeru = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaPeru);
-
-            var vm = new VentaTornilloViewModel
-            {
-                Fecha = ahoraPeru.Date,
-                Dia = ahoraPeru.ToString("dddd", new CultureInfo("es-PE")).ToUpper(),
-
-                Tornillos = _context.Productos
-                    .Where(p => p.Descripcion == "TORNILLO" && p.Activo)
-                    .OrderBy(p => p.Dimensiones)
-                    .ToList(),
-
-                Tarubos = _context.Productos
-                    .Where(p => p.Descripcion == "TARUBO" && p.Activo)
-                    .OrderBy(p => p.Dimensiones)
-                    .ToList()
-            };
-
-            return View(vm);
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Tornillos(VentaTornilloViewModel model)
-        {
-            model.Tornillos = _context.Productos
-                .Where(p => p.Descripcion == "TORNILLO" && p.Activo)
-                .OrderBy(p => p.Dimensiones)
-                .ToList();
-
-            model.Tarubos = _context.Productos
-                .Where(p => p.Descripcion == "TARUBO" && p.Activo)
-                .OrderBy(p => p.Dimensiones)
-                .ToList();
-
-            var resultado = await _tornilloService.RegistrarVentaAsync(model);
-
-            if (resultado != "OK")
-            {
-                ModelState.AddModelError("", resultado);
-                return View(model);
-            }
-
-            TempData["ok"] = "Venta registrada correctamente";
-
-            return RedirectToAction("Index");
-        }
+        }     
     }
 }
