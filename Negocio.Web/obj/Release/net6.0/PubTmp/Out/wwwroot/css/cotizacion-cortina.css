@@ -1,0 +1,338 @@
+﻿/* =========================================
+   AJUSTES ESPECÍFICOS – CORTINA
+========================================= */
+
+/* --- TARJETAS DE TUBOS --- */
+.tubo-card {
+    background: white;
+    border-radius: 20px;
+    border: 2px solid #f1f5f9;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    /* Altura mínima para que todas las tarjetas de tubos midan lo mismo */
+    min-height: 400px !important;
+}
+
+    .tubo-card:hover {
+        border-color: #22c55e;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.12);
+    }
+
+    /* MODIFICACIÓN: Imagen del tubo GIGANTE */
+    .tubo-card img {
+        width: 100%;
+        height: 220px !important; /* Subimos de 140px a 220px para que domine la tarjeta */
+        object-fit: contain;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .tubo-card:hover img {
+        transform: scale(1.04); /* Un zoom muy sutil al pasar el mouse */
+    }
+
+    /* MODIFICACIÓN: Textos de los tubos más compactos */
+    .tubo-card b {
+        font-size: 0.9rem !important; /* Texto un poco más reducido */
+        color: #0f172a;
+        display: block;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .tubo-card small {
+        font-size: 0.78rem !important;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+
+/* --- TARJETAS DE ACCESORIOS --- */
+.accesorio-card {
+    background: white;
+    border-radius: 20px;
+    border: 2px solid #f1f5f9;
+    padding: 1.2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    /* Altura mínima para accesorios, manteniéndolos alineados */
+    min-height: 320px !important;
+}
+
+    .accesorio-card:hover {
+        border-color: #22c55e;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.1);
+    }
+
+    /* MODIFICACIÓN: Imagen del accesorio mucho más grande y llamativa */
+    .accesorio-card img {
+        width: 100%;
+        height: 130px !important; /* Subimos de 70px a 130px para que se note el detalle */
+        object-fit: contain;
+        margin-bottom: .8rem;
+        transition: transform 0.3s ease;
+    }
+
+    .accesorio-card:hover img {
+        transform: scale(1.04);
+    }
+
+    /* MODIFICACIÓN: Textos de accesorios estilizados */
+    .accesorio-card b {
+        font-size: .85rem;
+        line-height: 1.2;
+        color: #0f172a;
+        display: block;
+    }
+
+    .accesorio-card small {
+        font-size: .75rem;
+        color: #64748b;
+    }
+
+    .accesorio-card .precio {
+        font-size: .9rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 4px;
+    }
+
+
+/* --- SECCIÓN RESULTADOS --- */
+.resultado-tubo {
+    border-left: 5px solid #6366f1;
+}
+
+
+/* =================================
+   MATERIAL MODAL
+==================================== */
+.material-modal-content {
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: #ffffff;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-pre-title {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #22c55e;
+    margin-bottom: 4px;
+}
+
+.material-select-card {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: #f8fafc;
+    border: 2px solid #f1f5f9;
+    border-radius: 18px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+    .material-select-card:hover {
+        border-color: #22c55e;
+        background: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(34, 197, 94, 0.1);
+    }
+
+.card-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 16px;
+}
+
+    .card-icon-wrapper.alum {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .card-icon-wrapper.steel {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+.card-content {
+    flex-grow: 1;
+}
+
+    .card-content strong {
+        display: block;
+        font-size: 1rem;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+
+    .card-content small {
+        display: block;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+.card-arrow {
+    color: #cbd5e1;
+    transition: transform 0.3s ease;
+}
+
+.material-select-card:hover .card-arrow {
+    color: #22c55e;
+    transform: translateX(3px);
+}
+
+@media (max-width: 576px) {
+    .material-modal-content {
+        border-radius: 24px 24px 0 0;
+    }
+}
+
+
+/* =================================
+   GLOBO DE ALERTA (HINT)
+==================================== */
+#grupoLargo {
+    position: relative;
+}
+
+.hint-usuario {
+    background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+    left: 5%;
+    text-align: center;
+    box-shadow: 0 8px 15px rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: pulseHint 2s infinite ease-in-out;
+}
+
+    .hint-usuario::after {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid #22c55e;
+    }
+
+@keyframes pulseHint {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+}
+/* Línea divisoria solo en tablets y computadoras */
+@media (min-width: 768px) {
+    .border-end-md {
+        border-right: 2px solid #f1f5f9 !important;
+    }
+}
+
+/* Estilo para las píldoras de medidas dentro del cotizador */
+.btn-dimension-pill {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    color: #334155;
+    font-weight: 750;
+    padding: 10px 20px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+    .btn-dimension-pill:hover {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+        color: #10b981;
+    }
+
+    .btn-dimension-pill.active {
+        border-color: #10b981;
+        background-color: #10b981;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+
+/* --- ADAPTACIÓN RESPONSIVA PARA LAS PÍLDORAS --- */
+.btn-dimension-pill {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    color: #334155;
+    font-weight: 750;
+    padding: 12px 24px; /* Un poco más de padding para que se vea pro */
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    width: 100%; /* Por defecto en móvil: Ocupa todo el ancho (Vertical stacking) */
+}
+
+@media (min-width: 768px) {
+    .btn-dimension-pill {
+        width: auto !important; /* En PC: Deja de ser vertical y vuelve a su tamaño dinámico */
+    }
+
+    /* Centrado vertical perfecto en PC si el contenedor derecho es muy alto */
+    .container-pills-wrapper {
+        padding-left: 2.5rem !important;
+    }
+}
+
+/* Efecto hover suave en la imagen izquierda al interactuar con las píldoras */
+.custom-master-img:hover {
+    transform: scale(1.03);
+}
+
+/* 🎯 CONTROL TOTAL DEL TAMAÑO DE LA IMAGEN MAESTRA */
+.custom-master-img {
+    /* 👇 Mueve estos dos valores a tu gusto (puedes usar px o rem) */
+    height: 320px !important; /* <--- Controla el ALTO de la imagen */
+    width: 600px !important; /* <--- Controla el ANCHO de la imagen */
+    /* 🚨 TRUCO MÁGICO: Evita que el tubo se estire feo o se deforme */
+    object-fit: contain !important;
+    /* Suavidad premium al cambiar entre dimensiones */
+    transition: transform 0.3s ease;
+}
+
+/* 📱 OPCIONAL: Si sientes que en celulares se ve muy gigante, 
+   puedes bajarle el tamaño automáticamente solo para pantallas móviles */
+@media (max-width: 767.98px) {
+    .custom-master-img {
+        height: 220px !important; /* Alto en celulares */
+        width: 220px !important; /* Ancho en celulares */
+    }
+}

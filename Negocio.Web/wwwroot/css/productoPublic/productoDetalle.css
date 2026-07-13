@@ -1,0 +1,434 @@
+﻿
+.js-product-master-container {
+    overflow-x: hidden !important;
+}
+
+.fw-extrabold {
+    font-weight: 800 !important;
+}
+
+.tracking-tight {
+    letter-spacing: -0.5px;
+}
+
+.tracking-tighter {
+    letter-spacing: -1.2px;
+}
+
+.main-product-image-box {
+    position: relative; /* Esto ya lo tienes, permite posicionar el sticker adentro */
+    height: 480px;
+    background: #ffffff;
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+
+
+/* Añade o modifica esta clase para posicionar el sticker arriba a la derecha */
+.badge-sticker {
+    position: absolute;
+    top: 15px; /* Distancia desde el borde superior */
+    right: 15px; /* Distancia desde el borde derecho */
+    z-index: 10; /* Para que flote por encima de la imagen */
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-uppercase: uppercase;
+}
+
+.product-image-placeholder {
+    background-color: #f1f5f9;
+    font-size: .95rem;
+    height: 100%;
+}
+
+.btn-variant-pill {
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    color: #374151;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+    .btn-variant-pill:hover {
+        border-color: #198754;
+        background-color: #f0fdf4;
+        color: #198754;
+    }
+
+    .btn-variant-pill.active {
+        border-color: #198754;
+        background-color: #198754;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.25);
+    }
+
+/* Estilo del precio limpio sin bordes ni fondos */
+.price-display-clean {
+    padding: 0.5rem 0;
+}
+
+.price-integer {
+    font-size: 2.2rem; /* Tamaño imponente para los soles */
+    line-height: 1;
+}
+
+.price-decimal {
+    font-size: 1.2rem; /* Los centavos un toque más arriba y pequeños */
+    align-self: flex-start;
+}
+
+/* 📊 MAQUETACIÓN DEL RIEL DE METROS REINTEGRADO (OPTIMIZADO A ANCHO COMPLETO Y SUAVE) */
+.progress-w-container {
+    width: 100%;
+    max-width: 100% !important; /* 🟢 Cambiado de 200px a 100% para ocupar todo el ancho */
+    height: 20px; /* Un toque más grueso para mejorar el touch con el dedo */
+    background-color: #e5e7eb;
+    border-radius: 20px;
+    overflow: visible;
+    margin: 15px 0; /* Alineado limpio con márgenes verticales */
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    touch-action: none; /* ⚡ Evita que el navegador del cel intente scrollear la web mientras arrastras el riel */
+}
+
+.progress-w-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #198754, #2ecc71);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    /* 🟢 Eliminamos el transition: width 0.1s; para que la respuesta al movimiento del dedo sea INSTANTÁNEA y ultra fluida */
+    transition: none !important;
+    position: relative;
+    min-width: 35px;
+    border-radius: 20px 0 0 20px;
+    will-change: width; /* ⚡ Le avisa a la GPU del cel que optimice el renderizado de esta barra */
+}
+
+.progress-w-text {
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.progress-w-handle {
+    width: 26px; /* 🟢 Un toque más grande para que sea súper fácil de agarrar con el pulgar */
+    height: 26px;
+    background-color: white;
+    border: 4px solid #198754;
+    border-radius: 50%;
+    position: absolute;
+    right: -13px; /* Centrado exacto con la mitad de su nuevo ancho */
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    z-index: 2;
+    cursor: grab;
+    will-change: left, transform; /* ⚡ Optimización premium para hilos de renderizado móviles */
+}
+
+.progress-w-container:active .progress-w-handle {
+    transform: translateY(-50%) scale(1.15);
+    cursor: grabbing;
+}
+
+@media (max-width: 991.98px) {
+    .main-product-image-box {
+        height: 320px;
+    }
+}
+
+/* Botón "Agregar al pedido" completamente ovalado (estilo cápsula) */
+.btn-add-cart {
+    background-color: #ff6f00 !important; /* Un naranja más corporativo y vibrante */
+    color: #ffffff !important; /* Texto blanco para que contraste pro */
+    border: none !important;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 14px 32px; /* Relleno: más alto y ancho para que mantenga la forma */
+    border-radius: 50px !important; /* El truco mágico para que quede ovalado */
+    box-shadow: 0 4px 15px rgba(255, 111, 0, 0.2); /* Sutil sombra naranja que le da profundidad */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espaciado perfecto entre el icono y el texto */
+}
+    /* Efecto Hover: se levanta sutilmente e intensifica el color */
+    .btn-add-cart:hover {
+        background-color: #e66400 !important;
+        transform: translateY(-2px); /* Micro-interacción de subida */
+        box-shadow: 0 6px 20px rgba(255, 111, 0, 0.35);
+        color: #ffffff !important;
+    }
+
+    /* Efecto Active: cuando el usuario lo presiona físicamente */
+    .btn-add-cart:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 8px rgba(255, 111, 0, 0.2);
+    }
+
+/* Contenedor del Stepper centrado y limpio */
+.quantity-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* Espaciado generoso entre botones y número como en tu foto */
+    margin: 15px auto;
+}
+
+/* Botones circulares perfectos (Menos y Más) */
+.btn-step {
+    width: 45px;
+    height: 45px;
+    border-radius: 50% !important; /* Los hace círculos perfectos */
+    border: 1px solid #e2e8f0 !important; /* Borde gris bien sutil */
+    background-color: #ffffff !important;
+    color: #ff6f00 !important; /* El naranja vibrante para el + y - */
+    font-size: 1.5rem; /* Símbolos grandes y claros */
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02); /* Sombra casi invisible */
+    padding: 0 !important; /* Evita que Bootstrap rompa el círculo */
+    line-height: 1;
+}
+
+    /* Micro-interacciones premium al pasar el mouse */
+    .btn-step:hover {
+        border-color: #ff6f00 !important; /* El borde se ilumina en naranja */
+        background-color: #fffaf5 !important; /* Un fondo naranja suavito */
+        transform: scale(1.05);
+    }
+
+    .btn-step:active {
+        transform: scale(0.95);
+    }
+
+/* El número del centro (Input de cantidad) */
+.quantity-input-clean {
+    width: 50px !important;
+    text-align: center;
+    font-size: 1.4rem !important; /* Número grande y elegante */
+    font-weight: 600 !important;
+    color: #475569 !important; /* Gris oscuro corporativo */
+    border: none !important; /* Le quitamos cualquier caja o borde */
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+    /* Deshabilitar las flechas nativas del navegador en el input */
+    .quantity-input-clean::-webkit-outer-spin-button,
+    .quantity-input-clean::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+.quantity-input-clean {
+    -moz-appearance: textfield;
+}
+
+/* Asegúrate de tener esto en productoDetalle.css */
+.tarjeta-convertida-bolita {
+    position: absolute; /* Modificado de fixed a absolute */
+    z-index: 999999 !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.6);
+    pointer-events: none;
+    border-radius: 20px;
+    opacity: 0.9;
+    transition: top 0.65s cubic-bezier(0.55, 0.055, 0.675, 0.19), left 0.65s cubic-bezier(0.215, 0.610, 0.355, 1), width 0.65s ease, height 0.65s ease, border-radius 0.4s ease, transform 0.65s ease;
+}
+@media (max-width: 991.98px) {
+    /* Ajustamos el wrapper inferior para albergar ambos componentes de forma compacta */
+    .fixed-bottom-mobile-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.98); /* Fondo blanco sólido para tapar texto detrás */
+        padding: 10px 16px 14px 16px; /* Ajuste sutil de paddings */
+        box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.08);
+        z-index: 1040;
+        backdrop-filter: blur(8px);
+    }
+
+    /* Le da un margen extra más generoso al contenedor maestro para que el bloque estático doble no tape el final de la web */
+    .js-product-master-container {
+        padding-bottom: 155px !important; /* Incrementado para que quepan ambos botones al scrollear al final */
+    }
+
+    /* Ajustamos el botón estático superior para que se vea más pulido, tipo píldora compacta */
+    .btn-outline-customize-mobile {
+        background-color: #f8fafc;
+        border: 1px dashed #cbd5e1; /* Borde más sutil para que no ensucie la pantalla */
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    /* 🛡️ CORRECCIÓN DEFINITIVA: El flex y el posicionamiento SOLO se activan cuando el modal está abierto (.show) */
+    .bottom-sheet-modal.show {
+        top: 0 !important;
+        bottom: 0 !important;
+        display: flex !important;
+        align-items: flex-end !important;
+        background-color: rgba(0, 0, 0, 0.5); /* Esto añade el fondo oscuro semitransparente premium de Bootstrap */
+    }
+
+    /* Cuando esté oculto, dejamos que Bootstrap lo maneje de forma nativa para que no bloquee los clics */
+    .bottom-sheet-modal:not(.show) {
+        display: none !important;
+    }
+
+        /* Transformamos el diálogo de Bootstrap en una hoja que sube desde el fondo real del viewport */
+        .bottom-sheet-modal .modal-dialog-bottom-sheet {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            z-index: 1050;
+        }
+
+        .bottom-sheet-modal.show .modal-dialog-bottom-sheet {
+            transform: translateY(0) !important;
+        }
+
+        .bottom-sheet-modal .modal-content {
+            border-radius: 24px 24px 0 0 !important; /* Bordes redondeados solo arriba */
+            padding-bottom: 30px; /* Espacio para que no lo tape la barra de navegación del celular */
+            width: 100%;
+        }
+
+    /* Línea estética superior tipo iPhone / Android Premium */
+    .bottom-sheet-drag-handle {
+        width: 40px;
+        height: 5px;
+        background-color: #cbd5e1;
+        border-radius: 3px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (min-width: 992px) {
+    /* En PC, hacemos que el botón de Configurar Medida desaparezca por completo, ya que el selector está fijo en el DOM lateral */
+    .btn-outline-customize-mobile {
+        display: none !important;
+    }
+
+    .bottom-sheet-modal {
+        position: relative !important;
+        display: block !important;
+        opacity: 1 !important;
+        z-index: auto !important;
+        background: none !important;
+    }
+
+        .bottom-sheet-modal .modal-dialog-bottom-sheet {
+            transform: none !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+
+        .bottom-sheet-modal .modal-content {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .bottom-sheet-modal .modal-header,
+        .bottom-sheet-modal .backdrop,
+        .bottom-sheet-modal::-webkit-scrollbar {
+            display: none !important;
+        }
+
+    .unit-selector-box {
+        border: 1px solid #e5e7eb !important;
+    }
+}
+
+/* Capa de carga sobre la caja de la imagen */
+.main-product-image-box {
+    position: relative; /* Asegura el contexto absoluto */
+}
+
+.product-box-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85); /* Fondo blanco traslúcido */
+    z-index: 20; /* Por encima de la imagen y del badge */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px); /* Suave desenfoque de la imagen de fondo */
+    transition: opacity 0.3s ease;
+}
+
+
+
+/* 📱 Sticker de Precio Flotante para Móviles dentro de la Imagen */
+.price-badge-mobile {
+    position: absolute;
+    top: 15px; /* Misma altura exacta que el badge-sticker de stock */
+    left: 15px; /* Alineado a la izquierda */
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco sutilmente translúcido */
+    padding: 4px 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.price-mobile-currency {
+    font-size: 0.85rem;
+    color: #1e293b;
+    margin-right: 2px;
+}
+
+.price-mobile-integer {
+    font-size: 1.3rem; /* Tamaño compacto e imponente para móvil */
+    color: #1e293b;
+    line-height: 1;
+}
+
+.price-mobile-decimal {
+    font-size: 0.85rem;
+    color: #1e293b;
+}
+
+.price-mobile-unit {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 700;
+    text-uppercase: uppercase;
+}
+
+/* Línea y contenedor del precio dentro del Bottom Sheet */
+.modal-price-display {
+    border-top: 1px dashed #e2e8f0;
+    width: 100%;
+}

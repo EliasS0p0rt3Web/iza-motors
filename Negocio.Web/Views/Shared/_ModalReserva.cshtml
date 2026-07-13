@@ -1,0 +1,880 @@
+﻿@using System.Security.Claims
+@{
+    // 🔥 DETECTAMOS SI EL CLIENTE ESTÁ LOGUEADO
+    bool estaLogueado = Context.Session.GetInt32("USER_ID") != null;
+    string usuarioCorreo = Context.Session.GetString("USER") ?? "";
+
+    // Intentamos recuperar el nombre desde los Claims de la cookie
+    string usuarioNombre = User.Identity?.IsAuthenticated == true ? User.Identity.Name : "";
+
+    if (!string.IsNullOrEmpty(usuarioNombre) && usuarioNombre.Contains("@"))
+    {
+        usuarioNombre = ""; 
+    }
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@@1.9.4/dist/leaflet.css" />
+
+<style>
+    #reservaModal .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        backdrop-filter: blur(6px);
+    }
+
+    #reservaModal .modal-header {
+        background: linear-gradient(135deg,#ffc107 0%,#ff9800 100%);
+        color: #000;
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+
+    #reservaModal .modal-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    #reservaModal .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: .9rem;
+        margin-bottom: .4rem;
+    }
+
+    #reservaModal .form-control,
+    #reservaModal .form-select {
+        border-radius: 10px;
+        padding: .7rem;
+        border: 1px solid #dee2e6;
+        transition: all .3s ease;
+    }
+
+    #reservaModal .form-control:focus,
+    #reservaModal .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 .25rem rgba(255,193,7,.25);
+    }
+
+    #btnConfirmarReserva {
+        padding: .9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-radius: 12px;
+        border: none;
+        background: #ffc107;
+        transition: .2s;
+    }
+
+    #btnConfirmarReserva:hover {
+        transform: translateY(-2px);
+        background: #e0a800;
+        box-shadow: 0 5px 15px rgba(0,0,0,.1);
+    }
+
+    #btnConfirmarReserva:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+    }
+
+    #reservaModal .modal-body {
+        padding: 2rem;
+    }
+
+    /* Estilo personalizado para el botón GPS flotante dentro de Leaflet */
+    .btn-gps-leaflet {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        font-weight: bold;
+        font-size: 11px;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .btn-gps-leaflet:hover {
+        background: #1d4ed8;
+    }
+
+    /* Animación de Olas de Carga (Skeleton Components) para el buscador del modal */
+    .skeleton-item-modal {
+        padding: 10px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .skeleton-line-modal {
+        height: 12px;
+        background: linear-gradient(90deg, #e9ecef 25%, #ced4da 50%, #e9ecef 75%);
+        background-size: 200% 100%;
+        animation: olasCargaModal 1.5s infinite linear;
+        border-radius: 4px;
+    }
+
+        .skeleton-line-modal.short {
+            width: 50%;
+            height: 8px;
+            margin-top: 4px;
+        }
+    @@keyframes olasCargaModal {
+        0%
+
+    {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+
+    }
+</style>
+
+<div class="modal fade"
+     id="reservaModal"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">✨ Finaliza tu Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                @if (estaLogueado)
+                {
+                    <div class="alert alert-success d-flex align-items-center gap-2" style="border-radius: 12px; font-size: 0.85rem;">
+                        <i class="bi bi-person-check-fill fs-5"></i>
+                        <div>
+                            ¡Pedido Identificado! Esta reserva se guardará directamente en tu sección de <strong>"Mis Pedidos"</strong>.
+                        </div>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-person me-2"></i> Nombre completo
+                    </label>
+                    <input type="text" id="clienteNombre" class="form-control" placeholder="Ej. Juan Pérez" value="@usuarioNombre" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-envelope me-2"></i> Correo electrónico <span class="text-muted" style="font-size: 0.8rem;">(Opcional)</span>
+                    </label>
+                    <input type="email" id="clienteCorreo" class="form-control" placeholder="ejemplo@correo.com" value="@usuarioCorreo" @(estaLogueado ? "readonly" : "")>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-telephone me-2"></i> Teléfono
+                        </label>
+                        <input type="tel" id="clienteTelefono" class="form-control" placeholder="999999999" maxlength="9" inputmode="numeric" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-truck me-2"></i> Tipo de entrega
+                        </label>
+                        <select id="clienteEntrega" class="form-select">
+                            <option value="RECOJO">Recojo en tienda</option>
+                            <option value="DELIVERY">Delivery</option>
+                            <option value="ESTACION">Delivery Estación de Tren (S/ 3.00)</option>
+                            <option value="SHALOM">Envío por Agencia Shalom (Pago a Destino)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3 d-none" id="grupoEstaciones">
+                        <label class="form-label">
+                            <i class="bi bi-train-front me-2"></i> Selecciona la Estación
+                        </label>
+                        <select id="estacionTren" class="form-select">
+                            <optgroup label="SJL (Cerca a tienda)">
+                                <option value="Bayanovar">Bayanovar</option>
+                                <option value="Santa Rosa">Santa Rosa</option>
+                                <option value="San Martín">San Martín</option>
+                                <option value="San Carlos">San Carlos</option>
+                                <option value="Los Postes">Los Postes</option>
+                                <option value="Los Jardines">Los Jardines</option>
+                                <option value="Pirámide del Sol">Pirámide del Sol</option>
+                                <option value="Caja de Agua">Caja de Agua</option>
+                            </optgroup>
+                            <optgroup label="Lima Centro / Sur">
+                                <option value="Presbítero Maestro">Presbítero Maestro</option>
+                                <option value="Grau">Grau</option>
+                                <option value="Gamarra">Gamarra</option>
+                                <option value="La Cultura">La Cultura</option>
+                                <option value="Angamos">Angamos</option>
+                                <option value="Cabitos">Cabitos</option>
+                                <option value="Atocongo">Atocongo</option>
+                                <option value="Villa El Salvador">Villa El Salvador</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3 d-none" id="grupoDireccionDinamica">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <label class="form-label small text-muted fw-bold">
+                            <i class="bi bi-geo-alt-fill text-danger"></i> Tus direcciones frecuentes:
+                        </label>
+                        <select id="comboDireccionesFrecuentes" class="form-select mb-2"></select>
+                    </div>
+                </div>
+
+                <div class="mb-3 d-none" id="grupoShalomDinamico">
+                    <div class="p-3 rounded-3 border" style="background-color: #fffbeb; border-color: #fef3c7;">
+                        <label class="form-label small text-muted fw-bold">
+                            <i class="bi bi-box-seam-fill text-warning"></i> Tus agencias Shalom frecuentes:
+                        </label>
+                        <select id="comboAgenciasFrecuentes" class="form-select mb-2"></select>
+
+                        <div id="campoShalomManual" class="d-none mt-2">
+                            <input type="text" id="clienteShalomAgencia" class="form-control mb-2" placeholder="Ciudad y Nombre de Agencia">
+                            <input type="text" id="clienteShalomReceptor" class="form-control" placeholder="Quién recoge (DNI y Nombre)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 d-none" id="grupoDireccion">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <label class="form-label small text-muted font-weight-bold mb-2">
+                            <i class="bi bi-geo-alt-fill text-danger"></i> Datos de entrega:
+                        </label>
+
+                        <div class="mb-3" style="position: relative;">
+                            <label class="form-label small text-success fw-bold">Escribe tu dirección (Calle, avenida o urbanización)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-secondary border-secondary text-white"><i class="bi bi-search"></i></span>
+                                <input type="text" id="inputBuscarMapModal" class="form-control" placeholder="Ej: Av Próceres de la Independencia 1540..." autocomplete="off" />
+                            </div>
+                            <div id="resultadosBusquedaModal" class="list-group position-absolute w-100" style="top: 100%; left: 0; z-index: 1050; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid #dee2e6;">
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label small text-muted">Distrito Detectado / Editado</label>
+                            <input type="text" id="manualDistrito" class="form-control" placeholder="Distrito (Ej: SJL, La Molina, Comas)">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label small text-muted">Dirección Procesada / Editada</label>
+                            <input type="text" id="manualDireccionTexto" class="form-control" placeholder="Calle, Avenida, Mz. y Lote, Nro.">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label small text-muted">Referencia Manual Exigida *</label>
+                            <input type="text" id="manualReferencia" class="form-control" placeholder="Referencia (Frente al parque, portón verde...)">
+                        </div>
+
+                        <div id="contenedorMapaLeaflet" class="mt-3" style="width: 100%; height: 250px; border-radius: 12px; border: 1px solid #dee2e6; z-index: 1;"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4 text-muted">
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-calendar-event me-2"></i> ¿Para cuándo lo necesitas?
+                    </label>
+                    <select id="tipoFecha" class="form-select">
+                        <option value="HOY">¡Lo quiero para hoy!</option>
+                        <option value="FECHA">Programar otra fecha</option>
+                    </select>
+                </div>
+
+                <div class="mb-3 d-none" id="grupoFecha">
+                    <label class="form-label">Selecciona la fecha</label>
+                    <input type="date" id="clienteFecha" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button"
+                        id="btnConfirmarReserva"
+                        class="btn btn-warning w-100 py-3"
+                        disabled>
+                    CONFIRMAR MI RESERVA
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal"
+     id="loadingReservaModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-warning" style="border-radius: 20px;">
+            <div class="modal-body text-center p-5">
+                <div class="spinner-border text-warning mb-3" role="status" style="width: 3.5rem; height: 3.5rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h4 class="fw-bold">Registrando y validando reserva...</h4>
+                <p class="text-secondary">Estamos preparando tu pedido, un momento por favor.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const clienteEntrega = document.getElementById('clienteEntrega');
+    const grupoEstaciones = document.getElementById('grupoEstaciones');
+    const grupoDireccionDinamica = document.getElementById('grupoDireccionDinamica');
+    const grupoShalomDinamico = document.getElementById('grupoShalomDinamico');
+    const comboDirFrecuentes = document.getElementById('comboDireccionesFrecuentes');
+    const comboAgenciasFrecuentes = document.getElementById('comboAgenciasFrecuentes');
+    const campoShalomManual = document.getElementById('campoShalomManual');
+    const grupoDireccion = document.getElementById('grupoDireccion');
+
+    const clienteNombre = document.getElementById('clienteNombre');
+    const clienteTelefono = document.getElementById('clienteTelefono');
+    const tipoFecha = document.getElementById('tipoFecha');
+    const grupoFecha = document.getElementById('grupoFecha');
+        const clienteFecha =
+        document.getElementById('clienteFecha');
+
+    const reservaModalElement =
+        document.getElementById('reservaModal');
+
+    const btnConfirmarReserva =
+        document.getElementById('btnConfirmarReserva');
+
+    // Variables globales del mapa Leaflet
+    let leafletMap = null;
+    let leafletMarker = null;
+    let buscadorMapaInicializado = false;
+    let timeoutBusquedaModal;
+    let solicitudBusquedaActiva = 0;
+    let solicitudReversaActiva = 0;
+    const inputBuscarModal = document.getElementById('inputBuscarMapModal');
+    const listaResultadosModal = document.getElementById('resultadosBusquedaModal');
+
+    clienteTelefono?.addEventListener("input", function() {
+        this.value = this.value.replace(/\D/g, "");
+    });
+
+    clienteEntrega?.addEventListener("change", function() {
+        grupoDireccionDinamica.classList.add("d-none");
+        grupoShalomDinamico.classList.add("d-none");
+        grupoEstaciones.classList.add("d-none");
+        grupoDireccion.classList.add("d-none");
+
+        const estaLogueado = @(Context.Session.GetInt32("USER_ID") != null ? "true" : "false");
+
+            if (this.value === 'DELIVERY') {
+        const tieneDireccionesGuardadas =
+            estaLogueado &&
+            comboDirFrecuentes &&
+            comboDirFrecuentes.options.length > 1;
+
+        if (tieneDireccionesGuardadas) {
+            grupoDireccionDinamica.classList.remove('d-none');
+        }
+
+        const requiereDireccionManual =
+            !tieneDireccionesGuardadas ||
+            comboDirFrecuentes?.value === 'MANUAL';
+
+        if (requiereDireccionManual) {
+            grupoDireccion.classList.remove('d-none');
+            inicializarMapaLeaflet();
+        }
+    } else if (this.value === "ESTACION") {
+            grupoEstaciones.classList.remove("d-none");
+            } else if (this.value === "SHALOM") {
+        grupoShalomDinamico.classList.remove("d-none");
+
+        const requiereShalomManual =
+            !estaLogueado ||
+            !comboAgenciasFrecuentes ||
+            comboAgenciasFrecuentes.options.length === 0 ||
+            comboAgenciasFrecuentes.value === "MANUAL";
+
+        campoShalomManual?.classList.toggle(
+            "d-none",
+            !requiereShalomManual
+        );
+    }
+    });
+
+    tipoFecha?.addEventListener("change", function() {
+        if (this.value === "FECHA") {
+            grupoFecha?.classList.remove("d-none");
+        } else {
+            grupoFecha?.classList.add("d-none");
+            if (clienteFecha) clienteFecha.value = "";
+        }
+    });
+
+        function validarFormulario() {
+        const nombre =
+            clienteNombre?.value.trim() || '';
+
+        const telefono =
+            clienteTelefono?.value.trim() || '';
+
+        const telefonoValido =
+            /^\d{9}$/.test(telefono);
+
+        if (btnConfirmarReserva) {
+            btnConfirmarReserva.disabled =
+                !(nombre && telefonoValido);
+        }
+    }
+
+    clienteNombre?.addEventListener("input", validarFormulario);
+    clienteTelefono?.addEventListener("input", validarFormulario);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const estaLogueado = @(Context.Session.GetInt32("USER_ID") != null ? "true" : "false");
+
+        if (estaLogueado) {
+            try {
+                const response = await fetch('/Cliente/ObtenerPerfilJson');
+                if (response.ok) {
+                    const perfil = await response.json();
+                    if (perfil.nombreCompleto) document.getElementById('clienteNombre').value = perfil.nombreCompleto;
+                    if (perfil.telefono) document.getElementById('clienteTelefono').value = perfil.telefono;
+                    if (perfil.correo) document.getElementById('clienteCorreo').value = perfil.correo;
+                    validarFormulario();
+                }
+            } catch (error) {
+                console.error("Error al recuperar los datos del perfil:", error);
+            }
+
+            try {
+                const resDir = await fetch('/Cliente/ObtenerDirecciones');
+                if (resDir.ok) {
+                    const datosLogistica = await resDir.json();
+
+                    let optionsHtml = '';
+                    if (datosLogistica.direcciones && datosLogistica.direcciones.length > 0) {
+                        datosLogistica.direcciones.forEach(d => {
+                            optionsHtml += `<option value="DOMICILIO: ${d.distrito} - ${d.direccionTexto} (Ref: ${d.referencia || 'Ninguna'})">📍 ${d.distrito} - ${d.direccionTexto}</option>`;
+                        });
+                    }
+                    optionsHtml += '<option value="MANUAL">➕ Ingresar otra dirección manual...</option>';
+
+
+                    if (comboDirFrecuentes) {
+                        comboDirFrecuentes.innerHTML = optionsHtml;
+                    }
+
+                    if (
+                        datosLogistica.agencias &&
+                        datosLogistica.agencias.length > 0
+                    ) {
+                        let optionsShalomHtml = '';
+
+                        datosLogistica.agencias.forEach(a => {
+                            optionsShalomHtml += `
+                                <option value="AGENCIA SHALOM: ${a.agenciaProvincia} | RECOGE: ${a.datosReceptor}">
+                                    📦 Shalom: ${a.agenciaProvincia}
+                                </option>
+                            `;
+                        });
+
+                        optionsShalomHtml +=
+                            '<option value="MANUAL">➕ Usar otra agencia manual...</option>';
+
+                        if (comboAgenciasFrecuentes) {
+                            comboAgenciasFrecuentes.innerHTML =
+                                optionsShalomHtml;
+                        }
+                    } else {
+                        if (comboAgenciasFrecuentes) {
+                            comboAgenciasFrecuentes.innerHTML =
+                                '<option value="MANUAL">➕ Registrar datos de envío manual...</option>';
+                        }
+
+                        campoShalomManual?.classList.remove('d-none');
+                    }
+                }
+            } catch (err) {
+                console.error("Error al inyectar combos logísticos:", err);
+            }
+        }
+
+        if (comboAgenciasFrecuentes) {
+            comboAgenciasFrecuentes.addEventListener('change', function() {
+                campoShalomManual?.classList.toggle('d-none', this.value !== "MANUAL");
+            });
+        }
+    });
+
+    if (comboDirFrecuentes) {
+        comboDirFrecuentes.addEventListener('change', function() {
+            if (this.value === "MANUAL") {
+                grupoDireccion?.classList.remove("d-none");
+                inicializarMapaLeaflet();
+            } else {
+                grupoDireccion?.classList.add("d-none");
+            }
+        });
+    }
+
+    reservaModalElement?.addEventListener(
+    "hidden.bs.modal",
+    function() {
+            if (
+            window.preservarDatosReservaAlOcultar ===
+            true
+        ) {
+            window.preservarDatosReservaAlOcultar =
+                false;
+
+            return;
+        }
+
+        const estaLogueado = @(Context.Session.GetInt32("USER_ID") != null ? "true" : "false");
+
+        if (!estaLogueado) {
+            if (clienteNombre) clienteNombre.value = "";
+            if (clienteTelefono) clienteTelefono.value = "";
+            if (document.getElementById('clienteCorreo')) document.getElementById('clienteCorreo').value = "";
+        }
+
+        if (inputBuscarModal) inputBuscarModal.value = "";
+
+        const manualDistrito = document.getElementById('manualDistrito');
+        const manualDireccionTexto = document.getElementById('manualDireccionTexto');
+        const manualReferencia = document.getElementById('manualReferencia');
+
+        if (manualDistrito) manualDistrito.value = "";
+        if (manualDireccionTexto) manualDireccionTexto.value = "";
+        if (manualReferencia) manualReferencia.value = "";
+        if (clienteFecha) clienteFecha.value = "";
+
+        grupoDireccion.classList.add("d-none");
+        grupoFecha.classList.add("d-none");
+        grupoEstaciones.classList.add("d-none");
+        grupoDireccionDinamica.classList.add("d-none");
+        grupoShalomDinamico.classList.add("d-none");
+        campoShalomManual?.classList.add("d-none");
+
+        if (tipoFecha) tipoFecha.value = "HOY";
+        if (clienteEntrega) clienteEntrega.value = "RECOJO";
+
+        if (listaResultadosModal) {
+        listaResultadosModal.innerHTML = '';
+        listaResultadosModal.style.display = 'none';
+        }
+        clearTimeout(timeoutBusquedaModal);
+        solicitudBusquedaActiva++;
+        solicitudReversaActiva++;
+
+        // Destruimos el mapa al cerrar el modal para que no consuma memoria innecesaria
+        if (leafletMap) {
+            leafletMap.remove();
+            leafletMap = null;
+            leafletMarker = null;
+        }
+            const agenciaManual =
+        document.getElementById('clienteShalomAgencia');
+
+    const receptorManual =
+        document.getElementById('clienteShalomReceptor');
+
+    if (agenciaManual) agenciaManual.value = '';
+    if (receptorManual) receptorManual.value = '';
+
+            validarFormulario();
+    });
+
+    // 🔥 ARRANQUE DEL MAPA TOTALMENTE GRATUITO CON LEAFLET
+    function inicializarMapaLeaflet() {
+        if (leafletMap !== null) {
+            setTimeout(() => {
+                leafletMap?.invalidateSize();
+            }, 100);
+            return; // Si ya está creado, evitamos duplicarlo
+        }
+
+        // Centrado en el corazón de San Juan de Lurigancho (Cerca a la estación del tren)
+        const latSJL = -11.985143;
+        const lngSJL = -77.004821;
+            if (typeof L === 'undefined') {
+        console.error('Leaflet no se cargó correctamente.');
+        alert('No se pudo cargar el mapa. Ingresa tu dirección manualmente.');
+        return;
+    }
+
+        // Instanciamos el mapa dentro de nuestro div
+        leafletMap = L.map('contenedorMapaLeaflet').setView([latSJL, lngSJL], 14);
+
+        // Cargamos las imágenes (tiles) de la capa pública de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(leafletMap);
+
+        // Agregamos el marcador clásico arrastrable (Pin)
+        leafletMarker = L.marker([latSJL, lngSJL], { draggable: true }).addTo(leafletMap);
+
+            leafletMarker.on('dragend', async function () {
+        const posicion = leafletMarker.getLatLng();
+
+        await obtenerDireccionReversaModal(
+            posicion.lat,
+            posicion.lng
+        );
+    });
+
+        // ➕ AGREGAMOS EL BOTÓN FLOTANTE GPS DENTRO DEL MAPA DE LEAFLET
+        const botonGpsContainer = L.control({ position: 'topleft' });
+        botonGpsContainer.onAdd = function () {
+            const boton = L.DomUtil.create('button', 'btn-gps-leaflet');
+            boton.type = "button";
+            boton.innerHTML = "📍 Usar mi ubicación actual";
+            L.DomEvent.disableClickPropagation(boton);
+
+            boton.addEventListener('click', function (e) {
+                e.preventDefault();
+                boton.innerHTML = "⏳ Localizando...";
+                boton.disabled = true;
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            if (!leafletMap || !leafletMarker) return;
+
+                            const miLat = position.coords.latitude;
+                            const miLng = position.coords.longitude;
+
+                            leafletMap.setView([miLat, miLng], 17);
+                            leafletMarker.setLatLng([miLat, miLng]);
+                                // Justo debajo de: leafletMarker.setLatLng([miLat, miLng]);
+                            await obtenerDireccionReversaModal(miLat, miLng);
+
+                            boton.innerHTML = "📍 Usar mi ubicación actual";
+                            boton.disabled = false;
+                        },
+                        () => {
+                            boton.innerHTML = "📍 Usar mi ubicación actual";
+                            boton.disabled = false;
+                            alert("Por favor, permite el acceso al GPS o escribe tu dirección manualmente.");
+                        }
+                    );
+                    } else {
+                        boton.innerHTML = "📍 Usar mi ubicación actual";
+                        boton.disabled = false;
+
+                        alert(
+                            "Navegador incompatible con geolocalización."
+                        );
+                    }
+            });
+            return boton;
+        };
+        botonGpsContainer.addTo(leafletMap);
+
+        // =================================================================
+        // 🔍 CONFIGURACIÓN DEL BUSCADOR PREDICTIVO DENTRO DEL MODAL
+        // =================================================================
+            if (
+        !buscadorMapaInicializado &&
+        inputBuscarModal &&
+        listaResultadosModal
+            ) {
+                buscadorMapaInicializado = true;
+            inputBuscarModal.addEventListener('input', function() {
+                clearTimeout(timeoutBusquedaModal);
+                const idBusqueda = ++solicitudBusquedaActiva;
+                const query = this.value.trim();
+
+                if (query.length < 3) {
+                    listaResultadosModal.innerHTML = '';
+                    listaResultadosModal.style.display = 'none';
+                    return;
+                }
+
+                inyectarOlasLoadingModal(listaResultadosModal);
+
+                timeoutBusquedaModal = setTimeout(() => {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&countrycodes=pe&limit=5`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Error HTTP ${response.status}`);
+                            }
+
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (
+                                idBusqueda !== solicitudBusquedaActiva ||
+                                !Array.isArray(data)
+                            ) {
+                                return;
+                            }
+
+                            listaResultadosModal.innerHTML = '';
+                            if (data.length === 0) {
+                                listaResultadosModal.innerHTML = '<div class="list-group-item bg-light text-muted small py-2 text-center">No se encontraron resultados.</div>';
+                                return;
+                            }
+
+                            data.forEach(lugar => {
+                                const boton = document.createElement('button');
+                                boton.type = 'button';
+                                boton.className = 'list-group-item list-group-item-action bg-light text-dark small py-2 px-3 text-start';
+                                boton.innerText = lugar.display_name;
+
+                                boton.onclick = function() {
+                                    solicitudReversaActiva++;
+
+                                    const lat = parseFloat(lugar.lat);
+                                    const lon = parseFloat(lugar.lon);
+
+                                    if (
+                                        !Number.isFinite(lat) ||
+                                        !Number.isFinite(lon) ||
+                                        !leafletMap ||
+                                        !leafletMarker
+                                    ) {
+                                        return;
+                                    }
+
+                                    leafletMap.setView([lat, lon], 17);
+                                    leafletMarker.setLatLng([lat, lon]);
+                                    inputBuscarModal.value = lugar.display_name || '';
+                                    listaResultadosModal.style.display = 'none';
+
+                                    procesarDireccionOSMModal(
+                                        lugar.address || {},
+                                        lugar.display_name || ''
+                                    );
+                                };
+                                listaResultadosModal.appendChild(boton);
+                            });
+                        })
+                        .catch((error) => {
+                            if (idBusqueda !== solicitudBusquedaActiva) return;
+
+                            console.error("Error buscando dirección:", error);
+                            listaResultadosModal.style.display = 'none';
+                        });
+                }, 500);
+            });
+
+                document.addEventListener('click', (e) => {
+                    if (
+                        e.target !== inputBuscarModal &&
+                        !listaResultadosModal.contains(e.target)
+                    ) {
+                        listaResultadosModal.style.display = 'none';
+                    }
+                });
+        }
+
+
+        // Forzamos al mapa a redibujarse para evitar que salga cortado por el modal de Bootstrap
+        setTimeout(() => {
+            leafletMap?.invalidateSize();
+        }, 300);
+    }
+
+        function inyectarOlasLoadingModal(contenedor) {
+        contenedor.innerHTML = `
+            <div class="skeleton-item-modal"><div class="skeleton-line-modal"></div><div class="skeleton-line-modal short"></div></div>
+            <div class="skeleton-item-modal"><div class="skeleton-line-modal"></div><div class="skeleton-line-modal short"></div></div>
+            <div class="skeleton-item-modal"><div class="skeleton-line-modal"></div><div class="skeleton-line-modal short"></div></div>
+        `;
+        contenedor.style.display = 'block';
+    }
+
+    function procesarDireccionOSMModal(address = {}, displayName = "") {
+        let distrito = address.suburb || address.neighbourhood || address.city_district || address.city || "";
+        let zonaOBarrio = address.neighbourhood || address.residential || address.allotments || "";
+
+        if (zonaOBarrio.toLowerCase() === distrito.toLowerCase()) {
+            zonaOBarrio = "";
+        }
+
+            const via =
+        address.road ||
+        address.pedestrian ||
+        "";
+
+    const numero =
+        address.house_number ||
+        "";
+
+    let direccionCompleta =
+        [via, numero]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+
+    if (!direccionCompleta) {
+        direccionCompleta =
+            displayName.split(',')[0]?.trim() || "";
+    }
+        if (zonaOBarrio) {
+            direccionCompleta += " - " + zonaOBarrio.trim();
+        }
+
+        const manualDireccionTexto = document.getElementById('manualDireccionTexto');
+        const manualDistrito = document.getElementById('manualDistrito');
+
+        if (manualDireccionTexto) manualDireccionTexto.value = direccionCompleta;
+        if (manualDistrito) manualDistrito.value = distrito.trim();
+    }
+
+            async function obtenerDireccionReversaModal(lat, lng) {
+        const idSolicitud =
+            ++solicitudReversaActiva;
+
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Error HTTP ${response.status}`
+                );
+            }
+
+            const data = await response.json();
+
+            if (
+                idSolicitud !== solicitudReversaActiva ||
+                !leafletMap ||
+                !leafletMarker
+            ) {
+                return;
+            }
+
+            if (data.address) {
+                procesarDireccionOSMModal(
+                    data.address,
+                    data.display_name || ""
+                );
+
+                if (inputBuscarModal) {
+                    inputBuscarModal.value =
+                        data.display_name || "";
+                }
+            }
+        } catch (err) {
+            if (
+                idSolicitud !== solicitudReversaActiva
+            ) {
+                return;
+            }
+
+            console.error(
+                "Error en geocodificación reversa:",
+                err
+            );
+        }
+    }
+</script>

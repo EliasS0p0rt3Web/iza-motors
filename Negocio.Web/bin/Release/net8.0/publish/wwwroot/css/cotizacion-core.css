@@ -1,0 +1,430 @@
+﻿/* ================= TUBO CARD ================= */
+
+/* ================= TUBO CARD ================= */
+
+/* --- TARJETAS DE SELECCIÓN DE TUBO (ESTILO CATÁLOGO PREMIUM) --- */
+.tubo-card {
+    background: white;
+    border-radius: 20px;
+    border: 2px solid #f1f5f9;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    /* NUEVO AJUSTE: Altura mínima mayor para dar espacio vertical a la imagen gigante */
+    min-height: 420px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.02) !important;
+}
+
+    /* EFECTO HOVER: Zoom premium y borde/sombra */
+    .tubo-card:hover {
+        border-color: #22c55e;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15);
+    }
+
+        .tubo-card:hover img {
+            transform: scale(1.05); /* Un ligero zoom premium al pasar el mouse */
+        }
+
+    /* Si la tarjeta está seleccionada (activa) */
+    .tubo-card.active {
+        border-color: #22c55e;
+        background-color: rgba(34, 197, 94, 0.02);
+        box-shadow: 0 0 0 1px #22c55e;
+    }
+
+    /* 🔥 MODIFICACIÓN CLAVE 1: IMAGEN GRANDÍSIMA QUE DOMINA LA TARJETA 🔥 */
+    .tubo-card img {
+        /* NUEVA ALTURA FIJA MUY GRANDE (ajústalo más si quieres aún más grande) */
+        height: 250px !important;
+        width: 100% !important;
+        object-fit: contain !important; /* Mantiene la proporción sin estirar el tubo */
+        padding: 0 !important;
+        margin-top: 10px !important;
+        margin-bottom: 20px !important;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* 🔥 MODIFICACIÓN CLAVE 2: TEXTO REDUCIDO 🔥 */
+    .tubo-card b {
+        /* TÍTULO REDUCIDO UN POCO */
+        font-size: 0.9rem !important;
+        color: #0f172a;
+        display: block;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .tubo-card small {
+        /* SUBTÍTULO MÁS PEQUEÑO Y SUTIL */
+        font-size: 0.8rem !important;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    /* El botón de la tarjeta - Un poco más compacto */
+    .tubo-card .btn-success {
+        border-radius: 12px;
+        /* Texto del botón un poco reducido */
+        font-size: 0.9rem !important;
+        font-weight: 700;
+        padding: 10px;
+        margin-top: 1rem;
+        background-color: #16a34a;
+        border: none;
+    }
+
+
+
+
+
+/* ================= RESULTADO ================= */
+
+/* ================= RESULTADO COMPACTO PRO ================= */
+
+#resultadoHtml {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 20px;
+    max-width: 850px; /* Más estrecho para lectura rápida */
+    margin: auto;
+    background: #0f172a; /* Azul noche profundo */
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+/* Cuerpo en dos columnas ajustadas */
+.resultado-body {
+    display: grid;
+    grid-template-columns: 180px 1fr; /* Imagen pequeña a la izquierda */
+    gap: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 1.5rem;
+}
+
+/* Miniatura del Tubo */
+.resultado-tubo {
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+    .resultado-tubo img {
+        width: 100%;
+        max-height: 100px;
+        object-fit: contain;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    .resultado-tubo h6 {
+        font-size: 0.9rem;
+        color: #f8fafc;
+        margin: 0;
+    }
+
+/* Lista de Accesorios Compacta */
+.resultado-accesorios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.acc-card {
+    background: rgba(16, 185, 129, 0.1); /* Fondo verde traslúcido */
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    font-size: 0.8rem;
+    color: #4ade80;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Fila de Especificaciones (Medidas, piezas, etc) */
+.resultado-resumen {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .resultado-resumen div {
+        flex: 1;
+        background: rgba(255,255,255,0.02);
+        padding: 0.8rem;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+        .resultado-resumen div small {
+            display: block;
+            font-size: 0.65rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .resultado-resumen div span {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+/* Total Minimalista */
+.resultado-total {
+    margin-top: 1.5rem;
+    background: #10b981;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+    .resultado-total::before {
+        content: "TOTAL ESTIMADO";
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        font-weight: 600;
+        opacity: 0.9;
+    }
+
+/* Mobile */
+@media(max-width: 600px) {
+    .resultado-body {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .resultado-resumen {
+        flex-direction: column;
+    }
+}
+
+/* ================= ZONA CLARA ================= */
+
+.card {
+    background: #ffffff;
+    color: #020617;
+    border: none;
+    border-radius: 18px;
+}
+
+
+    /* ================= INPUTS CLAROS ================= */
+
+    .card .form-control,
+    .card .form-select,
+    .card input,
+    .card select {
+        background: #f8fafc;
+        color: #020617;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+    }
+
+        .card .form-control:focus,
+        .card .form-select:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(34,197,94,.25);
+        }
+
+
+    /* ================= BOTONES + / − ================= */
+/* Diseño de botones circulares (image_8ed2e1.png) */
+.medida-control-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50% !important;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #10b981; /* Verde esmeralda profesional */
+    font-size: 1.5rem;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+    .medida-control-btn:hover {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+        transform: scale(1.1);
+    }
+
+    .medida-control-btn:active {
+        transform: scale(0.9);
+        background-color: #10b981;
+        color: #ffffff;
+    }
+
+/* Input central limpio sin bordes */
+.medida-input-clean {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e293b;
+    width: 60px !important;
+    text-align: center;
+    padding: 0;
+    outline: none;
+}
+
+/* Corrección visual para los signos */
+.btn-minus {
+    padding-bottom: 4px;
+}
+
+.btn-plus {
+    padding-bottom: 2px;
+}
+
+/* Evitar que aparezcan las flechas default del input number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Ajuste adicional para los inputs para que no se vean pegados */
+.form-control.text-center {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #0f172a;
+    border: 2px solid #e2e8f0;
+}
+
+/* ================= BARRA VISUAL ================= */
+/* El contenedor (lo que antes era gris claro) */
+.tubo-visual-wrapper {
+    background: #e2e8f0; /* Un gris más suave y profesional */
+    border-radius: 50px;
+    height: 18px; /* Un poco más delgada para que se vea elegante */
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+/* La barra que crece (el tubo real) */
+.tubo-visual {
+    height: 100%;
+    /* Gradiente metálico de Aluminio */
+    background: linear-gradient(180deg, #94a3b8 0%, #f1f5f9 50%, #64748b 100%);
+    border-radius: 50px 0 0 50px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+    /* Un brillo especial en la punta para que parezca el corte del tubo */
+    .tubo-visual::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: rgba(255,255,255,0.5);
+    }
+
+/* ================= ACCESORIO CARD ================= */
+
+/* --- TARJETAS DE SELECCIÓN DE ACCESORIOS (MISMOS ESTILOS PREMIUM) --- */
+#contenedorAccesorios .card,
+#contenedorAccesorios .tubo-card { /* Por si reutilizaste la clase .tubo-card */
+    background: white;
+    border-radius: 20px;
+    border: 2px solid #f1f5f9;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    /* Altura ideal para accesorios (un poco más compacta que los tubos) */
+    min-height: 390px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.02) !important;
+}
+
+    /* EFECTO HOVER */
+    #contenedorAccesorios .card:hover,
+    #contenedorAccesorios .tubo-card:hover {
+        border-color: #22c55e;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15);
+    }
+
+        #contenedorAccesorios .card:hover img,
+        #contenedorAccesorios .tubo-card:hover img {
+            transform: scale(1.06); /* Zoom suave al pasar el mouse */
+        }
+
+/* 🔥 MODIFICACIÓN CLAVE 1: IMAGEN DE ACCESORIO ENORME 🔥 */
+#contenedorAccesorios img {
+    height: 140px !important; /* Forzamos a la miniatura a crecer y destacar */
+    width: 100% !important;
+    object-fit: contain !important; /* Evita que el accesorio se deforme */
+    padding: 0 !important;
+    margin-top: 5px !important;
+    margin-bottom: 15px !important;
+    transition: transform 0.3s ease;
+}
+
+/* 🔥 MODIFICACIÓN CLAVE 2: TEXTOS COMPACTOS Y ORDENADOS 🔥 */
+#contenedorAccesorios b,
+#contenedorAccesorios h5,
+#contenedorAccesorios h6 {
+    font-size: 0.95rem !important; /* Título del accesorio (ej. TERMINALES) */
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+/* Subtítulo (ej. 1 PULGADA) y el Precio (ej. S/ 3) */
+#contenedorAccesorios small,
+#contenedorAccesorios .text-muted,
+#contenedorAccesorios div:not(.bg-dark) {
+    font-size: 0.8rem !important;
+    font-weight: 600;
+}
+
+/* Color oscuro para el precio para que no se pierda */
+#contenedorAccesorios .card-body,
+#contenedorAccesorios p {
+    color: #1e293b !important;
+}
+
+/* Botón Agregar de los accesorios */
+#contenedorAccesorios .btn-success,
+#contenedorAccesorios .btn {
+    border-radius: 12px;
+    font-size: 0.9rem !important; /* Botón un toque más estilizado */
+    font-weight: 700;
+    padding: 10px;
+    background-color: #16a34a;
+    border: none;
+}

@@ -1,0 +1,1783 @@
+﻿
+@using System.Globalization
+@model Negocio.Web.Models.ViewModels.PeriodoSemanalIndexViewModel
+
+@{
+    ViewData["Title"] = "Historial Semanal";
+    Layout = "_LayoutSistema";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet">
+
+<style>
+    .history-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    .panel-card-pro {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        overflow: hidden;
+    }
+
+    .table-pro {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.45px;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .table-pro tbody td {
+            padding: 1.1rem 1rem;
+            vertical-align: middle;
+            font-size: 0.88rem;
+            color: #334155;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-pro tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .badge-status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.73rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-pendiente {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .status-parcial {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-completado {
+        background: #dcfce3;
+        color: #16a34a;
+    }
+
+    .metric-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.03);
+        height: 100%;
+    }
+
+    .metric-label {
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .range-selector {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        min-height: 42px;
+    }
+
+    .modal-content-pro {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+    }
+
+    .modal-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        font-size: 1.9rem;
+    }
+
+    .movement-card {
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        padding: 14px;
+        background: #ffffff;
+    }
+
+    .movement-payment {
+        border-left: 4px solid #16a34a;
+    }
+
+    .movement-withdrawal {
+        border-left: 4px solid #0284c7;
+    }
+
+    .movement-generic {
+        border-left: 4px solid #64748b;
+    }
+
+    .empty-state {
+        padding: 3rem 1rem;
+        text-align: center;
+        color: #64748b;
+    }
+
+    @@media (max-width: 767.98px) {
+        .history-container {
+            max-width: 100%;
+        }
+
+        .table-pro thead th,
+        .table-pro tbody td {
+            padding: 0.85rem;
+        }
+    }
+</style>
+
+<div class="history-container py-4">
+
+    @*
+        El token se genera una sola vez y JavaScript lo adjunta
+        automáticamente a todas las solicitudes POST.
+    *@
+    <form id="formAntiforgery" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+        <div>
+            <h3 class="fw-800 text-dark mb-1">PAGOS Y RETIROS</h3>
+            <small class="text-muted">
+                Cada fila representa un corte real e independiente.
+            </small>
+        </div>
+
+        <div class="d-flex flex-column flex-lg-row align-items-stretch gap-2">
+            <div class="d-flex align-items-center gap-2 bg-white border px-3 py-2 range-selector">
+                <i class="bi bi-calendar3 text-secondary"></i>
+
+                <select id="cboPeriodoCierre"
+                        class="form-select form-select-sm border-0 fw-bold text-dark p-0"
+                        style="font-size: 0.84rem; min-width: 260px; box-shadow: none; background-color: transparent;">
+
+                    @if (Model.PeriodosPendientes.Count > 0)
+                    {
+                        for (int i = 0; i < Model.PeriodosPendientes.Count; i++)
+                        {
+                            var periodo = Model.PeriodosPendientes[i];
+
+                            <option value="@periodo.Valor">
+                                📅 @periodo.Texto @(i == 0 ? "(Próximo corte)" : "")
+                            </option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="">
+                            Al día — no existen tramos pendientes
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="button"
+                    id="btnAbrirCierre"
+                    class="btn btn-dark fw-bold shadow-sm"
+                    style="border-radius: 12px; min-height: 42px; background: #0f172a;">
+                <i class="bi bi-lock-fill me-1"></i>
+                Cerrar periodo
+            </button>
+
+            <button type="button"
+                    class="btn btn-outline-danger fw-bold shadow-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCierreEspecial"
+                    style="border-radius: 12px; min-height: 42px;">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                Cierre especial
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="metric-card p-3 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="metric-label">Deuda conmigo total</span>
+
+                    <h4 class="fw-800 text-danger mb-0 mt-1">
+                        S/ @Model.SueldoAcumuladoTotal.ToString("F2")
+                    </h4>
+                </div>
+
+                <button type="button"
+                        class="btn btn-sm btn-outline-danger fw-bold w-100 mt-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalPagoLibre"
+                        style="border-radius: 9px;">
+                    <i class="bi bi-plus-circle-fill me-1"></i>
+                    Abono libre
+                </button>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="metric-card p-3 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="metric-label">Caja real acumulada</span>
+
+                    <h4 class="fw-800 text-success mb-0 mt-1">
+                        S/ @Model.CajaAcumuladaTotal.ToString("F2")
+                    </h4>
+                </div>
+
+                <button type="button"
+                        class="btn btn-sm btn-outline-success fw-bold w-100 mt-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalRetiroLibre"
+                        style="border-radius: 9px;">
+                    <i class="bi bi-dash-circle-fill me-1"></i>
+                    Retiro libre
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card panel-card-pro">
+        <div class="table-responsive">
+            <table class="table-pro align-middle text-center">
+                <thead>
+                    <tr>
+                        <th class="text-start">Periodo</th>
+                        <th>Asistencia</th>
+                        <th>Efectivo bruto</th>
+                        <th>Yape</th>
+                        <th>Sueldo calculado</th>
+                        <th>Mi sueldo</th>
+                        <th>Caja neta pendiente</th>
+                        <th>Estado caja</th>
+                        <th>Historial</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Periodos.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="10" class="empty-state">
+                                <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                                No existen periodos cerrados todavía.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.Periodos)
+                        {
+                            string sueldoData =
+                            item.SueldoSaldoPendiente.ToString(
+                            "F2",
+                            CultureInfo.InvariantCulture
+                            );
+
+                            string cajaData =
+                            item.CajaSaldoPendiente.ToString(
+                            "F2",
+                            CultureInfo.InvariantCulture
+                            );
+
+                            <tr>
+                                <td class="text-start">
+                                    <div class="fw-bold text-dark">
+                                        📅 @item.FechaInicio.ToString("dd/MM/yyyy")
+                                        al
+                                        @item.FechaFin.ToString("dd/MM/yyyy")
+                                    </div>
+
+                                    <small class="text-muted">
+                                        @item.FechaInicio.ToString("HH:mm")
+                                        —
+                                        @item.FechaFin.ToString("HH:mm")
+                                    </small>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-light text-dark border px-2 py-1">
+                                        ⚡ @item.DiasTrabajados / 6
+                                    </span>
+                                </td>
+
+                                <td class="fw-bold text-success">
+                                    S/ @item.EfectivoGenerado.ToString("F2")
+                                </td>
+
+                                <td class="fw-bold text-primary">
+                                    S/ @item.YapeGenerado.ToString("F2")
+                                </td>
+
+                                <td class="fw-bold text-dark">
+                                    S/ @item.SueldoCalculado.ToString("F2")
+                                </td>
+
+                                <td>
+                                    @if (item.EstadoMiSueldo == "PAGADO")
+                                    {
+                                        <span class="badge-status status-completado">
+                                            ✅ Pagado
+                                        </span>
+                                    }
+                                    else if (item.EstadoMiSueldo == "PARCIAL")
+                                    {
+                                        <span class="badge-status status-parcial">
+                                            ⏳ S/ @item.SueldoSaldoPendiente.ToString("F2")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status status-pendiente">
+                                            🚨 S/ @item.SueldoSaldoPendiente.ToString("F2")
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="fw-bold text-dark">
+                                    S/ @item.CajaSaldoPendiente.ToString("F2")
+                                </td>
+
+                                <td>
+                                    @if (item.EstadoCajaJefe == "RETIRADO")
+                                    {
+                                        <span class="badge-status status-completado">
+                                            📦 Retirado
+                                        </span>
+                                    }
+                                    else if (item.EstadoCajaJefe == "PARCIAL")
+                                    {
+                                        <span class="badge-status status-parcial">
+                                            ⏳ Parcial
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status status-pendiente">
+                                            🚨 En caja
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary btn-ver-movimientos"
+                                            data-id="@item.IdPeriodoSemanal"
+                                            data-observacion-inicial="@item.Observaciones"
+                                            style="border-radius: 8px; white-space: nowrap;">
+                                        <i class="bi bi-eye me-1"></i>
+                                        Ver historial
+                                    </button>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex gap-1 justify-content-center flex-wrap">
+                                        @if (item.SueldoSaldoPendiente > 0)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-success fw-bold btn-pagar-sueldo"
+                                                    data-id="@item.IdPeriodoSemanal"
+                                                    data-monto="@sueldoData"
+                                                    style="border-radius: 8px;">
+                                                👤 Sueldo
+                                            </button>
+                                        }
+
+                                        @if (item.CajaSaldoPendiente > 0)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-info text-white fw-bold btn-retirar-caja"
+                                                    data-id="@item.IdPeriodoSemanal"
+                                                    data-monto="@cajaData"
+                                                    style="border-radius: 8px;">
+                                                💰 Caja
+                                            </button>
+                                        }
+
+                                        @if (item.SueldoSaldoPendiente <= 0 &&
+                                                                        item.CajaSaldoPendiente <= 0)
+                                        {
+                                            <span class="text-muted small fw-bold">
+                                                ✓ Al día
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: CONFIRMAR CIERRE NORMAL
+========================================================= -->
+<div class="modal fade"
+     id="modalConfirmarCierre"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-body text-center p-4">
+                <div class="modal-icon d-inline-flex align-items-center justify-content-center bg-dark text-white mb-3">
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+
+                <h5 class="fw-800 text-dark mb-2">
+                    Confirmar cierre contable
+                </h5>
+
+                <p id="textoConfirmarCierre"
+                   class="text-muted small mb-4">
+                </p>
+
+                <div class="d-flex gap-2">
+                    <button type="button"
+                            class="btn btn-light fw-bold w-50 py-2"
+                            data-bs-dismiss="modal"
+                            style="border-radius: 12px;">
+                        Cancelar
+                    </button>
+
+                    <button type="button"
+                            id="btnConfirmarCierre"
+                            class="btn btn-dark fw-bold w-50 py-2"
+                            style="border-radius: 12px; background: #0f172a;">
+                        Sí, cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: PAGO LIBRE
+========================================================= -->
+<div class="modal fade"
+     id="modalPagoLibre"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="fw-800 text-dark">
+                    <i class="bi bi-wallet2 text-success me-2"></i>
+                    Registrar pago de sueldo
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Monto recibido
+                    </label>
+
+                    <input type="number"
+                           id="txtMontoPagoLibre"
+                           class="form-control"
+                           min="0.01"
+                           step="0.01"
+                           inputmode="decimal"
+                           placeholder="0.00"
+                           style="border-radius: 12px; padding: 10px; font-weight: 700;">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Método de pago
+                    </label>
+
+                    <select id="ddlMetodoPagoLibre"
+                            class="form-select"
+                            style="border-radius: 12px; padding: 10px; font-weight: 600;">
+                        <option value="YAPE">Yape</option>
+                        <option value="EFECTIVO">Efectivo físico</option>
+                        <option value="TRANSFERENCIA">Transferencia bancaria</option>
+                    </select>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Observación
+                    </label>
+
+                    <textarea id="txtObsPagoLibre"
+                              class="form-control"
+                              maxlength="500"
+                              rows="3"
+                              placeholder="Detalle opcional del pago"
+                              style="border-radius: 12px;"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button"
+                        class="btn btn-light fw-bold"
+                        data-bs-dismiss="modal"
+                        style="border-radius: 10px;">
+                    Cancelar
+                </button>
+
+                <button type="button"
+                        id="btnEnviarPagoLibre"
+                        class="btn btn-dark fw-bold"
+                        style="border-radius: 10px; background: #0f172a;">
+                    Procesar abono
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: RETIRO LIBRE
+========================================================= -->
+<div class="modal fade"
+     id="modalRetiroLibre"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="fw-800 text-dark">
+                    <i class="bi bi-cash-coin text-danger me-2"></i>
+                    Registrar retiro de caja
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Monto retirado
+                    </label>
+
+                    <input type="number"
+                           id="txtMontoRetiroLibre"
+                           class="form-control"
+                           min="0.01"
+                           step="0.01"
+                           inputmode="decimal"
+                           placeholder="0.00"
+                           style="border-radius: 12px; padding: 10px; font-weight: 700;">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Motivo o destino
+                    </label>
+
+                    <textarea id="txtObsRetiroLibre"
+                              class="form-control"
+                              maxlength="500"
+                              rows="3"
+                              placeholder="Detalle opcional del retiro"
+                              style="border-radius: 12px;"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button"
+                        class="btn btn-light fw-bold"
+                        data-bs-dismiss="modal"
+                        style="border-radius: 10px;">
+                    Cancelar
+                </button>
+
+                <button type="button"
+                        id="btnEnviarRetiroLibre"
+                        class="btn btn-danger fw-bold"
+                        style="border-radius: 10px;">
+                    Confirmar salida
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: CIERRE ESPECIAL
+========================================================= -->
+<div class="modal fade"
+     id="modalCierreEspecial"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-header border-0 pb-0 justify-content-center pt-4">
+                <h5 class="fw-800 text-danger mb-0">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                    Cierre especial
+                </h5>
+            </div>
+
+            <div class="modal-body p-4">
+                <p class="text-muted small text-center mb-3">
+                    Solo permite cerrar rangos que todavía no hayan sido contabilizados.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Desde
+                    </label>
+
+                    <input type="date"
+                           id="txtCierreEspecialInicio"
+                           class="form-control fw-bold"
+                           style="border-radius: 12px; padding: 10px;">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Hasta
+                    </label>
+
+                    <input type="date"
+                           id="txtCierreEspecialFin"
+                           class="form-control fw-bold"
+                           style="border-radius: 12px; padding: 10px;">
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button"
+                            class="btn btn-light fw-bold w-50 py-2"
+                            data-bs-dismiss="modal"
+                            style="border-radius: 12px;">
+                        Cancelar
+                    </button>
+
+                    <button type="button"
+                            id="btnProcesarCierreEspecial"
+                            class="btn btn-danger fw-bold w-50 py-2"
+                            style="border-radius: 12px;">
+                        Forzar corte
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: CONFIRMAR MOVIMIENTO DIRECTO
+========================================================= -->
+<div class="modal fade"
+     id="modalConfirmarMovimiento"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-body text-center p-4">
+                <div id="iconoConfirmarMovimiento"
+                     class="modal-icon d-inline-flex align-items-center justify-content-center mb-3">
+                </div>
+
+                <h5 id="tituloConfirmarMovimiento"
+                    class="fw-800 text-dark mb-2">
+                    Confirmar movimiento
+                </h5>
+
+                <p id="textoConfirmarMovimiento"
+                   class="text-muted small mb-3">
+                </p>
+
+                <div id="contenedorMetodoPagoCompleto" class="mb-4 text-start d-none">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">
+                        Método de pago
+                    </label>
+
+                    <select id="ddlMetodoPagoCompleto"
+                            class="form-select"
+                            style="border-radius: 12px;">
+                        <option value="EFECTIVO">Efectivo físico</option>
+                        <option value="YAPE">Yape</option>
+                        <option value="TRANSFERENCIA">Transferencia bancaria</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button"
+                            class="btn btn-light fw-bold w-50 py-2"
+                            data-bs-dismiss="modal"
+                            style="border-radius: 12px;">
+                        Cancelar
+                    </button>
+
+                    <button type="button"
+                            id="btnEjecutarMovimiento"
+                            class="btn fw-bold w-50 py-2"
+                            style="border-radius: 12px;">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: CARGANDO
+========================================================= -->
+<div class="modal fade"
+     id="modalCargando"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 310px;">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-body text-center p-4">
+                <div class="spinner-border text-dark mb-3"
+                     role="status"
+                     style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+
+                <h6 id="tituloCargando" class="fw-800 text-dark mb-1">
+                    Procesando operación...
+                </h6>
+
+                <p id="textoCargando" class="text-muted small mb-0">
+                    Actualizando información
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: RESULTADO
+========================================================= -->
+<div class="modal fade"
+     id="modalResultado"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 410px;">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-body text-center p-4">
+                <div id="iconoResultado"
+                     class="modal-icon d-inline-flex align-items-center justify-content-center mb-3">
+                </div>
+
+                <h5 id="tituloResultado"
+                    class="fw-800 mb-2">
+                </h5>
+
+                <p id="textoResultado"
+                   class="text-muted small mb-4"
+                   style="white-space: pre-line;">
+                </p>
+
+                <button type="button"
+                        id="btnCerrarResultado"
+                        class="btn fw-bold w-100 py-2"
+                        style="border-radius: 12px;">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: HISTORIAL DE MOVIMIENTOS
+========================================================= -->
+<div class="modal fade"
+     id="modalHistorialMovimientos"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="fw-800 text-dark">
+                    <i class="bi bi-journal-text text-primary me-2"></i>
+                    Historial real de movimientos
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="observacionInicialPeriodo"
+                     class="alert alert-light border small d-none">
+                </div>
+
+                <div id="listaMovimientos"
+                     class="d-flex flex-column gap-2"
+                     style="max-height: 430px; overflow-y: auto;">
+                </div>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button"
+                        class="btn btn-secondary fw-bold"
+                        data-bs-dismiss="modal"
+                        style="border-radius: 10px;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            "use strict";
+
+            const estado = {
+                movimientoPendiente: null,
+                recargarAlCerrarResultado: false,
+                operacionEnCurso: false
+            };
+
+            const elementos = {
+                token: document.querySelector(
+                    '#formAntiforgery input[name="__RequestVerificationToken"]'
+                ),
+
+                comboPeriodo: document.getElementById("cboPeriodoCierre"),
+                btnAbrirCierre: document.getElementById("btnAbrirCierre"),
+                btnConfirmarCierre: document.getElementById("btnConfirmarCierre"),
+                textoConfirmarCierre: document.getElementById("textoConfirmarCierre"),
+
+                btnEnviarPagoLibre: document.getElementById("btnEnviarPagoLibre"),
+                btnEnviarRetiroLibre: document.getElementById("btnEnviarRetiroLibre"),
+                btnProcesarCierreEspecial: document.getElementById("btnProcesarCierreEspecial"),
+
+                btnEjecutarMovimiento: document.getElementById("btnEjecutarMovimiento"),
+                tituloConfirmarMovimiento: document.getElementById("tituloConfirmarMovimiento"),
+                textoConfirmarMovimiento: document.getElementById("textoConfirmarMovimiento"),
+                iconoConfirmarMovimiento: document.getElementById("iconoConfirmarMovimiento"),
+                contenedorMetodoPagoCompleto:
+                    document.getElementById("contenedorMetodoPagoCompleto"),
+                ddlMetodoPagoCompleto:
+                    document.getElementById("ddlMetodoPagoCompleto"),
+
+                tituloCargando: document.getElementById("tituloCargando"),
+                textoCargando: document.getElementById("textoCargando"),
+
+                iconoResultado: document.getElementById("iconoResultado"),
+                tituloResultado: document.getElementById("tituloResultado"),
+                textoResultado: document.getElementById("textoResultado"),
+                btnCerrarResultado: document.getElementById("btnCerrarResultado"),
+
+                listaMovimientos: document.getElementById("listaMovimientos"),
+                observacionInicialPeriodo:
+                    document.getElementById("observacionInicialPeriodo")
+            };
+
+            const modales = {
+                confirmarCierre:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalConfirmarCierre")
+                    ),
+
+                pagoLibre:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalPagoLibre")
+                    ),
+
+                retiroLibre:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalRetiroLibre")
+                    ),
+
+                cierreEspecial:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalCierreEspecial")
+                    ),
+
+                confirmarMovimiento:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalConfirmarMovimiento")
+                    ),
+
+                cargando:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalCargando")
+                    ),
+
+                resultado:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalResultado")
+                    ),
+
+                historial:
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById("modalHistorialMovimientos")
+                    )
+            };
+
+            function obtenerToken() {
+                return elementos.token?.value || "";
+            }
+
+            function crearFormData(datos) {
+                const formData = new FormData();
+
+                Object.entries(datos).forEach(([clave, valor]) => {
+                    formData.append(
+                        clave,
+                        valor === null || valor === undefined
+                            ? ""
+                            : String(valor)
+                    );
+                });
+
+                formData.append(
+                    "__RequestVerificationToken",
+                    obtenerToken()
+                );
+
+                return formData;
+            }
+
+            async function leerRespuestaJson(response) {
+                const contentType =
+                    response.headers.get("content-type") || "";
+
+                if (!contentType.includes("application/json")) {
+                    throw new Error(
+                        `El servidor respondió con un formato inesperado. HTTP ${response.status}.`
+                    );
+                }
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.message ||
+                        `Error HTTP ${response.status}.`
+                    );
+                }
+
+                return data;
+            }
+
+            async function enviarPost(url, datos) {
+                const response = await fetch(url, {
+                    method: "POST",
+                    body: crearFormData(datos),
+                    credentials: "same-origin",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                return leerRespuestaJson(response);
+            }
+
+            function mostrarCarga(titulo, texto) {
+                elementos.tituloCargando.textContent = titulo;
+                elementos.textoCargando.textContent = texto;
+                modales.cargando.show();
+            }
+
+            function ocultarCarga() {
+                modales.cargando.hide();
+            }
+
+            function mostrarResultado(
+                exito,
+                titulo,
+                mensaje,
+                recargar = false
+            ) {
+                estado.recargarAlCerrarResultado =
+                    exito && recargar;
+
+                elementos.iconoResultado.className =
+                    "modal-icon d-inline-flex align-items-center justify-content-center mb-3 " +
+                    (exito
+                        ? "bg-success text-white"
+                        : "bg-danger text-white");
+
+                elementos.iconoResultado.innerHTML =
+                    exito
+                        ? '<i class="bi bi-check-circle-fill"></i>'
+                        : '<i class="bi bi-x-circle-fill"></i>';
+
+                elementos.tituloResultado.className =
+                    "fw-800 mb-2 " +
+                    (exito
+                        ? "text-success"
+                        : "text-danger");
+
+                elementos.tituloResultado.textContent = titulo;
+                elementos.textoResultado.textContent =
+                    mensaje || "La operación no devolvió un mensaje.";
+
+                elementos.btnCerrarResultado.className =
+                    "btn fw-bold w-100 py-2 " +
+                    (exito
+                        ? "btn-success"
+                        : "btn-secondary");
+
+                elementos.btnCerrarResultado.textContent =
+                    exito
+                        ? "Excelente"
+                        : "Entendido";
+
+                modales.resultado.show();
+            }
+
+            async function ejecutarOperacion(configuracion) {
+                if (estado.operacionEnCurso) {
+                    return;
+                }
+
+                estado.operacionEnCurso = true;
+
+                try {
+                    configuracion.ocultarModal?.();
+
+                    await new Promise(resolve =>
+                        setTimeout(resolve, 250)
+                    );
+
+                    mostrarCarga(
+                        configuracion.tituloCarga,
+                        configuracion.textoCarga
+                    );
+
+                    const inicio = Date.now();
+
+                    const respuesta = await enviarPost(
+                        configuracion.url,
+                        configuracion.datos
+                    );
+
+                    const transcurrido = Date.now() - inicio;
+                    const restante = Math.max(
+                        0,
+                        800 - transcurrido
+                    );
+
+                    await new Promise(resolve =>
+                        setTimeout(resolve, restante)
+                    );
+
+                    ocultarCarga();
+
+                    await new Promise(resolve =>
+                        setTimeout(resolve, 250)
+                    );
+
+                    mostrarResultado(
+                        respuesta.success === true,
+                        respuesta.success === true
+                            ? configuracion.tituloExito
+                            : configuracion.tituloError,
+                        respuesta.message,
+                        respuesta.success === true &&
+                        configuracion.recargarAlFinal === true
+                    );
+                } catch (error) {
+                    console.error(error);
+                    ocultarCarga();
+
+                    await new Promise(resolve =>
+                        setTimeout(resolve, 200)
+                    );
+
+                    mostrarResultado(
+                        false,
+                        "No se pudo completar",
+                        error.message ||
+                        "Ocurrió un error inesperado.",
+                        false
+                    );
+                } finally {
+                    estado.operacionEnCurso = false;
+                    configuracion.restaurarBoton?.();
+                }
+            }
+
+            elementos.btnCerrarResultado.addEventListener(
+                "click",
+                () => {
+                    modales.resultado.hide();
+
+                    if (estado.recargarAlCerrarResultado) {
+                        window.location.reload();
+                    }
+                }
+            );
+
+            // =====================================================
+            // CIERRE NORMAL
+            // =====================================================
+            elementos.btnAbrirCierre.addEventListener(
+                "click",
+                () => {
+                    const valor =
+                        elementos.comboPeriodo.value;
+
+                    if (!valor) {
+                        mostrarResultado(
+                            false,
+                            "Sin periodos pendientes",
+                            "No existen tramos disponibles para cerrar."
+                        );
+
+                        return;
+                    }
+
+                    const texto =
+                        elementos.comboPeriodo.options[
+                            elementos.comboPeriodo.selectedIndex
+                        ].text;
+
+                    elementos.textoConfirmarCierre.textContent =
+                        `Se cerrará ${texto.trim()}. ` +
+                        "Se calcularán el efectivo, Yape, gastos, asistencia, sueldo y caja neta.";
+
+                    modales.confirmarCierre.show();
+                }
+            );
+
+            elementos.btnConfirmarCierre.addEventListener(
+                "click",
+                async () => {
+                    const rango =
+                        elementos.comboPeriodo.value;
+
+                    if (!rango) {
+                        return;
+                    }
+
+                    const partes = rango.split("|");
+
+                    if (partes.length !== 2) {
+                        mostrarResultado(
+                            false,
+                            "Rango inválido",
+                            "El periodo seleccionado no tiene un formato válido."
+                        );
+
+                        return;
+                    }
+
+                    await ejecutarOperacion({
+                        url: "/PeriodoSemanal/CerrarSemanaActual",
+
+                        datos: {
+                            FechaInicio: partes[0],
+                            FechaFin: partes[1]
+                        },
+
+                        ocultarModal: () =>
+                            modales.confirmarCierre.hide(),
+
+                        tituloCarga: "Cerrando periodo...",
+                        textoCarga:
+                            "Calculando ventas, gastos y asistencia",
+
+                        tituloExito: "Periodo cerrado",
+                        tituloError: "No se pudo cerrar",
+                        recargarAlFinal: true
+                    });
+                }
+            );
+
+            // =====================================================
+            // PAGO LIBRE
+            // =====================================================
+            elementos.btnEnviarPagoLibre.addEventListener(
+                "click",
+                async () => {
+                    const monto =
+                        document.getElementById(
+                            "txtMontoPagoLibre"
+                        ).value;
+
+                    const metodoPago =
+                        document.getElementById(
+                            "ddlMetodoPagoLibre"
+                        ).value;
+
+                    const observaciones =
+                        document.getElementById(
+                            "txtObsPagoLibre"
+                        ).value;
+
+                    const numero = Number(monto);
+
+                    if (!Number.isFinite(numero) || numero <= 0) {
+                        mostrarResultado(
+                            false,
+                            "Monto inválido",
+                            "Ingresa un monto mayor a cero."
+                        );
+
+                        return;
+                    }
+
+                    await ejecutarOperacion({
+                        url: "/PeriodoSemanal/RegistrarPagoLibre",
+
+                        datos: {
+                            Monto: monto,
+                            MetodoPago: metodoPago,
+                            Observaciones: observaciones
+                        },
+
+                        ocultarModal: () =>
+                            modales.pagoLibre.hide(),
+
+                        tituloCarga:
+                            "Procesando abono en cascada...",
+
+                        textoCarga:
+                            "Distribuyendo el pago desde el periodo más antiguo",
+
+                        tituloExito: "Abono registrado",
+                        tituloError: "No se pudo registrar",
+                        recargarAlFinal: true
+                    });
+                }
+            );
+
+            // =====================================================
+            // RETIRO LIBRE
+            // =====================================================
+            elementos.btnEnviarRetiroLibre.addEventListener(
+                "click",
+                async () => {
+                    const monto =
+                        document.getElementById(
+                            "txtMontoRetiroLibre"
+                        ).value;
+
+                    const observaciones =
+                        document.getElementById(
+                            "txtObsRetiroLibre"
+                        ).value;
+
+                    const numero = Number(monto);
+
+                    if (!Number.isFinite(numero) || numero <= 0) {
+                        mostrarResultado(
+                            false,
+                            "Monto inválido",
+                            "Ingresa un monto mayor a cero."
+                        );
+
+                        return;
+                    }
+
+                    await ejecutarOperacion({
+                        url:
+                            "/PeriodoSemanal/RegistrarRetiroCajaLibre",
+
+                        datos: {
+                            Monto: monto,
+                            Observaciones: observaciones
+                        },
+
+                        ocultarModal: () =>
+                            modales.retiroLibre.hide(),
+
+                        tituloCarga:
+                            "Procesando retiro en cascada...",
+
+                        textoCarga:
+                            "Descontando la caja desde el periodo más antiguo",
+
+                        tituloExito: "Retiro registrado",
+                        tituloError: "No se pudo retirar",
+                        recargarAlFinal: true
+                    });
+                }
+            );
+
+            // =====================================================
+            // CIERRE ESPECIAL
+            // =====================================================
+            elementos.btnProcesarCierreEspecial.addEventListener(
+                "click",
+                async () => {
+                    const fechaInicio =
+                        document.getElementById(
+                            "txtCierreEspecialInicio"
+                        ).value;
+
+                    const fechaFin =
+                        document.getElementById(
+                            "txtCierreEspecialFin"
+                        ).value;
+
+                    if (!fechaInicio || !fechaFin) {
+                        mostrarResultado(
+                            false,
+                            "Fechas incompletas",
+                            "Selecciona la fecha inicial y la fecha final."
+                        );
+
+                        return;
+                    }
+
+                    await ejecutarOperacion({
+                        url:
+                            "/PeriodoSemanal/CerrarPorRangoManual",
+
+                        datos: {
+                            FechaInicio: fechaInicio,
+                            FechaFin: fechaFin
+                        },
+
+                        ocultarModal: () =>
+                            modales.cierreEspecial.hide(),
+
+                        tituloCarga:
+                            "Procesando cierre especial...",
+
+                        textoCarga:
+                            "Validando que el rango no se cruce con otros periodos",
+
+                        tituloExito:
+                            "Cierre especial registrado",
+
+                        tituloError:
+                            "No se pudo cerrar el rango",
+
+                        recargarAlFinal: true
+                    });
+                }
+            );
+
+            // =====================================================
+            // ACCIONES COMPLETAS POR FILA
+            // =====================================================
+            document.querySelectorAll(
+                ".btn-pagar-sueldo"
+            ).forEach(boton => {
+                boton.addEventListener("click", () => {
+                    const id = Number(boton.dataset.id);
+                    const monto = boton.dataset.monto;
+
+                    estado.movimientoPendiente = {
+                        tipo: "SUELDO",
+                        id
+                    };
+
+                    elementos.iconoConfirmarMovimiento.className =
+                        "modal-icon d-inline-flex align-items-center justify-content-center mb-3 bg-success text-white";
+
+                    elementos.iconoConfirmarMovimiento.innerHTML =
+                        '<i class="bi bi-person-check-fill"></i>';
+
+                    elementos.tituloConfirmarMovimiento.textContent =
+                        "Pagar sueldo completo";
+
+                    elementos.textoConfirmarMovimiento.textContent =
+                        `Se registrará el pago del saldo actual de S/ ${monto}. ` +
+                        "El servidor volverá a consultar el monto real antes de guardarlo.";
+
+                    elementos.contenedorMetodoPagoCompleto.classList.remove(
+                        "d-none"
+                    );
+
+                    elementos.btnEjecutarMovimiento.className =
+                        "btn btn-success fw-bold w-50 py-2";
+
+                    elementos.btnEjecutarMovimiento.textContent =
+                        "Sí, pagar";
+
+                    modales.confirmarMovimiento.show();
+                });
+            });
+
+            document.querySelectorAll(
+                ".btn-retirar-caja"
+            ).forEach(boton => {
+                boton.addEventListener("click", () => {
+                    const id = Number(boton.dataset.id);
+                    const monto = boton.dataset.monto;
+
+                    estado.movimientoPendiente = {
+                        tipo: "CAJA",
+                        id
+                    };
+
+                    elementos.iconoConfirmarMovimiento.className =
+                        "modal-icon d-inline-flex align-items-center justify-content-center mb-3 bg-info text-white";
+
+                    elementos.iconoConfirmarMovimiento.innerHTML =
+                        '<i class="bi bi-cash-coin"></i>';
+
+                    elementos.tituloConfirmarMovimiento.textContent =
+                        "Retirar caja completa";
+
+                    elementos.textoConfirmarMovimiento.textContent =
+                        `Se registrará el retiro del saldo actual de S/ ${monto}. ` +
+                        "El servidor volverá a consultar el monto real antes de guardarlo.";
+
+                    elementos.contenedorMetodoPagoCompleto.classList.add(
+                        "d-none"
+                    );
+
+                    elementos.btnEjecutarMovimiento.className =
+                        "btn btn-info text-white fw-bold w-50 py-2";
+
+                    elementos.btnEjecutarMovimiento.textContent =
+                        "Sí, retirar";
+
+                    modales.confirmarMovimiento.show();
+                });
+            });
+
+            elementos.btnEjecutarMovimiento.addEventListener(
+                "click",
+                async () => {
+                    const movimiento =
+                        estado.movimientoPendiente;
+
+                    if (!movimiento || !movimiento.id) {
+                        modales.confirmarMovimiento.hide();
+
+                        mostrarResultado(
+                            false,
+                            "Acción inválida",
+                            "No existe un movimiento pendiente por procesar."
+                        );
+
+                        return;
+                    }
+
+                    const esSueldo =
+                        movimiento.tipo === "SUELDO";
+
+                    const url = esSueldo
+                        ? "/PeriodoSemanal/RegistrarPagoCompleto"
+                        : "/PeriodoSemanal/RegistrarRetiroCompleto";
+
+                    const datos = {
+                        IdPeriodoSemanal: movimiento.id,
+                        Observaciones: esSueldo
+                            ? "Pago completo desde acceso rápido."
+                            : "Retiro completo desde acceso rápido."
+                    };
+
+                    if (esSueldo) {
+                        datos.MetodoPago =
+                            elementos.ddlMetodoPagoCompleto.value;
+                    }
+
+                    estado.movimientoPendiente = null;
+
+                    await ejecutarOperacion({
+                        url,
+                        datos,
+
+                        ocultarModal: () =>
+                            modales.confirmarMovimiento.hide(),
+
+                        tituloCarga: esSueldo
+                            ? "Procesando pago..."
+                            : "Procesando retiro...",
+
+                        textoCarga:
+                            "Consultando y actualizando el saldo real",
+
+                        tituloExito: esSueldo
+                            ? "Sueldo pagado"
+                            : "Caja retirada",
+
+                        tituloError:
+                            "No se pudo completar",
+
+                        recargarAlFinal: true
+                    });
+                }
+            );
+
+            document.getElementById(
+                "modalConfirmarMovimiento"
+            ).addEventListener("hidden.bs.modal", () => {
+                estado.movimientoPendiente = null;
+            });
+
+            // =====================================================
+            // HISTORIAL REAL
+            // =====================================================
+            document.querySelectorAll(
+                ".btn-ver-movimientos"
+            ).forEach(boton => {
+                boton.addEventListener("click", async () => {
+                    const id = Number(boton.dataset.id);
+                    const observacionInicial =
+                        boton.dataset.observacionInicial || "";
+
+                    elementos.listaMovimientos.replaceChildren();
+
+                    if (observacionInicial.trim()) {
+                        elementos.observacionInicialPeriodo.classList.remove(
+                            "d-none"
+                        );
+
+                        elementos.observacionInicialPeriodo.textContent =
+                            `Observación del corte: ${observacionInicial}`;
+                    } else {
+                        elementos.observacionInicialPeriodo.classList.add(
+                            "d-none"
+                        );
+
+                        elementos.observacionInicialPeriodo.textContent =
+                            "";
+                    }
+
+                    const cargando =
+                        document.createElement("div");
+
+                    cargando.className =
+                        "text-center text-muted py-4";
+
+                    cargando.textContent =
+                        "Cargando movimientos...";
+
+                    elementos.listaMovimientos.appendChild(
+                        cargando
+                    );
+
+                    modales.historial.show();
+
+                    try {
+                        const response = await fetch(
+                            `/PeriodoSemanal/ObtenerMovimientos?id=${encodeURIComponent(id)}`,
+                            {
+                                method: "GET",
+                                credentials: "same-origin",
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            }
+                        );
+
+                        const resultado =
+                            await leerRespuestaJson(response);
+
+                        elementos.listaMovimientos.replaceChildren();
+
+                        if (!resultado.success) {
+                            throw new Error(
+                                resultado.message ||
+                                "No se pudo cargar el historial."
+                            );
+                        }
+
+                        const movimientos =
+                            Array.isArray(resultado.data)
+                                ? resultado.data
+                                : [];
+
+                        if (movimientos.length === 0) {
+                            const vacio =
+                                document.createElement("div");
+
+                            vacio.className =
+                                "text-center text-muted border rounded-3 py-4";
+
+                            vacio.textContent =
+                                "Este periodo todavía no tiene pagos ni retiros registrados.";
+
+                            elementos.listaMovimientos.appendChild(
+                                vacio
+                            );
+
+                            return;
+                        }
+
+                        movimientos.forEach(movimiento => {
+                            const tipo =
+                                String(
+                                    movimiento.tipoMovimiento || ""
+                                ).toUpperCase();
+
+                            const esPago =
+                                tipo === "PAGO_SUELDO";
+
+                            const esRetiro =
+                                tipo === "RETIRO_CAJA";
+
+                            const tarjeta =
+                                document.createElement("div");
+
+                            tarjeta.className =
+                                "movement-card " +
+                                (esPago
+                                    ? "movement-payment"
+                                    : esRetiro
+                                        ? "movement-withdrawal"
+                                        : "movement-generic");
+
+                            const encabezado =
+                                document.createElement("div");
+
+                            encabezado.className =
+                                "d-flex justify-content-between align-items-start gap-3 flex-wrap";
+
+                            const titulo =
+                                document.createElement("strong");
+
+                            titulo.className =
+                                esPago
+                                    ? "text-success"
+                                    : esRetiro
+                                        ? "text-info"
+                                        : "text-secondary";
+
+                            titulo.textContent =
+                                esPago
+                                    ? "Pago de sueldo"
+                                    : esRetiro
+                                        ? "Retiro de caja"
+                                        : tipo || "Movimiento";
+
+                            const monto =
+                                document.createElement("strong");
+
+                            monto.className = "text-dark";
+                            monto.textContent =
+                                `S/ ${Number(movimiento.monto || 0).toFixed(2)}`;
+
+                            encabezado.append(
+                                titulo,
+                                monto
+                            );
+
+                            const detalle =
+                                document.createElement("div");
+
+                            detalle.className =
+                                "small text-muted mt-2";
+
+                            const fecha =
+                                movimiento.fechaRegistro
+                                    ? new Date(
+                                        movimiento.fechaRegistro
+                                    ).toLocaleString("es-PE")
+                                    : "Fecha no disponible";
+
+                            const partesDetalle = [
+                                fecha
+                            ];
+
+                            if (movimiento.metodoPago) {
+                                partesDetalle.push(
+                                    `Método: ${movimiento.metodoPago}`
+                                );
+                            }
+
+                            if (movimiento.usuarioRegistro) {
+                                partesDetalle.push(
+                                    `Usuario: ${movimiento.usuarioRegistro}`
+                                );
+                            }
+
+                            detalle.textContent =
+                                partesDetalle.join(" · ");
+
+                            tarjeta.append(
+                                encabezado,
+                                detalle
+                            );
+
+                            if (movimiento.observaciones) {
+                                const observacion =
+                                    document.createElement("p");
+
+                                observacion.className =
+                                    "small text-dark mb-0 mt-2";
+
+                                observacion.textContent =
+                                    movimiento.observaciones;
+
+                                tarjeta.appendChild(
+                                    observacion
+                                );
+                            }
+
+                            elementos.listaMovimientos.appendChild(
+                                tarjeta
+                            );
+                        });
+                    } catch (error) {
+                        console.error(error);
+
+                        elementos.listaMovimientos.replaceChildren();
+
+                        const errorDiv =
+                            document.createElement("div");
+
+                        errorDiv.className =
+                            "alert alert-danger mb-0";
+
+                        errorDiv.textContent =
+                            error.message ||
+                            "No se pudo cargar el historial.";
+
+                        elementos.listaMovimientos.appendChild(
+                            errorDiv
+                        );
+                    }
+                });
+            });
+        })();
+    </script>
+}
+

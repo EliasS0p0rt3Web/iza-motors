@@ -1,0 +1,146 @@
+﻿@model Negocio.Web.Models.ViewModels.RegistrarProductoViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Registrar Producto";
+}
+
+<h2 class="mb-4">📦 Registrar Producto</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form asp-action="Registrar"
+              method="post"
+              enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+
+                <!-- DESCRIPCIÓN -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Descripción</label>
+                    <input asp-for="Descripcion" class="form-control" />
+                    <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                </div>
+
+                <!-- ÁREA -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Área</label>
+                    <select asp-for="Area"
+                            asp-items="Model.Areas"
+                            class="form-select">
+                    </select>
+                </div>
+
+                <!-- UNIDAD -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Unidad</label>
+                    <select asp-for="Unidad"
+                            asp-items="Model.Unidades"
+                            class="form-select">
+                    </select>
+                </div>
+
+                <!-- DIMENSIONES -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Dimensiones</label>
+                    <input asp-for="Dimensiones"
+                           class="form-control"
+                           placeholder="Ej: 1 PULGADA, 7/8, 80 cm" />
+                </div>
+
+                <!-- PRECIO COMPRA -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Precio Compra</label>
+                    <input asp-for="PrecioCompra"
+                           class="form-control"
+                           step="0.01" />
+                </div>
+
+                <!-- PRECIO VENTA -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Precio Venta</label>
+                    <input asp-for="PrecioVenta"
+                           class="form-control"
+                           step="0.01" />
+                </div>
+
+                <!-- STOCK -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Stock Inicial</label>
+                    <input asp-for="StockInicial"
+                           class="form-control"
+                           step="0.01" />
+                </div>
+
+                <!-- FACTOR CONVERSIÓN -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Factor de Conversión</label>
+                    <input asp-for="ConversionFactor"
+                           class="form-control"
+                           step="0.0001" />
+                </div>
+
+                <!-- IMAGEN -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Imagen del Producto</label>
+                    <input type="file"
+                           name="imagen"
+                           class="form-control"
+                           accept="image/*"
+                           onchange="previewImage(this)" />
+                </div>
+
+                <!-- PREVIEW IMAGEN -->
+                <div class="col-12">
+                    <div id="previewBox"
+                         class="border rounded p-3 text-center text-muted"
+                         style="display:none">
+                        <img id="imgPreview"
+                             style="max-height:180px;border-radius:12px;" />
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- BOTONES -->
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="btn btn-success px-4">
+                    💾 Guardar Producto
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function previewImage(input) {
+            const previewBox = document.getElementById('previewBox');
+            const img = document.getElementById('imgPreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    img.src = e.target.result;
+                    previewBox.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

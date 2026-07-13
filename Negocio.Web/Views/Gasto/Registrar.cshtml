@@ -1,0 +1,356 @@
+﻿@model Negocio.Web.Models.Entities.Gasto
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Registrar Gasto";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- VARIABLES Y BASE --- */
+    .gasto-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    /* --- TARJETAS DE PLANTILLA RÁPIDA (Estilo Cotizador) --- */
+    .quick-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        padding: 1.2rem;
+        height: 100%;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .quick-card:hover {
+            transform: translateY(-8px);
+            border-color: #22c55e;
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.1);
+        }
+
+    /* Badge "Auto" */
+    .quick-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 50px;
+        text-transform: uppercase;
+    }
+
+    .quick-card:hover .quick-badge {
+        background: #22c55e;
+        color: white;
+    }
+
+    .quick-icon {
+        width: 55px;
+        height: 55px;
+        background: #f8fafc;
+        color: #0f172a;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .quick-card:hover .quick-icon {
+        background: #0f172a;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .quick-card h6 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.3rem;
+    }
+
+    .quick-card p.price {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin: 0;
+        background: #f1f5f9;
+        padding: 4px 12px;
+        border-radius: 50px;
+    }
+
+    /* --- FORMULARIO PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        padding: 2.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.75rem 1.2rem;
+        font-size: 1rem;
+        color: #0f172a;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+        .input-pro:focus {
+            border-color: #0071e3;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            outline: none;
+        }
+
+    .input-group-pro .input-group-text {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        border-radius: 14px 0 0 14px;
+        font-weight: 800;
+        color: #64748b;
+    }
+
+    .input-group-pro .input-pro {
+        border-left: none;
+        border-radius: 0 14px 14px 0;
+        font-weight: 800;
+        font-size: 1.2rem;
+    }
+
+        .input-group-pro .input-pro:focus {
+            border-left: 1px solid #0071e3;
+        }
+
+    /* --- BOTÓN GUARDAR (Estilo Tech Primary) --- */
+    .btn-save-pro {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0);
+        background-size: 8px 8px;
+        color: #0f172a !important;
+        border: none;
+        padding: 16px 36px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .btn-save-pro:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
+            background: #15803d;
+        }
+
+    .btn-cancel-pro {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: 16px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+        .btn-cancel-pro:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+</style>
+
+<div class="gasto-container py-4">
+
+    <div class="text-center mb-5">
+        
+        <h2 class="fw-bold text-dark" style="font-family: 'Inter', sans-serif; font-weight: 800;"> Registro de Gastos</h2>
+        
+    </div>
+
+    <div class="row g-3 mb-5 justify-content-center">
+        <div class="col-6 col-md-3">
+            <div class="quick-card" onclick="llenarPlantilla('MENU', 'Menú diario', 10.00)">
+                <div class="quick-badge"><i class="bi bi-lightning-fill"></i> Rápido</div>
+                <div class="quick-icon"><i class="bi bi-cup-hot-fill"></i></div>
+                <h6>Menú Diario</h6>
+                <p class="price">S/ 10.00</p>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="quick-card" onclick="llenarPlantilla('PASAJE', 'Pasajes del día', 5.00)">
+                <div class="quick-badge"><i class="bi bi-lightning-fill"></i> Rápido</div>
+                <div class="quick-icon"><i class="bi bi-bus-front-fill"></i></div>
+                <h6>Pasajes</h6>
+                <p class="price">S/ 5.00</p>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="quick-card" onclick="llenarPlantilla('LUZ', 'Recibo de luz mensual', 10.00)">
+                <div class="quick-badge">Variable</div>
+                <div class="quick-icon" style="color: #eab308;"><i class="bi bi-lightbulb-fill"></i></div>
+                <h6>Luz</h6>
+                <p class="price">S/ 10.00*</p>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="quick-card" onclick="llenarPlantilla('SEGURIDAD', 'Seguridad semanal', 10.00)">
+                <div class="quick-badge">Semanal</div>
+                <div class="quick-icon" style="color: #3b82f6;"><i class="bi bi-shield-lock-fill"></i></div>
+                <h6>Seguridad</h6>
+                <p class="price">S/ 10.00</p>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Registrar" method="post" class="form-premium-card">
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <label class="form-label-pro">Fecha del Gasto</label>
+                <div class="position-relative">
+                    <input asp-for="FechaRegistro"
+                           type="date"
+                           class="form-control input-pro w-100" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label-pro">Día</label>
+                <select asp-for="Dia" class="form-select input-pro w-100">
+                    <option>LUNES</option>
+                    <option>MARTES</option>
+                    <option>MIÉRCOLES</option>
+                    <option>JUEVES</option>
+                    <option>VIERNES</option>
+                    <option>SÁBADO</option>
+                    <option>DOMINGO</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label-pro">Categoría</label>
+            <select asp-for="Categoria" id="categoriaSelect" class="form-select input-pro w-100">
+                <option value="">-- Seleccione categoría --</option>
+                <option value="MENU">MENU</option>
+                <option value="PASAJE">PASAJE</option>
+                <option value="SEGURIDAD">SEGURIDAD</option>
+                <option value="LUZ">LUZ</option>
+                <option value="VUELTO DE YAPE">VUELTO DE YAPE</option>
+                <option value="OTROS">OTROS</option>
+            </select>
+            <span asp-validation-for="Categoria" class="text-danger small mt-1 d-block"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label-pro">Descripción detallada</label>
+            <input asp-for="Descripcion"
+                   id="descripcionInput"
+                   class="form-control input-pro w-100"
+                   placeholder="Ej: Almuerzo personal, bolsa de tornillos, etc." />
+            <span asp-validation-for="Descripcion" class="text-danger small mt-1 d-block"></span>
+        </div>
+
+        <div class="mb-5">
+            <label class="form-label-pro">Total a Pagar</label>
+            <div class="input-group input-group-pro">
+                <span class="input-group-text">S/</span>
+                <input asp-for="Total"
+                       type="number"
+                       step="0.01"
+                       min="0"
+                       class="form-control input-pro text-end text-success"
+                       placeholder="0.00"
+                       id="totalInput" />
+            </div>
+            <span asp-validation-for="Total" class="text-danger small mt-1 d-block"></span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-8">
+                <button type="submit" class="btn-save-pro">
+                    <i class="bi bi-check2-circle me-2"></i> Guardar Gasto
+                </button>
+            </div>
+            <div class="col-md-4">
+                <a asp-action="Index" class="btn btn-cancel-pro d-flex align-items-center justify-content-center text-decoration-none">
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const fechaInput = document.querySelector('input[name="FechaRegistro"]');
+    const diaSelect = document.querySelector('select[name="Dia"]');
+    const categoriaSelect = document.getElementById("categoriaSelect");
+    const descripcionInput = document.getElementById("descripcionInput");
+    const totalInput = document.getElementById("totalInput");
+    const form = document.querySelector("form");
+
+    // Llenado automático con estilo visual
+    function llenarPlantilla(categoria, descripcion, monto) {
+        categoriaSelect.value = categoria;
+        descripcionInput.value = descripcion;
+        totalInput.value = monto.toFixed(2);
+
+        // Efecto visual pro: parpadeo verde en el total
+        totalInput.style.backgroundColor = '#dcfce3';
+        totalInput.style.color = '#16a34a';
+        setTimeout(() => {
+            totalInput.style.backgroundColor = '';
+            totalInput.style.color = '';
+        }, 500);
+
+        // Hace scroll suave hasta el botón de guardar
+        form.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    // FECHA ➔ DÍA AUTOMÁTICO
+    fechaInput.addEventListener("change", () => {
+        const fecha = new Date(fechaInput.value + 'T00:00:00');
+        if (isNaN(fecha)) return;
+        const dias = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
+        diaSelect.value = dias[fecha.getDay()];
+    });
+
+    // VALIDACIÓN PRE-SUBMIT
+    form.addEventListener("submit", function (e) {
+        if (!categoriaSelect.value || !descripcionInput.value || !totalInput.value || parseFloat(totalInput.value) <= 0) {
+            e.preventDefault();
+            alert("⚠️ Por favor, completa todos los campos requeridos.");
+        }
+    });
+</script>

@@ -1,0 +1,368 @@
+﻿@model List<Negocio.Web.Models.ViewModels.VentaProductoViewModel>
+
+@{
+    ViewData["Title"] = "Ventas por Día";
+    Layout = "_LayoutSistema";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- VARIABLES Y BASE --- */
+    .venta-list-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+        padding-bottom: 120px; /* 🔥 Espacio de seguridad para que el calculador flotante no tape filas */
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        padding: 1.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+        .input-pro:focus {
+            border-color: #0071e3;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            outline: none;
+        }
+
+    /* --- BOTONES PREMIUM --- */
+    .btn-search-pro {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 11px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    }
+
+        .btn-search-pro:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+    /* --- TABLA PRO --- */
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+        }
+
+        .table-pro tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #334155;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+
+        .table-pro tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+    .total-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.95rem;
+    }
+
+    /* =========================================
+           ⚡ PANEL FLOTANTE DESPLEGABLE (TOTALES POR DÍA)
+        ========================================= */
+    .wrapper-calculador-flotante {
+        position: fixed;
+        bottom: 85px;
+        right: 25px;
+        z-index: 1040;
+    }
+
+    .btn-calculador-float {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 12px 24px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        border-radius: 50px;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .btn-calculador-float:hover {
+            transform: scale(1.05) translateY(-2px);
+            background: #1e293b;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+        }
+
+    .summary-floating-card {
+        position: absolute;
+        bottom: 65px;
+        right: 0;
+        width: 320px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 24px;
+        box-shadow: 0 15px 40px rgba(15, 23, 42, 0.15);
+        padding: 1.25rem;
+        display: none;
+        overflow: hidden;
+        animation: slideUpVenta 0.3s ease-out;
+    }
+
+        .summary-floating-card.active {
+            display: block;
+        }
+
+    .floating-title {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .category-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.4rem;
+    }
+
+        .category-row span.badge-value {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+    .final-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 2px dashed #e2e8f0;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+    }
+
+        .final-total-row span.label {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #0f172a;
+        }
+
+        .final-total-row span.value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #16a34a;
+        }
+
+    @@keyframes slideUpVenta {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .summary-floating-card
+
+    {
+        width: calc(100vw - 50px);
+        right: 0;
+    }
+
+    }
+</style>
+
+<div class="venta-list-container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-0" style="font-weight: 800;"> Ventas por Día</h3>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <form method="get" class="form-premium-card">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4 col-12">
+                    <label class="form-label-pro">Seleccionar día</label>
+                    <input type="date"
+                           name="fecha"
+                           value="@ViewBag.Fecha.ToString("yyyy-MM-dd")"
+                           class="form-control input-pro w-100" />
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <button type="submit" class="btn btn-search-pro w-100">
+                        <i class="bi bi-search me-2"></i> Ver Ventas
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="form-premium-card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table-pro text-nowrap">
+                <thead class="text-center">
+                    <tr>
+                        <th>Área</th>
+                        <th class="text-start">Producto</th>
+                        <th>Dimensiones</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
+                        <th class="text-end">Precio</th>
+                        <th>Pago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-light"></i>
+                                No hubo ventas este día
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var v in Model)
+                        {
+                            <tr>
+                                <td class="text-center fw-bold">@v.Area</td>
+                                <td class="text-start">@v.Producto</td>
+                                <td class="text-center">@v.Dimensiones</td>
+                                <td class="text-center fw-bold">@v.Cantidad</td>
+                                <td class="text-center text-secondary small">@v.Unidad</td>
+                                <td class="text-end">
+                                    <span class="total-badge">S/ @v.Precio.ToString("0.00")</span>
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        string bgBadge = v.Destino.ToUpper().Contains("YAPE") ? "bg-primary text-white" : "bg-success text-white";
+                                    }
+                                    <span class="badge @bgBadge border-0 px-2 py-1 shadow-sm">@v.Destino</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="wrapper-calculador-flotante">
+
+    <div id="cardCalculadorDiario" class="summary-floating-card">
+        <div class="floating-title d-flex align-items-center gap-1">
+            <i class="bi bi-calculator text-success"></i> Resumen del Día
+        </div>
+
+        <div class="category-row">
+            <span>• EFECTIVO:</span>
+            <span class="badge-value text-success" style="font-weight: 700;">S/ @ViewBag.TotalEfectivo</span>
+        </div>
+        <div class="category-row">
+            <span>• YAPE:</span>
+            <span class="badge-value text-primary" style="font-weight: 700;">S/ @ViewBag.TotalYape</span>
+        </div>
+
+        <div class="final-total-row">
+            <span class="label">TOTAL VENDIDO</span>
+            <span class="value" id="totalDiarioFlotante">S/ @ViewBag.TotalVentas</span>
+        </div>
+    </div>
+
+    <button type="button" id="btnCalculadorDiarioToggle" class="btn-calculador-float">
+        <i class="bi bi-calculator-fill"></i> Calculador
+    </button>
+</div>
+
+<script>
+    const btnCalculadorDiario = document.getElementById("btnCalculadorDiarioToggle");
+    const cardCalculadorDiario = document.getElementById("cardCalculadorDiario");
+
+    // ⚡ LÓGICA DE DETECCIÓN CLIC APERTURA BURBUJA
+    if (btnCalculadorDiario && cardCalculadorDiario) {
+        btnCalculadorDiario.addEventListener("click", (e) => {
+            e.stopPropagation();
+            cardCalculadorDiario.classList.toggle("active");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!cardCalculadorDiario.contains(e.target) && e.target !== btnCalculadorDiario) {
+                cardCalculadorDiario.classList.remove("active");
+            }
+        });
+    }
+</script>

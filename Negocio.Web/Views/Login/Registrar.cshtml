@@ -1,0 +1,509 @@
+﻿@{
+    ViewData["Title"] = "Registro de Clientes";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Iza Motors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Fondo corporativo Rojo */
+            background-color: #b91c1c;
+            background-image: radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.8) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(153, 27, 27, 1) 0px, transparent 50%);
+            color: #1e293b;
+            position: relative;
+        }
+
+        /* --- BOTÓN VOLVER --- */
+        .btn-back {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 10;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .btn-back:hover {
+                color: #ffffff;
+                background: rgba(0, 0, 0, 0.3);
+                transform: translateX(-3px);
+            }
+
+        .right {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            padding: 35px 40px;
+            /* Caja blanca limpia */
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+
+        form {
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* --- MAGIC FLOATING LABELS --- */
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus ~ label,
+        input:not(:placeholder-shown) ~ label {
+            top: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: #dc2626; /* Rojo activo */
+            background-color: #ffffff; /* Fondo blanco */
+            padding: 0 6px;
+            text-transform: uppercase;
+            transform: translateY(-50%);
+            left: 12px;
+        }
+
+        /* Ajuste especial de etiqueta para el teléfono con prefijo estático */
+        .prefix-present ~ label {
+            left: 48px; /* Evita que el label choque con el +51 en estado de reposo */
+        }
+
+        input:focus ~ label,
+        input:not(:placeholder-shown) ~ label {
+            left: 12px; /* Regresa a su origen al flotar */
+        }
+
+        input:not(:focus):not(:placeholder-shown) ~ label {
+            color: #94a3b8;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Prefijo peruano discreto integrado */
+        .phone-prefix {
+            position: absolute;
+            left: 16px;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            /* Fondo gris clarito */
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #1e293b;
+            transition: all 0.2s ease;
+        }
+
+            /* El input de teléfono necesita un padding izquierdo extra para que el texto empiece después del prefijo */
+            input#phoneInput {
+                padding-left: 48px;
+            }
+
+            input[type="password"], input[type="text"].pass-open {
+                padding-right: 45px;
+            }
+
+            input:focus {
+                outline: none;
+                border-color: #dc2626; /* Borde rojo */
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+                background: #ffffff;
+            }
+
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            z-index: 5;
+        }
+
+            .toggle-password i {
+                font-size: 18px;
+                color: #94a3b8;
+                transition: color 0.2s;
+            }
+
+            .toggle-password:hover i {
+                color: #dc2626; /* Hover rojo */
+            }
+
+        button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            /* Botón rojo corporativo */
+            background: #dc2626;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+            button:hover {
+                background: #b91c1c;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            }
+
+        .error {
+            margin-top: 0px;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #b91c1c;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-footer-link {
+            text-align: left;
+            margin-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+            .login-footer-link a {
+                color: #dc2626; /* Link rojo */
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.2s;
+            }
+
+                .login-footer-link a:hover {
+                    color: #b91c1c;
+                }
+
+        /* RESPONSIVE */
+        @@media (max-width: 480px) {
+            .btn-back {
+                top: 15px;
+                left: 15px;
+                background: #f1f5f9;
+                color: #1e293b;
+                border: 1px solid #e2e8f0;
+            }
+
+            body {
+                background: #ffffff; /* Todo blanco en móvil */
+            }
+
+            .login-box {
+                max-width: 100%;
+                min-height: 100vh;
+                border: none;
+                border-radius: 0;
+                background: transparent;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                box-shadow: none;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="/" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        <span>Volver a Inicio</span>
+    </a>
+
+    <div class="right">
+        <div class="login-box">
+
+            <div style="text-align: center; margin-bottom: 35px;">
+                <h2 style="font-size: 26px; font-weight: 800; color: #dc2626; letter-spacing: -0.03em; margin: 0 0 6px 0; text-transform: uppercase;">
+                    Crea tu Cuenta
+                </h2>
+                <p style="font-size: 14px; color: #64748b; margin: 0; font-weight: 500;">
+                    Iza Motors
+                </p>
+            </div>
+
+            <div id="frontError" class="error" style="display: none;">
+                <i class="bi bi-exclamation-circle"></i>
+                <span id="errorText"></span>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="error" id="backError">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span>@ViewBag.Error</span>
+                </div>
+            }
+
+            <form asp-action="Registrar" method="post" id="registerForm">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <input type="text" name="nombreCompleto" id="nameInput" placeholder=" " required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" title="Ingresa un nombre válido sin caracteres especiales" />
+                        <label for="nameInput">Nombres Completos</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <input type="email" name="email" id="emailInput" placeholder=" " required />
+                        <label for="emailInput">Correo Electrónico (Gmail / Otros)</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <span class="phone-prefix">+51</span>
+                        <input type="tel" name="telefono" id="phoneInput" class="prefix-present" placeholder=" " required
+                               maxlength="11" inputmode="numeric" autocomplete="off" />
+                        <label for="phoneInput">Teléfono Celular</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="passwordInput" placeholder=" " required minlength="6" />
+                        <label for="passwordInput">Contraseña</label>
+                        <span class="toggle-password" onclick="toggleVisibility('passwordInput', 'togglePasswordIcon')">
+                            <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="password-wrapper">
+                        <input type="password" name="confirmPassword" id="confirmPasswordInput" placeholder=" " required />
+                        <label for="confirmPasswordInput">Confirmar Contraseña</label>
+                        <span class="toggle-password" onclick="toggleVisibility('confirmPasswordInput', 'toggleConfirmIcon')">
+                            <i class="bi bi-eye-slash" id="toggleConfirmIcon"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit">REGISTRARME AHORA</button>
+            </form>
+
+            <div class="login-footer-link">
+                ¿Ya tienes una cuenta? <a asp-action="Index">Inicia Sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Mostrar/Ocultar contraseñas dinámicamente
+        function toggleVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+
+            if(isPassword) {
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+                passwordInput.classList.add("pass-open");
+            } else {
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+                passwordInput.classList.remove("pass-open");
+            }
+        }
+
+        // 2. Muestra errores dinámicos en tiempo de ejecución
+        function mostrarErrorTemporal(mensaje) {
+            const box = document.getElementById("frontError");
+            const text = document.getElementById("errorText");
+            text.innerText = mensaje;
+            box.style.display = "flex";
+
+            // Auto-cierre del error en 4 segundos
+            setTimeout(() => {
+                box.style.transition = "opacity 0.5s ease";
+                box.style.opacity = "0";
+                setTimeout(() => {
+                    box.style.display = "none";
+                    box.style.opacity = "1";
+                }, 500);
+            }, 4000);
+        }
+
+        // Auto-cierre del error del servidor (ViewBag)
+        const backError = document.getElementById("backError");
+        if (backError) {
+            setTimeout(() => {
+                backError.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                backError.style.opacity = "0";
+                backError.style.transform = "translateY(-10px)";
+                setTimeout(() => backError.remove(), 500);
+            }, 4000);
+        }
+
+        // ========================================================
+        // 🔥 LÓGICA ULTRA AVANZADA DE ENTRADA PARA EL TELÉFONO (MÁSCARA PERÚ)
+        // ========================================================
+        const phoneInput = document.getElementById("phoneInput");
+
+        function procesarYFormatearNumero(textoOrigen) {
+            // Limpia todo lo que no sea un número
+            let numeros = textoOrigen.replace(/\D/g, "");
+
+            // Si copiaron con prefijo internacional tipo "+519..." o "519...", removemos el 51
+            if (numeros.length > 9 && numeros.startsWith("51")) {
+                numeros = numeros.substring(2);
+            }
+
+            // Validar de inmediato que si hay números, el primero empiece por 9
+            if (numeros.length > 0 && numeros[0] !== '9') {
+                mostrarErrorTemporal("En Perú los celulares deben empezar con 9");
+                return "";
+            }
+
+            // Limitar estrictamente a 9 dígitos puros
+            numeros = numeros.substring(0, 9);
+
+            // Armar la máscara "999 999 999" en bloques de 3
+            let resultado = "";
+            if (numeros.length > 0) {
+                resultado += numeros.substring(0, 3);
+            }
+            if (numeros.length > 3) {
+                resultado += " " + numeros.substring(3, 6);
+            }
+            if (numeros.length > 6) {
+                resultado += " " + numeros.substring(6, 9);
+            }
+            return resultado;
+        }
+
+        // Captura escritura manual o pulsaciones de teclado individuales
+        phoneInput.addEventListener("input", (e) => {
+            phoneInput.value = procesarYFormatearNumero(phoneInput.value);
+        });
+
+        // Captura eventos nativos de pegado desde portapapeles en Celular o PC
+        phoneInput.addEventListener("paste", (e) => {
+            e.preventDefault(); // Evitamos el pegado estándar sin filtrar
+            const datosPegados = (e.clipboardData || window.clipboardData).getData("text");
+            phoneInput.value = procesarYFormatearNumero(datosPegados);
+        });
+
+        // ========================================================
+        // 🔒 VALIDACIONES FINALES ANTES DE ENVIAR (FRONT-END GUARD)
+        // ========================================================
+        document.getElementById("registerForm").addEventListener("submit", (e) => {
+            const pass = document.getElementById("passwordInput").value;
+            const confirmPass = document.getElementById("confirmPasswordInput").value;
+            const numeroLimpio = phoneInput.value.replace(/\s/g, ""); // Quita los espacios virtuales
+
+            // 1. Validar que la contraseña coincida en caliente
+            if (pass !== confirmPass) {
+                e.preventDefault();
+                mostrarErrorTemporal("Las contraseñas no coinciden, dale una mirada.");
+                return;
+            }
+
+            // 2. Validar longitud del teléfono al enviar
+            if (numeroLimpio.length !== 9) {
+                e.preventDefault();
+                mostrarErrorTemporal("El número celular debe tener exactamente 9 dígitos.");
+                return;
+            }
+        });
+    </script>
+
+</body>
+</html>

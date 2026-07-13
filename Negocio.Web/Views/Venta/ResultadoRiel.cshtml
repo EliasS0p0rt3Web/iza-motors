@@ -1,0 +1,72 @@
+﻿@model Negocio.Web.Models.ViewModels.RielCortinaResultadoViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Resultado de la Venta";
+}
+
+<h2 class="mb-4">✅ Resultado de la Venta</h2>
+
+<h4 class="mt-4">Productos descontados</h4>
+
+<ul class="list-group mb-4">
+    <li class="list-group-item">Riel descontado: <strong>@Model.RielDescontado</strong></li>
+    <li class="list-group-item">Uñera: <strong>@Model.UneraNormalDescontado</strong></li>
+    <li class="list-group-item">Cruce: <strong>@Model.CruceDescontado</strong></li>
+    <li class="list-group-item">Terminal: <strong>@Model.TerminalDescontado</strong></li>
+    <li class="list-group-item">Rueda terminal: <strong>@Model.RuedaDescontado</strong></li>
+</ul>
+
+<h4 class="mt-4">Verificación de Inventario</h4>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Producto</th>
+            <th>Stock Antes</th>
+            <th>Descontado</th>
+            <th>Stock Actual</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Riel Blanco</td>
+            <td>@Model.StockRielAntes</td>
+            <td>@Model.RielDescontado</td>
+            <td>@Model.StockRiel</td>
+        </tr>
+
+        <tr>
+            <td>Uñera</td>
+            <td>@Model.StockUneraAntes</td>
+            <td>@Model.UneraNormalDescontado</td>
+            <td>@Model.StockUnera</td>
+        </tr>
+
+        <tr>
+            <td>Cruce</td>
+            <td>@Model.StockCruceAntes</td>
+            <td>@Model.CruceDescontado</td>
+            <td>@Model.StockCruce</td>
+        </tr>
+
+        <tr>
+            <td>Terminal</td>
+            <td>@Model.StockTerminalAntes</td>
+            <td>@Model.TerminalDescontado</td>
+            <td>@Model.StockTerminal</td>
+        </tr>
+
+        <tr>
+            <td>Rueda Terminal</td>
+            <td>@Model.StockRuedaAntes</td>
+            <td>@Model.RuedaDescontado</td>
+            <td>@Model.StockRueda</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="mt-4">
+    <a asp-action="RielCortina" class="btn btn-success">➕ Nueva Venta</a>
+    <a asp-action="Index" class="btn btn-secondary">📋 Ir a Ventas</a>
+</div>

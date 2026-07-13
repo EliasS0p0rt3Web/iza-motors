@@ -1,0 +1,86 @@
+﻿@model List<Negocio.Web.Models.Entities.TrabajoMarketing>
+
+@{
+    ViewData["Title"] = "Galería de Trabajos";
+    Layout = "_LayoutSistema";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="m-0">📸 Galería de Trabajos Publicados</h3>
+    <a asp-action="Create" class="btn btn-success">➕ Nueva foto</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay fotos en el catálogo.</div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm border-0" style="border-radius: 14px; overflow: hidden;">
+                    <div style="position: relative;">
+                        <img src="@item.ImagenUrl" class="card-img-top" style="height: 180px; object-fit: cover;">
+                        <span class="badge bg-primary position-absolute" style="bottom: 10px; right: 10px;">@item.Categoria</span>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title mb-1 fw-bold">@item.Titulo</h6>
+                        <span class="badge mb-3 align-self-start @(item.Activo ? "bg-success" : "bg-secondary")">
+                            @(item.Activo ? "Público en Web" : "Oculto")
+                        </span>
+                        <div class="mt-auto d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    data-bs-toggle="modal" data-bs-target="#editModal"
+                                    data-id="@item.Id" data-titulo="@item.Titulo"
+                                    data-categoria="@item.Categoria" data-descripcion="@item.Descripcion">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                            <form asp-action="Toggle" method="post" class="flex-fill">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-sm w-100 @(item.Activo ? "btn-outline-warning" : "btn-outline-success")">
+                                    @(item.Activo ? "Ocultar" : "Mostrar")
+                                </button>
+                            </form>
+                            <form asp-action="Delete" method="post" onsubmit="return confirm('¿Eliminar?');">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div class="modal-header"><h5 class="modal-title">Editar Trabajo</h5></div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editId" />
+                    <div class="mb-3"><label>Título</label><input name="titulo" id="editTitulo" class="form-control" required /></div>
+                    <div class="mb-3"><label>Categoría</label><input name="categoria" id="editCategoria" class="form-control" /></div>
+                    <div class="mb-3"><label>Descripción</label><textarea name="descripcion" id="editDescripcion" class="form-control"></textarea></div>
+                    <div class="mb-3"><label>Imagen (dejar vacío para mantener actual)</label><input type="file" name="imagen" class="form-control" accept="image/*" /></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('editId').value = btn.dataset.id;
+        document.getElementById('editTitulo').value = btn.dataset.titulo;
+        document.getElementById('editCategoria').value = btn.dataset.categoria;
+        document.getElementById('editDescripcion').value = btn.dataset.descripcion;
+    });
+</script>

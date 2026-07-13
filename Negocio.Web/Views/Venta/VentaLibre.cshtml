@@ -1,0 +1,276 @@
+﻿@model Negocio.Web.Models.ViewModels.RegistrarVentaViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Venta Libre";
+    bool esEdicion = Model.IdVenta.HasValue;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PRO --- */
+    .venta-libre-container {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS DE CONTROL PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
+        padding: 1.75rem;
+    }
+
+    .panel-header-pro {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- INPUTS MODERNOS --- */
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+        .input-pro:focus {
+            border-color: #6366f1; /* Tono Indigo elegante distintivo para venta libre */
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+    /* --- BOTONES DE CONTROL DE CANTIDAD --- */
+    .btn-quantity {
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 700;
+        width: 46px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-quantity:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+    /* --- ENLACES Y ACCIONES --- */
+    .btn-save-pro {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: white !important;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+    }
+
+        .btn-save-pro:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.35);
+        }
+
+    .btn-clear-pro {
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569 !important;
+        padding: 10px 24px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        text-align: center;
+    }
+
+        .btn-clear-pro:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+</style>
+
+<div class="venta-libre-container py-4">
+
+    <div class="mb-4">
+       
+        <h3 class="fw-800 text-dark mb-0">
+            @(esEdicion ? "✏️ Editar Venta Libre" : " Registro de Venta Libre")
+        </h3>
+    </div>
+
+    <form asp-action="@(esEdicion ? "Editar" : "VentaLibre")" method="post" class="row g-4">
+        @Html.AntiForgeryToken()
+
+        @if (esEdicion)
+        {
+            <input type="hidden" asp-for="IdVenta" />
+        }
+
+        <div class="col-lg-7">
+            <div class="form-premium-card h-100">
+                <div class="panel-header-pro">
+                    📦 Datos del Producto / Servicio
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label-pro">Día</label>
+                        <select asp-for="Dia" asp-items="Model.Dias" class="form-select input-pro w-100">
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-pro">Fecha</label>
+                        <input asp-for="Fecha" type="date" class="form-control input-pro w-100" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-pro">Área de Destino</label>
+                    <select asp-for="Area" class="form-select input-pro w-100">
+                        <option value="">-- Seleccione área --</option>
+                        <option value="ALUMINIO">ALUMINIO</option>
+                        <option value="ACCESORIOS">ACCESORIOS</option>
+                        <option value="ARC">ARC</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-pro">Producto / Concepto</label>
+                    <input asp-for="Descripcion" class="form-control input-pro w-100" placeholder="Ej: Corte de tubo o trabajo especial..." />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-pro">Dimensión / Formato</label>
+                    <input asp-for="Dimensiones" class="form-control input-pro w-100" placeholder="Ej: 2 metros / Medida personalizada..." />
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label-pro">Cantidad</label>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-quantity rounded-start-3" id="btnMenos">
+                                <i class="bi bi-dash-lg"></i>
+                            </button>
+
+                            <input asp-for="Cantidad" type="number" step="0.01" min="0"
+                                   class="form-control input-pro text-center border-start-0 border-end-0 rounded-0" id="cantidadInput" />
+
+                            <button type="button" class="btn btn-quantity rounded-end-3" id="btnMas">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label-pro">Unidad Medida</label>
+                        <select asp-for="Unidad" asp-items="Model.Unidades" class="form-select input-pro w-100">
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="form-premium-card d-flex flex-column justify-content-between h-100">
+                <div>
+                    <div class="panel-header-pro">
+                        💰 Detalle Financiero
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label-pro">Caja de Destino</label>
+                        <select asp-for="Destino" asp-items="Model.Destinos" class="form-select input-pro w-100">
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label-pro">Monto Subtotal (S/)</label>
+                        <div class="position-relative">
+                            <input asp-for="Precio" class="form-control input-pro w-100 fs-5 fw-bold text-success ps-5" placeholder="0.00" style="background: #f0fdf4;" />
+                            <span class="position-absolute top-50 start-0 translate-middle-y ms-3 fw-bold text-success fs-5">S/</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-3 pt-4">
+                    <button type="submit" class="btn btn-save-pro btn-lg">
+                        @(esEdicion ? "💾 Actualizar Registro" : "💾 Guardar Venta Libre")
+                    </button>
+
+                    <a asp-action="VentaLibre" class="btn-clear-pro">
+                        <i class="bi bi-eraser me-1"></i> Limpiar Campos
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const cantidadInput = document.getElementById("cantidadInput");
+    const btnMas = document.getElementById("btnMas");
+    const btnMenos = document.getElementById("btnMenos");
+
+    // 🔥 NUEVOS SELECTORES DE TIEMPO
+    const fechaInput = document.querySelector('input[name="Fecha"]');
+    const diaSelect = document.querySelector('select[name="Dia"]');
+
+    // CONTROLES DE SUMA / RESTA
+    btnMas.addEventListener("click", () => {
+        let valor = parseFloat(cantidadInput.value) || 0;
+        cantidadInput.value = (valor + 1).toFixed(2);
+    });
+
+    btnMenos.addEventListener("click", () => {
+        let valor = parseFloat(cantidadInput.value) || 0;
+        if (valor > 0) {
+            cantidadInput.value = Math.max(0, valor - 1).toFixed(2);
+        }
+    });
+
+    // ⚡ LÓGICA AUTOMÁTICA FECHA → DÍA (Con anclaje local 'T00:00:00' para evitar saltos)
+    if (fechaInput && diaSelect) {
+        fechaInput.addEventListener("change", () => {
+            const fecha = new Date(fechaInput.value + 'T00:00:00');
+            if (isNaN(fecha)) return;
+
+            const dias = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
+            diaSelect.value = dias[fecha.getDay()];
+        });
+    }
+</script>

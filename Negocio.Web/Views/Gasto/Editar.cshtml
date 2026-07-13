@@ -1,0 +1,213 @@
+﻿@model Negocio.Web.Models.Entities.Gasto
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Editar Gasto";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- VARIABLES Y BASE (Mismos que Registrar) --- */
+    .gasto-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    /* --- FORMULARIO PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        padding: 2.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.75rem 1.2rem;
+        font-size: 1rem;
+        color: #0f172a;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+        .input-pro:focus {
+            border-color: #0071e3;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            outline: none;
+        }
+
+    .input-group-pro .input-group-text {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        border-radius: 14px 0 0 14px;
+        font-weight: 800;
+        color: #64748b;
+    }
+
+    .input-group-pro .input-pro {
+        border-left: none;
+        border-radius: 0 14px 14px 0;
+        font-weight: 800;
+        font-size: 1.2rem;
+    }
+
+        .input-group-pro .input-pro:focus {
+            border-left: 1px solid #0071e3;
+        }
+
+    /* --- BOTÓN GUARDAR (Estilo Edición: Tono Azul/Warning si prefieres, aquí usé el verde premium) --- */
+    .btn-save-pro {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0);
+        background-size: 8px 8px;
+        color: #0f172a !important; /* Texto oscuro para que resalte */
+        border: none;
+        padding: 16px 36px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .btn-save-pro:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
+            background: #15803d;
+        }
+
+    .btn-cancel-pro {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: 16px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+        .btn-cancel-pro:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+</style>
+
+<div class="gasto-container py-4">
+
+    <div class="text-center mb-5">
+        
+        <h2 class="fw-bold text-dark" style="font-family: 'Inter', sans-serif; font-weight: 800;"> Editar Gasto</h2>
+
+    </div>
+
+    <form asp-action="Editar" method="post" class="form-premium-card">
+
+        <input type="hidden" asp-for="IdGasto" />
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <label class="form-label-pro">Fecha del Gasto</label>
+                <div class="position-relative">
+                    <input asp-for="FechaRegistro"
+                           type="date"
+                           class="form-control input-pro w-100" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label-pro">Día</label>
+                <select asp-for="Dia" class="form-select input-pro w-100">
+                    <option>LUNES</option>
+                    <option>MARTES</option>
+                    <option>MIÉRCOLES</option>
+                    <option>JUEVES</option>
+                    <option>VIERNES</option>
+                    <option>SÁBADO</option>
+                    <option>DOMINGO</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label-pro">Categoría</label>
+            <select asp-for="Categoria" class="form-select input-pro w-100">
+                <option value="">-- Seleccione categoría --</option>
+                <option value="MENU">MENU</option>
+                <option value="PASAJE">PASAJE</option>
+                <option value="SEGURIDAD">SEGURIDAD</option>
+                <option value="LUZ">LUZ</option>
+                <option value="VUELTO DE YAPE">VUELTO DE YAPE</option>
+                <option value="OTROS">OTROS</option>
+            </select>
+            <span asp-validation-for="Categoria" class="text-danger small mt-1 d-block"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label-pro">Descripción detallada</label>
+            <input asp-for="Descripcion"
+                   class="form-control input-pro w-100"
+                   placeholder="Ej: Almuerzo personal, bolsa de tornillos, etc." />
+            <span asp-validation-for="Descripcion" class="text-danger small mt-1 d-block"></span>
+        </div>
+
+        <div class="mb-5">
+            <label class="form-label-pro">Total Pagado</label>
+            <div class="input-group input-group-pro">
+                <span class="input-group-text">S/</span>
+                <input asp-for="Total"
+                       type="number"
+                       step="0.01"
+                       min="0"
+                       class="form-control input-pro text-end text-success"
+                       placeholder="0.00" />
+            </div>
+            <span asp-validation-for="Total" class="text-danger small mt-1 d-block"></span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-8">
+                <button type="submit" class="btn-save-pro">
+                    <i class="bi bi-pencil-square me-2"></i> Guardar Cambios
+                </button>
+            </div>
+            <div class="col-md-4">
+                <a asp-action="Index" class="btn btn-cancel-pro d-flex align-items-center justify-content-center text-decoration-none">
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const fechaInput = document.querySelector('input[name="FechaRegistro"]');
+        const diaSelect = document.querySelector('select[name="Dia"]');
+
+        // Actualizar día automáticamente cuando cambie la fecha
+        fechaInput.addEventListener("change", () => {
+            // Se añade 'T00:00:00' para evitar que se desface el día por zonas horarias
+            const fecha = new Date(fechaInput.value + 'T00:00:00');
+            if (isNaN(fecha)) return;
+
+            const dias = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
+            diaSelect.value = dias[fecha.getDay()];
+        });
+    </script>
+}

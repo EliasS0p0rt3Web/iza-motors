@@ -1,0 +1,65 @@
+﻿@model List<Negocio.Web.Controllers.ProductoPublicVm>
+
+@{
+    ViewData["Title"] = "Accesorio - " + ViewBag.Nombre;
+    Layout = "_LayoutProductos";
+}
+
+<a asp-action="Categoria" asp-route-area="ACCESORIOS" class="btn btn-outline-secondary mb-3">
+    ⬅ Volver a accesorios
+</a>
+
+<h3 class="fw-bold mb-4">🔩 @ViewBag.Nombre</h3>
+
+<div class="row g-4">
+    @foreach (var p in Model)
+    {
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100 product-card">
+
+                <div class="product-image-placeholder">
+                    Imagen
+                </div>
+
+                <div class="card-body text-center">
+                    <h6 class="fw-bold">@p.Descripcion</h6>
+
+                    @if (!string.IsNullOrWhiteSpace(p.Dimensiones))
+                    {
+                        <div class="text-muted small">
+                            📐 @p.Dimensiones
+                        </div>
+                    }
+
+                    <span class="badge bg-success mt-2">
+                        Stock: @p.StockTotal
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .product-card {
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        }
+
+    .product-image-placeholder {
+        height: 130px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+</style>

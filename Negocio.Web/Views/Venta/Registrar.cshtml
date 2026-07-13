@@ -1,0 +1,433 @@
+﻿@model Negocio.Web.Models.ViewModels.RegistrarVentaViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Registrar Venta";
+}
+
+@{
+    bool esEdicion = Model.IdVenta.HasValue;
+}
+<h3 class="mb-4">🧾 Registro de Venta</h3>
+@if (!ViewData.ModelState.IsValid)
+{
+    @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+}
+
+@if (TempData["Success"] != null)
+{
+    <div id="mensajeExito" class="alert alert-success shadow-sm" role="alert">
+        @TempData["Success"]
+    </div>
+}
+
+<form asp-action="@(esEdicion ? "Editar" : "Registrar")"
+      method="post"
+      class="row g-4">
+    @Html.AntiForgeryToken()
+
+    @if (esEdicion)
+    {
+        <input type="hidden" asp-for="IdVenta" />
+    }
+    <!-- ======================
+         COLUMNA IZQUIERDA
+    ======================= -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light fw-semibold">
+                📦 Datos del Producto
+            </div>
+
+            <div class="card-body">
+
+                <!-- FECHA -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Día</label>
+                        <select asp-for="Dia"
+                                asp-items="Model.Dias"
+                                class="form-select">
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha</label>
+                        <input asp-for="Fecha" type="date" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- AREA -->
+                <div class="mb-3">
+                    <label class="form-label">Área</label>
+                    <select asp-for="Area"
+                            asp-items="Model.Areas"
+                            class="form-select"
+                            id="areaSelect">
+                        <option value="">-- Seleccione área --</option>
+                    </select>
+                </div>
+
+                <!-- PRODUCTO -->
+                <div class="mb-3">
+                    <label class="form-label">Producto</label>
+                    <select id="productoSelect" class="form-select">
+                        <option value="">-- Seleccione producto --</option>
+                    </select>
+                </div>
+
+                <!-- DIMENSIONES -->
+                <div class="mb-3">
+                    <label class="form-label">Dimensión</label>
+                    <select id="dimensionSelect" class="form-select">
+                        <option value="">-- Seleccione dimensión --</option>
+                    </select>
+                </div>
+
+                <!-- ID PRODUCTO REAL -->
+                <input type="hidden" name="IdProducto" id="idProductoHidden" />
+
+                <!-- CANTIDAD / UNIDAD -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Cantidad</label>
+
+                        <div class="input-group input-group-lg">
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    id="btnMenos">
+                                −
+                            </button>
+
+                            <input asp-for="Cantidad"
+                                   type="number"
+                                   step="0.01"
+                                   min="0"
+                                   class="form-control text-center"
+                                   id="cantidadInput" />
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    id="btnMas">
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Unidad</label>
+                        <select asp-for="Unidad"
+                                asp-items="Model.Unidades"
+                                class="form-select"
+                                id="unidadSelect">
+                        </select>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================
+         COLUMNA DERECHA
+    ======================= -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light fw-semibold">
+                💰 Detalle de Venta
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Destino</label>
+                    <select asp-for="Destino"
+                            asp-items="Model.Destinos"
+                            class="form-select">
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Subtotal</label>
+                    <input asp-for="Precio"
+                           class="form-control"
+                           placeholder="0.00" />
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="ActualizarStock"
+                           class="form-check-input"
+                           checked />
+                    <label class="form-check-label">
+                        Actualizar stock automáticamente
+                    </label>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        💾 Guardar Venta
+                    </button>
+
+                    <a asp-action="Registrar" class="btn btn-outline-secondary">
+                        🧹 Limpiar formulario
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- ======================
+     JAVASCRIPT
+====================== -->
+<script>
+    const areaSelect = document.getElementById("areaSelect");
+    const productoSelect = document.getElementById("productoSelect");
+    const dimensionSelect = document.getElementById("dimensionSelect");
+    const unidadSelect = document.getElementById("unidadSelect");
+    const idProductoHidden = document.getElementById("idProductoHidden");
+    const fechaInput = document.querySelector('input[name="Fecha"]');
+    const diaSelect = document.querySelector('select[name="Dia"]');
+    const form = document.querySelector("form");
+
+    // ======================
+    // CONFIG UNIDADES POR ÁREA
+    // ======================
+    const unidadesPorArea = {
+        "ACCESORIOS": ["UNIDAD"],
+        "ALUMINIO": ["METROS", "VARILLAS"],
+        "ARC": ["METROS", "VARILLAS"]
+    };
+
+        function actualizarUnidades(area) {
+        unidadSelect.innerHTML = `<option value="">-- Seleccione unidad --</option>`;
+
+        if (!unidadesPorArea[area]) return;
+
+        unidadesPorArea[area].forEach(u => {
+            unidadSelect.innerHTML += `<option value="${u}">${u}</option>`;
+        });
+
+        // 🔒 LÓGICA FINAL
+        if (area === "ACCESORIOS") {
+            unidadSelect.value = "UNIDAD";
+            unidadSelect.style.pointerEvents = "none";
+            unidadSelect.style.backgroundColor = "#e9ecef";
+        } else {
+            unidadSelect.style.pointerEvents = "auto";
+            unidadSelect.style.backgroundColor = "";
+        }
+    }
+
+
+    // ======================
+    // ÁREA → PRODUCTOS
+    // ======================
+    areaSelect.addEventListener("change", () => {
+        const area = areaSelect.value;
+
+        actualizarUnidades(area);
+
+            // Habilitar selects al elegir área
+
+        unidadSelect.style.pointerEvents = "auto";
+    unidadSelect.style.backgroundColor = "";
+
+
+    productoSelect.style.pointerEvents = "auto";
+    productoSelect.style.backgroundColor = "";
+
+    dimensionSelect.style.pointerEvents = "none";
+    dimensionSelect.style.backgroundColor = "#e9ecef";
+
+        productoSelect.innerHTML = `<option>Cargando...</option>`;
+        dimensionSelect.innerHTML = `<option value="">-- Seleccione dimensión --</option>`;
+        idProductoHidden.value = "";
+
+
+        if (!area) {
+            productoSelect.innerHTML = `<option value="">-- Seleccione producto --</option>`;
+            return;
+        }
+
+        fetch(`/Venta/ObtenerProductosPorArea?area=${encodeURIComponent(area)}`)
+            .then(r => r.json())
+            .then(data => {
+                productoSelect.innerHTML = `<option value="">-- Seleccione producto --</option>`;
+                data.forEach(p => {
+                    productoSelect.innerHTML +=
+                        `<option value="${p.descripcion}">${p.descripcion}</option>`;
+                });
+            });
+    });
+
+    // ======================
+    // PRODUCTO → DIMENSIONES
+    // ======================
+        productoSelect.addEventListener("change", () => {
+        const area = areaSelect.value;
+        const descripcion = productoSelect.value;
+
+        // 🔓 Habilitar dimensión al elegir producto
+        dimensionSelect.style.pointerEvents = "auto";
+        dimensionSelect.style.backgroundColor = "";
+
+        dimensionSelect.innerHTML = `<option>Cargando...</option>`;
+        idProductoHidden.value = "";
+
+        if (!descripcion) {
+            dimensionSelect.innerHTML = `<option value="">-- Seleccione dimensión --</option>`;
+            return;
+        }
+
+        fetch(`/Venta/ObtenerDimensiones?area=${encodeURIComponent(area)}&descripcion=${encodeURIComponent(descripcion)}`)
+            .then(r => r.json())
+            .then(data => {
+                dimensionSelect.innerHTML = `<option value="">-- Seleccione dimensión --</option>`;
+                data.forEach(d => {
+                    dimensionSelect.innerHTML += `<option value="${d}">${d}</option>`;
+                });
+            });
+    });
+
+    // ======================
+    // DIMENSIÓN → PRODUCTO REAL
+    // ======================
+        dimensionSelect.addEventListener("change", () => {
+        const area = areaSelect.value;
+        const descripcion = productoSelect.value;
+        const dimensiones = dimensionSelect.value;
+
+        if (!dimensiones) return;
+
+        fetch(`/Venta/ObtenerProductoFinal?area=${encodeURIComponent(area)}&descripcion=${encodeURIComponent(descripcion)}&dimensiones=${encodeURIComponent(dimensiones)}`)
+            .then(r => r.json())
+            .then(p => {
+                idProductoHidden.value = p.idProducto;
+
+                // ⚠️ Solo forzar unidad si es ACCESORIOS
+                if (area === "ACCESORIOS") {
+                    unidadSelect.value = p.unidad;
+                }
+            });
+    });
+
+
+
+
+
+
+      // ======================
+    // FECHA → DÍA (Corregido sin desfase UTC)
+    // ======================
+    fechaInput.addEventListener("change", () => {
+        // 🔥 Al sumarle 'T00:00:00' obligas a JavaScript a leerlo en hora local nativa
+        const fecha = new Date(fechaInput.value + 'T00:00:00');
+        if (isNaN(fecha)) return;
+
+        const dias = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
+        diaSelect.value = dias[fecha.getDay()];
+    });
+
+    // ======================
+    // VALIDACIÓN FINAL
+    // ======================
+        form.addEventListener("submit", function (e) {
+
+        if (@esEdicion.ToString().ToLower()) {
+            return;
+        }
+
+        const campos = [
+            areaSelect.value,
+            productoSelect.value,
+            dimensionSelect.value,
+            idProductoHidden.value,
+            unidadSelect.value,
+            fechaInput.value,
+            diaSelect.value
+        ];
+
+        const hayVacio = campos.some(c => !c);
+
+        if (hayVacio) {
+            e.preventDefault();
+            alert("⚠️ Llena todos los campos antes de guardar la venta");
+        }
+    });
+
+
+
+        // ======================
+    // BOTONES + / - CANTIDAD
+    // ======================
+    const cantidadInput = document.getElementById("cantidadInput");
+    const btnMas = document.getElementById("btnMas");
+    const btnMenos = document.getElementById("btnMenos");
+
+    btnMas.addEventListener("click", () => {
+        let valor = parseFloat(cantidadInput.value) || 0;
+        cantidadInput.value = (valor + 1).toFixed(2);
+    });
+
+    btnMenos.addEventListener("click", () => {
+        let valor = parseFloat(cantidadInput.value) || 0;
+        if (valor > 0) {
+            cantidadInput.value = Math.max(0, valor - 1).toFixed(2);
+        }
+    });
+
+
+
+
+        function bloquearInicial() {
+        productoSelect.style.pointerEvents = "none";
+    dimensionSelect.style.pointerEvents = "none";
+
+    productoSelect.style.backgroundColor = "#e9ecef";
+    dimensionSelect.style.backgroundColor = "#e9ecef";
+    }
+
+        if (!@esEdicion.ToString().ToLower()) {
+        bloquearInicial();
+    }
+
+            if (@esEdicion.ToString().ToLower()) {
+
+        // Precargar área
+        areaSelect.value = "@Model.Area";
+        actualizarUnidades("@Model.Area");
+
+        // Habilitar selects
+        productoSelect.style.pointerEvents = "auto";
+        dimensionSelect.style.pointerEvents = "auto";
+        unidadSelect.style.pointerEvents = "auto";
+
+        productoSelect.style.backgroundColor = "";
+        dimensionSelect.style.backgroundColor = "";
+        unidadSelect.style.backgroundColor = "";
+
+        // Precargar visualmente producto y dimensión
+        productoSelect.innerHTML =
+            `<option selected>@Model.Descripcion</option>`;
+        dimensionSelect.innerHTML =
+            `<option selected>@Model.Dimensiones</option>`;
+
+        // Mantener valores reales
+        unidadSelect.value = "@Model.Unidad";
+        idProductoHidden.value = "@Model.IdProducto";
+    }
+</script>
+
+<script>
+    setTimeout(() => {
+        const alerta = document.getElementById("mensajeExito");
+        if (alerta) {
+            alerta.style.transition = "opacity 0.5s ease";
+            alerta.style.opacity = "0";
+            setTimeout(() => alerta.remove(), 500);
+        }
+    }, 2500);
+</script>
+

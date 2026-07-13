@@ -1,0 +1,122 @@
+﻿@model List<Negocio.Web.Models.Entities.SugerenciaSistema>
+@{
+    ViewData["Title"] = "Buzón de Opiniones";
+    Layout = "_LayoutSistema";
+}
+
+<div class="container-fluid py-4" style="font-family: 'Inter', sans-serif;">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-lightbulb-fill text-warning me-2"></i> Retroalimentación de Usuarios</h3>
+            <p class="text-muted small mb-0">Monitorea críticas, errores reportados e ideas de mejora enviados por los clientes.</p>
+        </div>
+    </div>
+
+    <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark bg-dark">
+                    <tr>
+                        <th class="py-3 ps-4" style="font-size: 0.8rem; letter-spacing: 0.5px;">FECHA</th>
+                        <th class="py-3" style="font-size: 0.8rem; letter-spacing: 0.5px;">TIPO</th>
+                        <th class="py-3" style="font-size: 0.8rem; letter-spacing: 0.5px; width: 50%;">COMENTARIO</th>
+                        <th class="py-3 text-center" style="font-size: 0.8rem; letter-spacing: 0.5px;">ESTADO</th>
+                        <th class="py-3 text-center pe-4" style="font-size: 0.8rem; letter-spacing: 0.5px;">ACCIÓN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted fw-bold">
+                                <i class="bi bi-emoji-smile fs-3 d-block mb-2"></i> No hay comentarios registrados en el sistema aún.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr id="rowSugerencia_@item.Id" style="background: @(item.Revisado ? "transparent" : "#fffbeb");">
+                                <td class="ps-4 text-secondary small fw-bold">
+                                    @item.FechaRegistro.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td>
+                                    @if (item.TipoFeedback == "Critica")
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2 small fw-bold">⚠️ CRÍTICA</span>
+                                    }
+                                    else if (item.TipoFeedback == "Felicitacion")
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 small fw-bold">✨ FELICITACIÓN</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 small fw-bold">💡 SUGERENCIA</span>
+                                    }
+                                </td>
+                                <td class="text-dark fw-medium" style="font-size: 0.9rem; line-height: 1.4;">
+                                    @item.Comentario
+                                </td>
+                                <td class="text-center">
+                                    <span id="badgeEstado_@item.Id" class="badge rounded-pill fw-bold px-2 py-1 @(item.Revisado ? "bg-secondary-subtle text-secondary" : "bg-warning text-warning-dark")" style="font-size: 0.75rem;">
+                                        @(item.Revisado ? "REVISADO" : "NUEVO")
+                                    </span>
+                                </td>
+                                <td class="text-center pe-4">
+                                    @if (!item.Revisado)
+                                    {
+                                        <button type="button" id="btnCheck_@item.Id" onclick="marcarLeido(@item.Id)" class="btn btn-sm btn-outline-success rounded-3 fw-bold px-3 shadow-sm" style="font-size: 0.8rem;">
+                                            <i class="bi bi-check2-circle me-1"></i> Archivar
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-check-all text-success fs-4" title="Ya revisado"></i>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function marcarLeido(id) {
+            if(!confirm("¿Deseas marcar esta sugerencia como revisada?")) return;
+
+            const data = new FormData();
+            data.append('id', id);
+
+            fetch('/BuzonAdmin/MarcarComoRevisado', {
+                method: 'POST',
+                body: data
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    // Actualización dinámica sin recargar para mantener la fluidez de tu panel
+                    const row = document.getElementById("rowSugerencia_" + id);
+                    const badge = document.getElementById("badgeEstado_" + id);
+                    const btn = document.getElementById("btnCheck_" + id);
+
+                    if(row) row.style.background = "transparent";
+                    if(badge) {
+                        badge.className = "badge bg-secondary-subtle text-secondary rounded-pill fw-bold px-2 py-1";
+                        badge.innerText = "REVISADO";
+                    }
+                    if(btn) {
+                        btn.outerHTML = `<i class="bi bi-check-all text-success fs-4"></i>`;
+                    }
+                } else {
+                    alert(res.message);
+                }
+            })
+            .catch(err => console.error("Error:", err));
+        }
+    </script>
+}

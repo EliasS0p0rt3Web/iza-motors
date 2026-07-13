@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cotización</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/ui-base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cotizacion-core.css" asp-append-version="true" />
+    
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    @RenderSection("Styles", required: false) @* 👈 AGREGA ESTA LÍNEA AQUÍ *@
+
+    <style>
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .brand {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #198754;
+            text-decoration: none;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 4rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #020617, #0f172a);
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        .brand {
+            color: #22c55e;
+        }
+
+        header a {
+            color: #f8fafc !important;
+        }
+
+        /* APPLE STYLE LOADER */
+
+        .apple-loader {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        .apple-loader-box {
+            text-align: center;
+        }
+
+        .apple-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin: auto;
+            animation: applePulse 1.2s ease-in-out infinite;
+        }
+
+        .apple-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #64748b;
+            letter-spacing: .3px;
+        }
+
+        @@keyframes applePulse {
+            0% {
+                transform: scale(.8);
+                opacity: .5;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(.8);
+                opacity: .5;
+            }
+        }
+
+    </style>
+
+
+</head>
+
+<body>
+
+    <!-- APPLE STYLE LOADER -->
+    <div id="loadingGlobal" class="apple-loader">
+        <div class="apple-loader-box">
+            <div class="apple-dot"></div>
+            <div class="apple-text">
+                Inicializando cotización...
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <main class="container my-4 flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <small>© @DateTime.Now.Year · Sistema de Cotizaciones</small>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/js/ui-core.js"
+        asp-append-version="true"></script>
+
+<script src="~/js/cotizacion-core.js"
+        asp-append-version="true"></script>
+
+<!-- 🔥 MODAL GLOBAL DE RESERVA -->
+@await Html.PartialAsync("_ModalReserva")
+
+@RenderSection("Scripts", required: false)
+
+    <script>
+
+        const start = Date.now();
+
+        window.addEventListener("load", function () {
+
+            const elapsed = Date.now() - start;
+            const delay = Math.max(1800 - elapsed, 0);
+
+            setTimeout(() => {
+
+                const loader = document.getElementById("loadingGlobal");
+
+                if(loader){
+                    loader.style.opacity = "0";
+                    loader.style.transition = "opacity .4s";
+
+                    setTimeout(()=>{
+                        loader.remove();
+                    },400);
+                }
+
+            }, delay);
+
+        });
+
+    </script>
+
+</body>
+</html>

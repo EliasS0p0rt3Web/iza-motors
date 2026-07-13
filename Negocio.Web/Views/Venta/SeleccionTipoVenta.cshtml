@@ -1,0 +1,143 @@
+﻿@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Registrar Venta";
+}
+
+<style>
+    /* Efecto de elevación y suavizado profesional */
+    .card-pro {
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border-radius: 20px;
+        border: none;
+        background: #ffffff;
+    }
+
+        .card-pro:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
+        }
+
+    /* Contenedores de Iconos */
+    .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        border-radius: 18px;
+        font-size: 1.8rem;
+    }
+
+    /* Colores temáticos suaves */
+    .bg-soft-success {
+        background-color: #eafaf1;
+        color: #2ecc71;
+    }
+
+    .bg-soft-primary {
+        background-color: #ebf5fb;
+        color: #3498db;
+    }
+
+    .bg-soft-warning {
+        background-color: #fef9e7;
+        color: #f1c40f;
+    }
+
+    .btn-action {
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+        .btn-action:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+</style>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark mb-2">Punto de Registro de Ventas</h2>
+        <p class="text-muted fs-5">Seleccione la modalidad de venta que desea procesar ahora</p>
+        <div class="d-flex justify-content-center">
+            <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #2ecc71, #3498db); border-radius: 2px;"></div>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card card-pro shadow-sm h-100 p-3">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper bg-soft-success">
+                        📦
+                    </div>
+                    <h4 class="fw-bold mb-3">Venta General</h4>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Salida estándar de inventario: Aluminio, accesorios y perfiles ARC.
+                    </p>
+                    <a asp-controller="Venta" asp-action="Registrar" class="btn btn-success btn-action w-100 shadow-sm">
+                        Ir a Inventario
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card card-pro shadow-sm h-100 p-3">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper bg-soft-primary">
+                        🪟
+                    </div>
+                    <h4 class="fw-bold mb-3">Riel de Cortina</h4>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Configurador especializado para cortes y medidas de rieles.
+                    </p>
+                    <a asp-controller="Venta" asp-action="RielCortina" class="btn btn-primary btn-action w-100 shadow-sm">
+                        Configurar Medidas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card card-pro shadow-sm h-100 p-3">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper bg-soft-warning">
+                        🧾
+                    </div>
+                    <h4 class="fw-bold mb-3">Venta Libre</h4>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Registro rápido de productos o servicios no listados en stock fijo.
+                    </p>
+                    <a asp-controller="Venta" asp-action="VentaLibre" class="btn btn-warning btn-action w-100 shadow-sm text-dark">
+                        Iniciar Venta Libre
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- NUEVA TARJETA -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card card-pro shadow-sm h-100 p-3">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="icon-wrapper bg-soft-primary">
+                        🔩
+                    </div>
+                    <h4 class="fw-bold mb-3">Venta de Tornillos</h4>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Venta rápida de tornillos y tarugos por unidad o docena con control automático de stock.
+                    </p>
+                    <a asp-controller="Venta" asp-action="Tornillos" class="btn btn-primary btn-action w-100 shadow-sm">
+                        Registrar Tornillos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

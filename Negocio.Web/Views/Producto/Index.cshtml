@@ -1,0 +1,275 @@
+﻿@model List<Negocio.Web.Models.Entities.Producto>
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Catálogo de Productos";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PREMIUM --- */
+    .catalogo-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        padding: 1.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+        .input-pro:focus {
+            border-color: #0f172a;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.08);
+            outline: none;
+        }
+
+    /* --- BOTÓN NUEVO --- */
+    .btn-new-pro {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        color: white !important;
+        border: none;
+        padding: 10px 24px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-new-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(34, 197, 94, 0.35);
+        }
+
+    /* --- TABLA PRO --- */
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+        }
+
+        .table-pro tbody td {
+            padding: 0.85rem 1rem;
+            vertical-align: middle;
+            color: #334155;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+
+        .table-pro tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+    .qty-badge {
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-family: monospace;
+        font-size: 0.95rem;
+    }
+
+    .price-badge {
+        font-family: monospace;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #16a34a;
+    }
+
+    /* --- BOTONES DE ACCIÓN --- */
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            transform: scale(1.05);
+            color: #d97706;
+        }
+</style>
+
+<div class="catalogo-container优化 py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-800 text-dark mb-0"> Catálogo de Productos</h3>
+        </div>
+        <a asp-action="Registrar" class="btn-new-pro">
+            <i class="bi bi-plus-lg"></i> Nuevo Producto
+        </a>
+    </div>
+
+    <div class="form-premium-card mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-8">
+                <label class="form-label-pro">Buscar producto en planta</label>
+                <input type="text" id="buscador" class="form-control input-pro w-100" placeholder="Escribe la descripción del artículo..." />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label-pro">Filtrar por Área</label>
+                <select id="area" class="form-select input-pro w-100">
+                    <option value="">Todas las áreas</option>
+                    <option value="ALUMINIO">Aluminio</option>
+                    <option value="ACCESORIOS">Accesorios</option>
+                    <option value="ARC">ARC</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-premium-card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table-pro text-nowrap">
+                <thead class="text-center">
+                    <tr>
+                        <th style="width: 100px;">Imagen</th>
+                        <th class="text-start">Descripción</th>
+                        <th>Dimensiones</th>
+                        <th>Unidad</th>
+                        <th>Stock Actual</th>
+                        <th class="text-end">Precio Venta</th>
+                        <th style="width: 90px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="resultado">
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-search fs-2 d-block mb-2 text-light"></i>
+                            Escribe en el buscador superior para rastrear productos
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const buscador = document.getElementById("buscador");
+    const area = document.getElementById("area");
+    const resultado = document.getElementById("resultado");
+
+    function buscar() {
+        let termino = buscador.value.trim();
+        let areaSeleccionada = area.value;
+
+        if (termino.length < 2) {
+            resultado.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+                        <i class="bi bi-keyboard fs-3 d-block mb-2 text-light"></i>
+                        Escribe al menos 2 letras para iniciar la búsqueda
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        fetch(`/Producto/BuscarProductos?termino=${encodeURIComponent(termino)}&area=${encodeURIComponent(areaSeleccionada)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    resultado.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-danger py-5 fw-semibold">
+                                <i class="bi bi-exclamation-circle fs-3 d-block mb-2 text-danger opacity-50"></i>
+                                No se encontraron productos con ese criterio
+                            </td>
+                        </tr>`;
+                    return;
+                }
+
+                let filas = "";
+
+                data.forEach(p => {
+                    filas += `
+                        <tr>
+                            <td class="text-center">
+                                ${p.imagenUrl
+                                    ? `<img src="${p.imagenUrl}" style="height:44px; width:44px; object-fit:cover; border-radius:10px; border:1px solid #e2e8f0;">`
+                                    : `<span class="text-muted small fw-bold">Sin foto</span>`}
+                            </td>
+                            <td class="text-start fw-bold text-dark">${p.descripcion}</td>
+                            <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1 font-monospace">${p.dimensiones ?? "-"}</span></td>
+                            <td class="text-center text-secondary small fw-bold">${p.unidad}</td>
+                            <td class="text-center"><span class="qty-badge">${p.stockActual}</span></td>
+                            <td class="text-end price-badge">S/ ${Number(p.precioVenta).toFixed(2)}</td>
+                            <td class="text-center">
+                                <a href="/Producto/Editar/${p.idProducto}" class="btn-action btn-edit" title="Editar">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                resultado.innerHTML = filas;
+            });
+    }
+
+    buscador.addEventListener("keyup", buscar);
+    area.addEventListener("change", buscar);
+</script>

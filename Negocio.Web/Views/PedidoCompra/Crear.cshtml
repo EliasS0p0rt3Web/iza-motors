@@ -1,0 +1,157 @@
+﻿@model Negocio.Web.Models.Entities.PedidoCompra
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Nuevo Pedido de Compra";
+}
+
+<h2 class="mb-3">📝 Nuevo Pedido de Compra</h2>
+
+<form asp-action="Crear" method="post">
+    @Html.AntiForgeryToken()
+
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>Área</th>
+                <th>Producto</th>
+                <th>Dimensiones</th>
+                <th>Stock</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="detalleBody"></tbody>
+    </table>
+
+    <button type="button"
+            class="btn btn-outline-primary mb-3"
+            onclick="agregarFila()">
+        ➕ Agregar producto
+    </button>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-success">
+            💾 Guardar Pedido
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">
+            Cancelar
+        </a>
+    </div>
+</form>
+
+<script>
+    let index = 0;
+    const areas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Areas));
+
+    function agregarFila() {
+        const tbody = document.getElementById("detalleBody");
+
+        const row = `
+    <tr>
+        <td>
+            <select name="Detalles[${index}].Area"
+                    class="form-select"
+                    onchange="cargarProductos(this, ${index})">
+                <option value="">Área</option>
+                ${areas.map(a => `<option value="${a}">${a}</option>`).join("")}
+            </select>
+        </td>
+
+        <td>
+            <select class="form-select"
+                    id="producto_${index}"
+                    onchange="cargarDimensiones(this, ${index})">
+                <option value="">Producto</option>
+            </select>
+        </td>
+
+        <td>
+            <select name="Detalles[${index}].Dimensiones"
+                    class="form-select"
+                    id="dimension_${index}"
+                    onchange="cargarProductoFinal(${index})">
+                <option value="">Dimensión</option>
+            </select>
+        </td>
+
+        <td>
+            <input type="number"
+                   name="Detalles[${index}].StockActual"
+                   class="form-control"
+                   id="stock_${index}"
+                   step="0.0001" />
+        </td>
+
+        <td>
+            <button type="button"
+                    class="btn btn-danger"
+                    onclick="this.closest('tr').remove()">
+                ✖
+            </button>
+        </td>
+
+        <input type="hidden"
+               name="Detalles[${index}].IdProducto"
+               id="idProducto_${index}" />
+    </tr>`;
+
+        tbody.insertAdjacentHTML("beforeend", row);
+        index++;
+    }
+
+    // ÁREA → PRODUCTOS
+    function cargarProductos(select, i) {
+        const area = select.value;
+        const prod = document.getElementById(`producto_${i}`);
+        const dim = document.getElementById(`dimension_${i}`);
+
+        prod.innerHTML = `<option>Cargando...</option>`;
+        dim.innerHTML = `<option value="">Dimensión</option>`;
+
+        fetch(`/PedidoCompra/ObtenerProductosPorArea?area=${encodeURIComponent(area)}`)
+            .then(r => r.json())
+            .then(data => {
+                prod.innerHTML = `<option value="">Producto</option>`;
+                data.forEach(p => {
+                    prod.innerHTML += `<option value="${p.descripcion}">${p.descripcion}</option>`;
+                });
+            });
+    }
+
+    // PRODUCTO → DIMENSIONES
+    function cargarDimensiones(select, i) {
+        const area = document.querySelector(`[name="Detalles[${i}].Area"]`).value;
+        const desc = select.value;
+        const dim = document.getElementById(`dimension_${i}`);
+
+        dim.innerHTML = `<option>Cargando...</option>`;
+
+        fetch(`/PedidoCompra/ObtenerDimensiones?area=${encodeURIComponent(area)}&descripcion=${encodeURIComponent(desc)}`)
+            .then(r => r.json())
+            .then(data => {
+                dim.innerHTML = `<option value="">Dimensión</option>`;
+                data.forEach(d => {
+                    dim.innerHTML += `<option value="${d}">${d}</option>`;
+                });
+            });
+    }
+
+    // DIMENSIÓN → PRODUCTO FINAL + STOCK
+    function cargarProductoFinal(i) {
+        const area = document.querySelector(`[name="Detalles[${i}].Area"]`).value;
+        const desc = document.getElementById(`producto_${i}`).value;
+        const dim = document.getElementById(`dimension_${i}`).value;
+
+        if (!dim) return;
+
+        fetch(`/PedidoCompra/ObtenerProductoFinal?area=${encodeURIComponent(area)}&descripcion=${encodeURIComponent(desc)}&dimensiones=${encodeURIComponent(dim)}`)
+            .then(r => r.json())
+            .then(p => {
+                document.getElementById(`idProducto_${i}`).value = p.idProducto;
+                document.getElementById(`stock_${i}`).value = p.stockActual;
+            });
+    }
+
+    // Arranca con una fila
+    agregarFila();
+</script>

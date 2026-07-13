@@ -1,0 +1,118 @@
+﻿@model Negocio.Web.Models.Entities.Producto
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Editar Producto";
+}
+
+<h2 class="mb-4">✏️ Editar Producto</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form asp-action="Editar"
+              method="post"
+              enctype="multipart/form-data">
+
+            <input type="hidden" asp-for="IdProducto" />
+
+            <div class="row g-3">
+
+                <!-- DESCRIPCIÓN -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Descripción</label>
+                    <input asp-for="Descripcion" class="form-control" />
+                </div>
+
+                <!-- ÁREA -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Área</label>
+                    <input asp-for="Area" class="form-control" />
+                </div>
+
+                <!-- UNIDAD -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Unidad</label>
+                    <input asp-for="Unidad" class="form-control" />
+                </div>
+
+                <!-- DIMENSIONES -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Dimensiones</label>
+                    <input asp-for="Dimensiones" class="form-control" />
+                </div>
+
+                <!-- PRECIO COMPRA -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Precio Compra</label>
+                    <input asp-for="PrecioCompra" class="form-control" step="0.01" />
+                </div>
+
+                <!-- PRECIO VENTA -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Precio Venta</label>
+                    <input asp-for="PrecioVenta" class="form-control" step="0.01" />
+                </div>
+
+                <!-- STOCK -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Stock Actual</label>
+                    <input asp-for="StockActual" class="form-control" step="0.01" />
+                </div>
+
+                <!-- FACTOR -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Factor Conversión</label>
+                    <input asp-for="ConversionFactor" class="form-control" step="0.0001" />
+                </div>
+
+                <!-- ESTADO -->
+                <div class="col-md-4 d-flex align-items-center">
+                    <div class="form-check form-switch mt-4">
+                        <input asp-for="Activo"
+                               class="form-check-input"
+                               type="checkbox" />
+                        <label class="form-check-label fw-semibold">
+                            Producto activo (visible para clientes)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- IMAGEN -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Imagen del Producto</label>
+                    <input type="file"
+                           name="imagen"
+                           class="form-control"
+                           accept="image/*" />
+                </div>
+
+                <!-- PREVIEW -->
+                <div class="col-md-6">
+                    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+                    {
+                        <label class="form-label fw-semibold">Imagen actual</label>
+                        <div>
+                            <img src="@Model.ImagenUrl"
+                                 style="max-height:180px;border-radius:12px;" />
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-success px-4">
+                    💾 Guardar cambios
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

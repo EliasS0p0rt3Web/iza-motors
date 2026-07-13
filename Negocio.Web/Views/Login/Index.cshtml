@@ -1,0 +1,375 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Iza Motors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Fondo corporativo Rojo */
+            background-color: #b91c1c;
+            background-image: radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.8) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(153, 27, 27, 1) 0px, transparent 50%);
+            color: #1e293b;
+            position: relative;
+        }
+
+        /* --- BOTÓN VOLVER A INICIO --- */
+        .btn-back {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 10;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .btn-back:hover {
+                color: #ffffff;
+                background: rgba(0, 0, 0, 0.3);
+                transform: translateX(-3px);
+            }
+
+        .container-login {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            /* Caja blanca limpia */
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+
+            .login-box h2 {
+                font-size: 24px;
+                font-weight: 800;
+                margin-bottom: 6px;
+                text-align: center;
+                /* Texto rojo Iza Motors */
+                color: #dc2626;
+                letter-spacing: -0.025em;
+                text-transform: uppercase;
+            }
+
+        .login-subtitle {
+            font-size: 14px;
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        form {
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            position: absolute;
+            left: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Focus en el input y label flotante */
+        input:focus ~ label,
+        input:not(:placeholder-shown) ~ label {
+            top: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: #dc2626; /* Rojo activo */
+            background-color: #ffffff; /* Fondo blanco para tapar la línea */
+            padding: 0 6px;
+            text-transform: uppercase;
+            transform: translateY(-50%);
+            left: 16px;
+        }
+
+        input:not(:focus):not(:placeholder-shown) ~ label {
+            color: #94a3b8;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+            .input-wrapper i.input-icon {
+                position: absolute;
+                left: 16px;
+                color: #94a3b8;
+                font-size: 16px;
+            }
+
+        input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            /* Fondo gris clarito para contrastar en la caja blanca */
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 15px;
+            color: #1e293b;
+            transition: all 0.2s ease;
+        }
+
+            input[type="password"], input[type="text"].pass-open {
+                padding-right: 45px;
+            }
+
+            input:focus {
+                outline: none;
+                border-color: #dc2626; /* Borde rojo */
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+                background: #ffffff;
+            }
+
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+            .toggle-password i {
+                font-size: 18px;
+                color: #94a3b8;
+                transition: color 0.2s;
+            }
+
+            .toggle-password:hover i {
+                color: #dc2626; /* Hover en rojo */
+            }
+
+        button[type="submit"] {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            /* Botón rojo corporativo */
+            background: #dc2626;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+            button[type="submit"]:hover {
+                background: #b91c1c; /* Rojo más oscuro al pasar el mouse */
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            }
+
+        .error {
+            margin-top: 0px;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #b91c1c;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .btn-back {
+                top: 15px;
+                left: 15px;
+                background: #f1f5f9;
+                color: #1e293b;
+                border: 1px solid #e2e8f0;
+            }
+
+            body {
+                background: #ffffff; /* Todo blanco en móvil */
+            }
+
+            .login-box {
+                max-width: 100%;
+                min-height: 100vh;
+                border: none;
+                border-radius: 0;
+                background: transparent;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                box-shadow: none;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="/" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        <span>Volver al inicio</span>
+    </a>
+
+    <div class="container-login">
+        <div class="login-box">
+
+            <div style="text-align: center; margin-bottom: 35px;">
+                <h2 style="font-size: 26px; font-weight: 800; color: #dc2626; letter-spacing: -0.03em; margin: 0 0 6px 0; text-transform: uppercase;">
+                    Bienvenido de nuevo
+                </h2>
+                <p style="font-size: 14px; color: #64748b; margin: 0; font-weight: 500;">
+                    Iza Motors
+                </p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span>@ViewBag.Error</span>
+                </div>
+            }
+
+            <form method="post">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="bi bi-envelope input-icon"></i>
+                        <input type="text" name="username" id="usernameInput" placeholder=" " required autocomplete="username" />
+                        <label for="usernameInput">Correo Electrónico</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input type="password" name="password" id="passwordInput" placeholder=" " required autocomplete="current-password" />
+                        <label for="passwordInput">Contraseña</label>
+
+                        <span class="toggle-password" id="togglePassword">
+                            <i class="bi bi-eye-slash"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit">INICIAR SESIÓN</button>
+            </form>
+
+            <div style="margin-top: 20px; font-size: 14px; color: #64748b; text-align: left;">
+                ¿Necesitas una cuenta?
+                <a asp-action="Registrar" style="color: #dc2626; text-decoration: none; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#b91c1c'" onmouseout="this.style.color='#dc2626'">
+                    Regístrate
+                </a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin: 24px 0; color: #94a3b8; font-size: 13px; font-weight: 500;">
+                <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                <span>O</span>
+                <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+            </div>
+
+            <a href="@Url.Action("LoginGoogle", "Login")" style="text-decoration: none; display: flex; width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; color: #1e293b; font-weight: 600; font-size: 14px; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: background 0.2s; margin-top: 15px;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width: 18px;" />
+                Continuar con Google
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("passwordInput");
+        const icon = toggleBtn.querySelector("i");
+
+        toggleBtn.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+
+            if(isPassword) {
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+                passwordInput.classList.add("pass-open");
+            } else {
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+                passwordInput.classList.remove("pass-open");
+            }
+        });
+
+        const errorAlert = document.querySelector(".error");
+        if (errorAlert) {
+            setTimeout(() => {
+                errorAlert.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                errorAlert.style.opacity = "0";
+                errorAlert.style.transform = "translateY(-10px)";
+                setTimeout(() => errorAlert.remove(), 500);
+            }, 4000);
+        }
+    </script>
+
+</body>
+</html>

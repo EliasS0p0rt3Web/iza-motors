@@ -1,0 +1,453 @@
+﻿@{
+    var rol = Context.Session.GetString("ROL");
+    var usuario = Context.Session.GetString("USER");
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <meta charset="utf-8" />
+    <!-- ✅ RESPONSIVE PARA CELULAR -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - E&E</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/layouts/layout-admin.css" asp-append-version="true" />
+    <style>
+        
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="sidebar">
+
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        
+
+        <h4>E&E ALUMINIOS</h4>
+
+        
+
+        @if (rol == "ADMINISTRADOR")
+        {
+            <!-- PRINCIPAL -->
+            <a asp-controller="Home" asp-action="Admin" class="menu-btn">
+                <i class="bi bi-house"></i>
+                <span>Inicio</span>
+            </a>
+
+
+
+            <div class="menu-group">
+                <button class="menu-group-btn" onclick="toggleMenu(this)">
+                    <div class="menu-left">
+                        <i class="bi bi-folder2"></i>
+                        <span>REGISTROS</span>
+                    </div>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+
+                <div class="menu-group-content">
+
+                    <a asp-controller="Venta" asp-action="Index" class="menu-btn">
+                         Ventas
+                    </a>
+
+                    <a asp-controller="Gasto" asp-action="Index" class="menu-btn">
+                         Gastos
+                    </a>
+
+                    <a asp-controller="Ingreso" asp-action="Index" class="menu-btn">
+                         Entradas
+                    </a>
+
+                    <a asp-controller="PeriodoSemanal" asp-action="Index" class="menu-btn">
+                         Pagos y cajas
+                    </a>
+
+                    <a asp-controller="PedidoCompra" asp-action="Index" class="menu-btn">
+                         Pedidos de Compra
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- INVENTARIO -->
+            <div class="menu-group">
+                <button class="menu-group-btn" onclick="toggleMenu(this)">
+                    <div class="menu-left">
+                        <i class="bi bi-box"></i>
+                        <span>INVENTARIO</span>
+                    </div>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+
+                <div class="menu-group-content">
+
+                    <a asp-controller="Producto" asp-action="Index" class="menu-btn">
+                         Catálogo de Productos
+                    </a>
+
+                    <a asp-controller="Stock" asp-action="Index" class="menu-btn">
+                         Stock de Productos
+                    </a>
+
+                   
+                    @* --- NUEVO BOTÓN PARA LAS FOTOS --- *@
+                    <a asp-controller="CatalogoAdmin" asp-action="ConfigurarImagen" class="menu-btn">
+                        Fotos del Catálogo
+                    </a>
+
+                    <a asp-controller="GaleriaAdmin" asp-action="Index" class="menu-btn">
+                        Galería de Marketing
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- RESERVAS -->
+            <div class="menu-group">
+                <button class="menu-group-btn" onclick="toggleMenu(this)">
+                    <div class="menu-left">
+                        <i class="bi bi-bookmark"></i>
+                        <span>RESERVAS</span>
+                    </div>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+
+                <div class="menu-group-content">
+                    <a asp-controller="Reserva"
+                       asp-action="Admin"
+                       class="menu-btn">
+                        Panel de Reservas
+                    </a>
+                </div>
+            </div>
+
+
+            <div class="menu-group">
+                <button class="menu-group-btn" onclick="toggleMenu(this)">
+                    <div class="menu-left">
+                        <i class="bi bi-people-fill"></i>
+                        <span>CLIENTES</span>
+                    </div>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+
+                <div class="menu-group-content">
+                    <!-- Donde pusiste el enlace de clientes, cámbialo a: -->
+                    <a asp-controller="Cliente" asp-action="Index" class="menu-btn">
+                        Listado de Clientes
+                    </a>
+                </div>
+            </div>
+        }
+
+      
+        @if (rol == "JEFE")
+        {
+            <!-- PRINCIPAL -->
+            <a asp-controller="Home"
+               asp-action="Jefe"
+               class="menu-btn">
+                <i class="bi bi-house"></i>
+                <span>Inicio</span>
+            </a>
+
+            <!-- REGISTROS -->
+            <div class="menu-group">
+                <button class="menu-group-btn" onclick="toggleMenu(this)">
+                    <div class="menu-left">
+                        <i class="bi bi-folder2"></i>
+                        <span>REGISTROS</span>
+                    </div>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+
+                <div class="menu-group-content">
+                    <a asp-controller="PedidoCompra"
+                       asp-action="Index"
+                       class="menu-btn">
+                        Pedidos de Compra
+                    </a>
+                </div>
+            </div>
+
+            <!-- INVENTARIO -->
+            <div class="menu-group">
+                <button class="menu-group-btn" onclick="toggleMenu(this)">
+                    <div class="menu-left">
+                        <i class="bi bi-box"></i>
+                        <span>INVENTARIO</span>
+                    </div>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </button>
+
+                <div class="menu-group-content">
+                    <a asp-controller="GaleriaAdmin" asp-action="Index" class="menu-btn">
+                        Galería de Marketing
+                    </a>
+
+                    
+                </div>
+            </div>
+        }
+
+        <!-- CONSULTAS -->
+        <div class="menu-group">
+            <button class="menu-group-btn" onclick="toggleMenu(this)">
+                <div class="menu-left">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>CONSULTAS</span>
+                </div>
+                <i class="bi bi-chevron-down chevron"></i>
+            </button>
+
+            <div class="menu-group-content">
+
+                
+                <a asp-controller="Reporte" asp-action="Resumen" class="menu-btn">
+                    Resumen General
+                </a>
+
+                <a asp-controller="Reporte" asp-action="PorDia" class="menu-btn">
+                    Venta por Día
+                </a>
+
+                <a asp-controller="Reporte" asp-action="VentasPorProducto" class="menu-btn">
+                    Ventas por Producto
+                </a>
+
+                <a asp-controller="BuzonAdmin" asp-action="Index" class="menu-btn">
+                    Buzón de Opiniones
+                </a>
+            </div>
+        </div>
+
+        <!-- STOCK -->
+        <!-- STOCK -->
+        
+
+
+        <!-- BACKUP -->
+        <!-- LOGOUT -->
+        <div class="sidebar-bottom">
+            <div class="user-box">
+                <div class="user-box-header">
+                    <!-- 🔥 Tu nuevo avatar circular con la inicial del usuario actual -->
+                    <div class="user-avatar-admin">
+                        @(usuario?.Substring(0, 1).ToUpper() ?? "A")
+                    </div>
+                    <div class="user-details-admin">
+                        <!-- Se mantienen tus variables intactas -->
+                        <div class="user-name" title="@usuario">@usuario</div>
+                        <div class="user-role">ROL: @rol</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- El botón conserva tu clase y evento modal original -->
+            <button class="logout-btn d-flex align-items-center justify-content-center gap-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#logoutModal">
+                <i class="bi bi-box-arrow-left"></i>
+                <span>Cerrar sesión</span>
+            </button>
+        </div>
+    </div>
+
+   
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+
+    <!-- CONTENIDO -->
+    <div id="content" class="content">
+        @RenderBody()
+    </div>
+
+    <!-- MODAL LOGOUT -->
+    <div class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cerrar sesión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Quieres cerrar sesión?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a asp-controller="Login" asp-action="Logout" class="btn btn-danger">
+                        Sí, cerrar sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @if (rol == "JEFE")
+    {
+        <div id="welcomeOverlay" class="welcome-overlay">
+            <div class="welcome-card welcome-elegant">
+                <div class="welcome-icon">👋</div>
+                <h2>Bienvenido, @usuario</h2>
+                <p>Todo listo para comenzar</p>
+            </div>
+        </div>
+    }
+
+    <!-- SCRIPTS -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+                        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            const content = document.getElementById("content");
+
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle("show");
+                overlay.classList.toggle("show");
+            } else {
+                sidebar.classList.toggle("collapsed");
+                content.classList.toggle("collapsed");
+            }
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+
+            sidebar.classList.remove("show");
+            overlay.classList.remove("show");
+        }
+
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Si ya se mostró la bienvenida en esta sesión, no hacer nada
+            if (sessionStorage.getItem("welcomeShown") === "true") {
+                const overlay = document.getElementById("welcomeOverlay");
+                if (overlay) overlay.remove();
+                return;
+            }
+
+            const overlay = document.getElementById("welcomeOverlay");
+
+            if (overlay) {
+                // Marcar como ya mostrada
+                sessionStorage.setItem("welcomeShown", "true");
+
+                // Ocultar luego de 3 segundos
+                setTimeout(() => {
+                    overlay.style.animation = "fadeOut 0.5s ease forwards";
+                    setTimeout(() => overlay.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
+
+
+    <script>
+                document.addEventListener("DOMContentLoaded", function () {
+            const currentUrl = window.location.pathname.toLowerCase();
+
+            document.querySelectorAll(".menu-btn").forEach(link => {
+                const href = link.getAttribute("href");
+                if (!href) return;
+
+                // coincidencia exacta o inicio de ruta
+                if (
+                    currentUrl === href.toLowerCase() ||
+                    currentUrl.startsWith(href.toLowerCase() + "/")
+                ) {
+                    link.classList.add("active");
+
+                    const group = link.closest(".menu-group");
+                    if (group) {
+                        group.classList.add("open");
+                        group.classList.add("active"); // 🔥 CLAVE
+                    }
+                }
+            });
+        });
+
+    </script>
+
+
+
+    @RenderSection("Scripts", required: false)
+
+
+
+    <script>
+        function toggleMenu(button) {
+            const group = button.closest(".menu-group");
+
+            document.querySelectorAll(".menu-group").forEach(g => {
+                if (g !== group) g.classList.remove("open");
+            });
+
+            group.classList.toggle("open");
+        }
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentUrl = window.location.pathname.toLowerCase();
+
+            document.querySelectorAll(".mobile-bottom-nav .nav-item").forEach(item => {
+                const href = item.getAttribute("href");
+                if (!href) return;
+
+                if (currentUrl.includes(href.toLowerCase())) {
+                    item.classList.add("active");
+                }
+            });
+        });
+    </script>
+
+    <!-- =========================
+     BOTTOM NAV SOLO MOBILE
+========================= -->
+    <div class="mobile-bottom-nav">
+
+        <a asp-controller="Home" asp-action="Admin" class="nav-item">
+            <div class="icon"><i class="bi bi-house"></i></div>
+            <span>Inicio</span>
+        </a>
+
+        <a asp-controller="Venta" asp-action="Registrar" class="nav-item">
+            <div class="icon"><i class="bi bi-plus-circle"></i></div>
+            <span>Venta</span>
+        </a>
+
+        <button class="nav-item" onclick="toggleSidebar()">
+            <div class="icon"><i class="bi bi-list"></i></div>
+            <span>Menú</span>
+        </button>
+
+        <a asp-controller="Stock" asp-action="Index" class="nav-item">
+            <div class="icon"><i class="bi bi-box"></i></div>
+            <span>Stock</span>
+        </a>
+
+        <button class="nav-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
+            <div class="icon"><i class="bi bi-box-arrow-right"></i></div>
+            <span>Salir</span>
+        </button>
+
+    </div>
+</body>
+</html>

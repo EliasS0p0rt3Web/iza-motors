@@ -1,0 +1,321 @@
+﻿@{
+    ViewData["Title"] = "Consultar Reserva";
+    Layout = "_LayoutReservaPublic";
+}
+
+<div class="consultar-container">
+    <div class="container h-100 d-flex align-items-center justify-content-center py-4">
+        <div class="row w-100 justify-content-center">
+            <div class="col-12 col-md-10 col-lg-6 col-xl-5">
+
+                @* Card con efecto Pro *@
+                <div class="glass-card shadow-2xl animate-fade-in">
+
+                    @* Cabecera con el gradiente tecnológico *@
+                    <div class="card-header-tech">
+                        <div class="icon-circle">
+                            <i class="bi bi-search-heart"></i>
+                        </div>
+                        <h2 class="h4 fw-800 text-white mb-1">Mi Reserva</h2>
+                        <p class="text-white-50 small mb-0">Rastrea el estado de tu proyecto en tiempo real</p>
+                    </div>
+
+                    <div class="card-body-content p-4 p-md-5">
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-custom-danger animate-shake" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+                            </div>
+                        }
+
+                        <form asp-controller="Reserva" asp-action="Buscar" method="post" autocomplete="off">
+                            <div class="form-group-tech mb-4">
+                                <label class="form-label-tech">Código de Seguimiento</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-hash input-icon"></i>
+                                    <input type="text"
+                                           name="codigo"
+                                           class="form-control-tech"
+                                           placeholder="RES-2026-XXXX"
+                                           required
+                                           maxlength="20" />
+                                </div>
+                                <span class="helper-text">Lo encontrarás en tu ticket o correo electrónico.</span>
+                            </div>
+
+                            <button type="submit" class="btn-tech-primary w-100">
+                                <span class="btn-content">
+                                    <i class="bi bi-arrow-right-circle-fill me-2"></i> Consultar Ahora
+                                </span>
+                            </button>
+                        </form>
+
+                        <div class="divider-tech">
+                            <span>O TAMBIÉN</span>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="small text-muted mb-3">¿Perdiste tu código? Nuestro soporte te ayuda:</p>
+                            <a href="https://wa.me/51921726629?text=Hola%20*E%26E%20Aluminios*%20%F0%9F%9B%A0%EF%B8%8F%20vengo%20de%20la%20secci%C3%B3n%20de%20Soporte.%20No%20encuentro%20mi%20*C%C3%B3digo%20de%20Reserva*%20y%20necesito%20ayuda%20para%20rastrear%20mi%20pedido.%20%0A%0AMi%20nombre%20es:%20________________"
+                               target="_blank"
+                               class="btn-whatsapp-minimal text-decoration-none">
+                                <i class="bi bi-whatsapp"></i> Contactar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                @* Botón volver discreto *@
+                <div class="text-center mt-4">
+                    <a href="/" class="btn-back-link">
+                        <i class="bi bi-arrow-left"></i> Volver al Inicio
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Fondo que combina con el Hero */
+    .consultar-container {
+        min-height: 100vh;
+        background: radial-gradient(circle at top right, #1e293b, #0f172a);
+        display: flex;
+        align-items: center;
+    }
+
+    /* Card Pro (Glassmorphism) */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 28px;
+        overflow: hidden;
+    }
+
+    .card-header-tech {
+        background: linear-gradient(135deg, #0071e3 0%, #00c6ff 100%);
+        padding: 40px 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 1.8rem;
+        color: white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Formulario Estilo App */
+    .card-body-content {
+        background: #ffffff;
+        border-radius: 28px 28px 0 0;
+        margin-top: -20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-label-tech {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.2rem;
+    }
+
+    .form-control-tech {
+        width: 100%;
+        padding: 14px 15px 14px 45px;
+        background: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #0f172a;
+        transition: all 0.3s ease;
+    }
+
+        .form-control-tech:focus {
+            background: #fff;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            outline: none;
+        }
+
+    .helper-text {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 8px;
+        display: block;
+    }
+
+    /* Botón con el efecto LED que ya tenemos */
+    .btn-tech-primary {
+        background: linear-gradient(135deg, #0071e3 0%, #00c6ff 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+    }
+
+        .btn-tech-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 113, 227, 0.4);
+        }
+
+        /* Animación LED sutil */
+        .btn-tech-primary::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmers 3s infinite;
+        }
+    @@keyframes shimmers {
+        0%
+
+    {
+        left: -100%;
+    }
+
+    30% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+
+    }
+
+    /* WhatsApp Minimalista */
+    .btn-whatsapp-minimal {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #16a34a;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 10px 20px;
+        border-radius: 50px;
+        background: #f0fdf4;
+        transition: all 0.3s ease;
+    }
+
+        .btn-whatsapp-minimal:hover {
+            background: #16a34a;
+            color: white;
+        }
+
+    .divider-tech {
+        text-align: center;
+        margin: 25px 0;
+        position: relative;
+    }
+
+        .divider-tech::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider-tech span {
+            position: relative;
+            background: #fff;
+            padding: 0 15px;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+
+    .btn-back-link {
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: color 0.3s;
+    }
+
+        .btn-back-link:hover {
+            color: #fff;
+        }
+
+    /* Responsive */
+    @@media (max-width: 576px) {
+        .card-body-content
+
+    {
+        padding: 30px 20px;
+    }
+
+    .card-header-tech {
+        padding: 30px 15px;
+    }
+
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .alert-custom-danger {
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        color: #dc2626;
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+</style>

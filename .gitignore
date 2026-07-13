@@ -1,0 +1,5 @@
+/.vs/
+/bin/
+/obj/
+/*.user
+/Negocio.Web/obj/Debug/net6.0/Negocio.Web.AssemblyInfo.cs

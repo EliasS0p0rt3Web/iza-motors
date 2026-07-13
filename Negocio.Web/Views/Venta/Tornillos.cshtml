@@ -1,0 +1,450 @@
+﻿@model Negocio.Web.Models.ViewModels.VentaTornilloViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Venta de Tornillos";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PREMIUM --- */
+    .tornillo-container {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
+        padding: 1.75rem;
+        animation: fadeInVenta 0.35s ease;
+    }
+
+    .panel-header-pro {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+        .input-pro:focus {
+            border-color: #3b82f6; /* Azul característico de accesorios */
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+    .btn-save-pro {
+        background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+        color: white !important;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+    }
+
+        .btn-save-pro:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.35);
+        }
+
+    @@keyframes fadeInVenta {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+</style>
+
+<div class="tornillo-container py-4">
+
+    <div class="mb-4">
+       
+        <h3 class="fw-800 text-dark mb-0">Venta de Tornillos y Tarubos</h3>
+    </div>
+
+    
+
+    <div class="form-premium-card">
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label-pro">Día de Registro</label>
+                    <select asp-for="Dia" asp-items="Model.Dias" class="form-select input-pro w-100"></select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-pro">Fecha Comercial</label>
+                    <input asp-for="Fecha" type="date" class="form-control input-pro w-100" />
+                </div>
+            </div>
+
+            <div class="form-check form-switch mb-4 p-0 ps-5 fs-6">
+                <input type="checkbox" class="form-check-input ms-5" id="chkSeparado">
+                <label class="form-check-label fw-bold text-dark ps-2" for="chkSeparado">
+                    Habilitar venta por separado (Tornillo o Tarubo individual)
+                </label>
+            </div>
+
+            <div class="mb-4 d-none" id="divProductoSeparado">
+                <label class="form-label-pro">Producto Específico a Vender</label>
+                <select id="tipoProducto" class="form-select input-pro w-100">
+                    <option value="">-- Seleccione el Componente Único --</option>
+                    <option value="TORNILLO">TORNILLO</option>
+                    <option value="TARUBO">TARUBO</option>
+                </select>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4" id="divTornillo">
+                    <label class="form-label-pro">Medida de Tornillo</label>
+                    <select asp-for="IdProductoTornillo" class="form-select input-pro w-100" id="comboTornillo">
+                        <option value="">Seleccione</option>
+                        @foreach (var t in Model.Tornillos)
+                        {
+                            <option value="@t.IdProducto" data-stock="@t.StockActual">
+                                @t.Descripcion - @t.Dimensiones
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4" id="divTarubo">
+                    <label class="form-label-pro">Color de Tarubo</label>
+                    <select asp-for="IdProductoTarubo" class="form-select input-pro w-100" id="comboTarubo">
+                        <option value="">Seleccione</option>
+                        @foreach (var t in Model.Tarubos)
+                        {
+                            <option value="@t.IdProducto" data-stock="@t.StockActual">
+                                @t.Descripcion - @t.Dimensiones
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label-pro">Presentación de Venta</label>
+                    <select asp-for="TipoVenta" class="form-select input-pro w-100">
+                        <option value="">Seleccione</option>
+                        <option value="DOCENA">DOCENA</option>
+                        <option value="UNIDAD">UNIDAD</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end mb-4">
+                <div class="col-md-6">
+                    <label class="form-label-pro">Cantidad Solicitada</label>
+                    <input asp-for="Cantidad" type="number" class="form-control input-pro w-100" min="1" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label-pro">Destino de Caja</label>
+                    <select asp-for="Destino" class="form-select input-pro w-100">
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="YAPE">YAPE</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" class="btn btn-save-pro btn-lg w-100">
+                    <i class="bi bi-check2-circle me-1"></i> Registrar Venta de Accesorios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalStock" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header bg-danger text-white border-0" style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Alerta Stock</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <p id="mensajeStock" class="mb-0 fw-bold text-secondary fs-6"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-3">
+                <button type="button" class="btn btn-secondary fw-bold px-4 rounded-3" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Extrae el mensaje de error que envió el controlador en C#
+                const errorServidor = "@Html.Raw(string.Join(" ", ViewData.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)))";
+
+                if (errorServidor) {
+                    document.getElementById("mensajeStock").innerText = errorServidor;
+                    const modal = new bootstrap.Modal(document.getElementById("modalStock"));
+                    modal.show();
+                }
+            });
+        </script>
+    }
+</div>
+
+<script>
+    const chkSeparado = document.getElementById("chkSeparado");
+    const divProductoSeparado = document.getElementById("divProductoSeparado");
+    const tipoProducto = document.getElementById("tipoProducto");
+    const comboTornillo = document.getElementById("comboTornillo");
+    const comboTarubo = document.getElementById("comboTarubo");
+    const divTornillo = document.getElementById("divTornillo");
+    const divTarubo = document.getElementById("divTarubo");
+
+    // 🔥 NUEVOS CAPTADORES DE FECHAS AUTOMÁTICAS
+    const fechaInput = document.querySelector('input[name="Fecha"]');
+    const diaSelect = document.querySelector('select[name="Dia"]');
+
+    // CONTROL CAMBIO FECHA -> DÍA (Parchado nativo anti UTC)
+    if (fechaInput && diaSelect) {
+        fechaInput.addEventListener("change", () => {
+            const fecha = new Date(fechaInput.value + 'T00:00:00');
+            if (isNaN(fecha)) return;
+
+            const dias = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
+            diaSelect.value = dias[fecha.getDay()];
+        });
+    }
+
+    chkSeparado.addEventListener("change", function(){
+        if(this.checked){
+            divProductoSeparado.classList.remove("d-none");
+            divTornillo.style.display = "none";
+            divTarubo.style.display = "none";
+            comboTornillo.value = "";
+            comboTarubo.value = "";
+        } else {
+            divProductoSeparado.classList.add("d-none");
+            divTornillo.style.display = "block";
+            divTarubo.style.display = "block";
+            comboTarubo.disabled = false;
+        }
+    });
+
+    tipoProducto.addEventListener("change", function(){
+        if(this.value === "TORNILLO"){
+            divTornillo.style.display = "block";
+            divTarubo.style.display = "none";
+            comboTarubo.value = "";
+        }
+        if(this.value === "TARUBO"){
+            divTarubo.style.display = "block";
+            divTornillo.style.display = "none";
+            comboTornillo.value = "";
+        }
+    });
+
+        comboTornillo.addEventListener("change", function(){
+        // Si es venta por separado NO autoseleccionar ni bloquear por texto
+        if(chkSeparado.checked){
+            return;
+        }
+
+        const texto = comboTornillo.options[comboTornillo.selectedIndex].text;
+
+        // ⚡ NUEVA LÓGICA DE BLOQUEO PARA EL TORNILLO ACCESORIO
+        if (texto.includes("ACCESORIO")) {
+            comboTarubo.value = "";       // Limpia cualquier tarubo seleccionado antes
+            comboTarubo.disabled = true;  // Bloquea el campo por completo
+            return;                       // Corta la ejecución aquí para que no busque abajo
+        } else {
+            comboTarubo.disabled = false; // Desbloquea el campo si eligen otro tornillo normal
+        }
+
+        // Comportamiento normal para los demás tornillos
+        if(texto.includes("GRANDE") || texto.includes("MEDIANO")){
+            for(let i=0; i<comboTarubo.options.length; i++){
+                if(comboTarubo.options[i].text.includes("AZUL")){
+                    comboTarubo.selectedIndex = i;
+                }
+            }
+        }
+
+        if(texto.includes("PEQUEÑO")){
+            for(let i=0; i<comboTarubo.options.length; i++){
+                if(comboTarubo.options[i].text.includes("VERDE")){
+                    comboTarubo.selectedIndex = i;
+                }
+            }
+        }
+    });
+
+    const form = document.querySelector("form");
+    const cantidadInput = document.querySelector("input[name='Cantidad']");
+    const tipoVenta = document.querySelector("select[name='TipoVenta']");
+
+        form.addEventListener("submit", function(e){
+
+        // Limpiamos validaciones previas para que no se queden bloqueadas
+        fechaInput.setCustomValidity("");
+        tipoVenta.setCustomValidity("");
+        cantidadInput.setCustomValidity("");
+        if(tipoProducto) tipoProducto.setCustomValidity("");
+        comboTornillo.setCustomValidity("");
+        comboTarubo.setCustomValidity("");
+
+        // 1️⃣ VALIDACIONES CON BURBUJA DIRECTA EN EL CAMPO
+        if (!fechaInput.value) {
+            e.preventDefault();
+            fechaInput.setCustomValidity("Por favor, seleccione la Fecha Comercial.");
+            fechaInput.reportValidity();
+            return;
+        }
+
+        if (!tipoVenta.value) {
+            e.preventDefault();
+            tipoVenta.setCustomValidity("Por favor, seleccione la Presentación de Venta.");
+            tipoVenta.reportValidity(); // 🔥 Lanza el mensaje pegado al combo selector
+            return;
+        }
+
+        if (!cantidadInput.value || parseFloat(cantidadInput.value) <= 0) {
+            e.preventDefault();
+            cantidadInput.setCustomValidity("Por favor, ingrese una cantidad mayor a 0.");
+            cantidadInput.reportValidity();
+            return;
+        }
+
+        // 2️⃣ VALIDAR SELECCIÓN POR SEPARADO
+        if (chkSeparado.checked && !tipoProducto.value) {
+            e.preventDefault();
+            tipoProducto.setCustomValidity("Debe seleccionar si venderá un TORNILLO o un TARUBO individual.");
+            tipoProducto.reportValidity();
+            return;
+        }
+
+        // 3️⃣ VALIDAR TORNILLO (Solo si es visible y no está bloqueado)
+        if (divTornillo.style.display !== "none" && !comboTornillo.disabled && !comboTornillo.value) {
+            e.preventDefault();
+            comboTornillo.setCustomValidity("Por favor, seleccione una medida de Tornillo.");
+            comboTornillo.reportValidity();
+            return;
+        }
+
+        // 4️⃣ VALIDAR TARUBO (Solo si es visible y no está bloqueado)
+        if (divTarubo.style.display !== "none" && !comboTarubo.disabled && !comboTarubo.value) {
+            e.preventDefault();
+            comboTarubo.setCustomValidity("Por favor, seleccione un color de Tarubo.");
+            comboTarubo.reportValidity();
+            return;
+        }
+
+
+        // ==========================================
+        // 🛡️ TU LOGICA DE CONTROL DE STOCK SE MANTIENE TOTALMENTE INTACTA ABAJO:
+        // ==========================================
+        let unidades = parseInt(cantidadInput.value);
+        if(tipoVenta.value === "DOCENA"){
+            unidades = unidades * 12;
+        }
+
+        let stock = 0;
+        let nombre = "";
+
+        if(!chkSeparado.checked){
+            const tornilloOpt = comboTornillo.options[comboTornillo.selectedIndex];
+            const taruboOpt = comboTarubo.options[comboTarubo.selectedIndex];
+
+            if (!tornilloOpt.value || (!taruboOpt.value && !comboTarubo.disabled)) return;
+
+            const stockTornillo = parseFloat(tornilloOpt.dataset.stock);
+            const stockTarubo = parseFloat(taruboOpt.dataset.stock);
+
+            if(stockTornillo < unidades){
+                e.preventDefault();
+                nombre = tornilloOpt.text;
+                stock = stockTornillo;
+            }
+            else if(stockTarubo < unidades){
+                e.preventDefault();
+                nombre = taruboOpt.text;
+                stock = stockTarubo;
+            }
+        } else {
+            if(tipoProducto.value === "TORNILLO"){
+                const opt = comboTornillo.options[comboTornillo.selectedIndex];
+                if(!opt.value) return;
+                stock = parseFloat(opt.dataset.stock);
+                nombre = opt.text;
+            }
+            if(tipoProducto.value === "TARUBO"){
+                const opt = comboTarubo.options[comboTarubo.selectedIndex];
+                if(!opt.value) return;
+                stock = parseFloat(opt.dataset.stock);
+                nombre = opt.text;
+            }
+            if(stock < unidades){
+                e.preventDefault();
+            }
+        }
+
+        if(stock < unidades){
+            document.getElementById("mensajeStock").innerText = `Falta stock en ${nombre}. Stock disponible: ${stock}`;
+            const modal = new bootstrap.Modal(document.getElementById("modalStock"));
+            modal.show();
+        }
+    });
+
+    // ⚡ EXTRAS DE SEGURIDAD: Limpian la burbuja apenas el usuario escriba o cambie algo
+    fechaInput.addEventListener("change", () => fechaInput.setCustomValidity(""));
+    tipoVenta.addEventListener("change", () => tipoVenta.setCustomValidity(""));
+    cantidadInput.addEventListener("input", () => cantidadInput.setCustomValidity(""));
+    if(tipoProducto) tipoProducto.addEventListener("change", () => tipoProducto.setCustomValidity(""));
+    comboTornillo.addEventListener("change", () => comboTornillo.setCustomValidity(""));
+    comboTarubo.addEventListener("change", () => comboTarubo.setCustomValidity(""));
+</script>

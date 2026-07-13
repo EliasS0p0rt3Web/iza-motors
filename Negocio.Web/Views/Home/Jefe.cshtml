@@ -1,0 +1,222 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+    Layout = "_LayoutSistema";
+
+    var hoy = DateTime.Today;
+    int diff = (7 + (hoy.DayOfWeek - DayOfWeek.Monday)) % 7;
+    var lunes = hoy.AddDays(-diff);
+    var sabado = lunes.AddDays(5);
+}
+
+<style>
+    :root {
+        --green: #16a34a;
+        --red: #dc2626;
+        --purple: #7c3aed;
+        --gray: #475569;
+    }
+
+    .dashboard-title {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: #0f172a;
+    }
+
+    .card-accent {
+        border-left: 6px solid;
+        border-radius: 18px;
+        transition: all 0.25s ease;
+    }
+
+        .card-accent:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        }
+
+    .card-ventas {
+        background: #f0fdf4;
+        border-color: var(--green);
+    }
+
+    .card-gastos {
+        background: #fef2f2;
+        border-color: var(--red);
+    }
+
+    .card-yape {
+        background: #f5f3ff;
+        border-color: var(--purple);
+    }
+
+    .card-efectivo {
+        background: #f1f5f9;
+        border-color: var(--gray);
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .quick-card {
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+        .quick-card:hover {
+            background: #0f172a;
+            color: #ffffff !important;
+            transform: translateY(-4px);
+        }
+
+            .quick-card:hover small {
+                color: #cbd5e1 !important;
+            }
+
+    .section-divider {
+        border-top: 1px solid #e2e8f0;
+        margin: 3rem 0;
+    }
+</style>
+
+<!-- ================= HEADER ================= -->
+
+<div class="mb-5">
+    <h1 class="dashboard-title mb-1">Dashboard</h1>
+    <p class="text-muted">
+        Estado general al
+        <span class="fw-semibold text-dark">
+            @hoy.ToString("dd MMM yyyy")
+        </span>
+    </p>
+</div>
+
+<!-- ================= RESUMEN DIARIO ================= -->
+
+<div class="row g-4 mb-5">
+
+    <!-- VENTAS HOY -->
+    <div class="col-6 col-md-4">
+        <div class="card card-accent card-ventas p-4 h-100">
+            <div class="stat-label text-success">Ventas Hoy</div>
+            <div class="stat-value text-success">
+                S/ @ViewBag.VentasHoy
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCTOS VENDIDOS -->
+    <div class="col-6 col-md-4">
+        <div class="card card-accent card-efectivo p-4 h-100">
+            <div class="stat-label text-secondary">Productos Vendidos</div>
+            <div class="stat-value text-dark">
+                @ViewBag.CantidadVentas
+            </div>
+        </div>
+    </div>
+
+    <!-- ÚLTIMA ACTIVIDAD -->
+    <div class="col-12 col-md-4">
+        <div class="card card-accent card-efectivo p-4 h-100">
+            <div class="stat-label text-secondary">Última Actividad</div>
+            @if (ViewBag.UltimaVenta != null && ViewBag.UltimaVenta != DateTime.MinValue)
+            {
+                <div class="fw-semibold text-dark">
+                    @ViewBag.UltimaVenta.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            }
+            else
+            {
+                <div class="text-muted">Sin registros</div>
+            }
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= RESUMEN SEMANAL ================= -->
+
+<h6 class="text-uppercase text-muted fw-bold mb-3">
+    Resumen Semanal (Lun - Vie)
+</h6>
+
+<div class="row g-4 mb-5">
+
+    <!-- GASTOS -->
+    <div class="col-6 col-md-4">
+        <div class="card card-accent card-gastos p-4 h-100">
+            <div class="stat-label text-danger">Gastos Totales</div>
+            <div class="stat-value text-danger">
+                S/ @ViewBag.GastosSemana
+            </div>
+        </div>
+    </div>
+
+    <!-- YAPE -->
+    <div class="col-6 col-md-4">
+        <div class="card card-accent card-yape p-4 h-100">
+            <div class="stat-label" style="color:var(--purple)">Ingresos Yape</div>
+            <div class="stat-value" style="color:var(--purple)">
+                S/ @ViewBag.YapeSemana
+            </div>
+        </div>
+    </div>
+
+    <!-- EFECTIVO -->
+    <div class="col-6 col-md-4">
+        <div class="card card-accent card-efectivo p-4 h-100">
+            <div class="stat-label text-secondary">Ventas Efectivo</div>
+            <div class="stat-value text-secondary">
+                S/ @ViewBag.EfectivoSemana
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= ACCESOS RÁPIDOS ================= -->
+
+<div class="section-divider"></div>
+
+<h5 class="fw-bold mb-4">Accesos Rápidos</h5>
+
+<div class="row g-4">
+
+    <div class="col-6 col-md-3">
+        <a asp-controller="Stock"
+           asp-action="Index"
+           class="quick-card text-decoration-none text-dark p-4 d-block h-100">
+            <div class="fw-semibold">Ver Stock</div>
+            <small class="text-muted">Inventario general</small>
+        </a>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <a asp-controller="Stock"
+           asp-action="MasVendido"
+           class="quick-card text-decoration-none text-dark p-4 d-block h-100">
+            <div class="fw-semibold">Más Vendido</div>
+            <small class="text-muted">Productos con mayor salida</small>
+        </a>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <a asp-controller="Reporte"
+           asp-action="Resumen"
+           asp-route-desde="@lunes.ToString("yyyy-MM-dd")"
+           asp-route-hasta="@sabado.ToString("yyyy-MM-dd")"
+           class="quick-card text-decoration-none text-dark p-4 d-block h-100">
+            <div class="fw-semibold">Reporte Semanal</div>
+            <small class="text-muted">Lun - Sáb</small>
+        </a>
+    </div>
+
+</div>

@@ -1,0 +1,28 @@
+﻿@model List<Negocio.Web.Models.ViewModels.CarritoItemVm>
+
+@if (!Model.Any())
+{
+    <div class="mini-cart-empty">🛒 Tu carrito está vacío</div>
+}
+else
+{
+    <div class="mini-cart-items">
+        @foreach (var item in Model.Take(4))
+        {
+            <div class="mini-cart-item">
+                <div class="mini-cart-info">
+                    <div class="mini-cart-title">@item.Descripcion</div>
+                    <div class="mini-cart-sub">@item.Dimensiones x @item.Cantidad</div>
+                </div>
+                <div class="mini-cart-price">S/ @item.Subtotal.ToString("0.00")</div>
+            </div>
+        }
+    </div>
+    <div class="mini-cart-footer">
+        <div class="mini-cart-total">Total: S/ @Model.Sum(x => x.Subtotal).ToString("0.00")</div>
+        <div class="mini-cart-actions">
+            <a href="/ProductoPublic/Carrito" class="btn-mini">Ver carrito</a>
+            <a href="/ProductoPublic/Carrito" class="btn-mini btn-mini-primary">Reservar</a>
+        </div>
+    </div>
+}

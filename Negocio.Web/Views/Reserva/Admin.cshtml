@@ -1,0 +1,313 @@
+﻿@model List<Negocio.Web.Models.Entities.Reserva>
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Panel de Reservas";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PREMIUM --- */
+    .reserva-panel-container {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
+        padding: 1.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- INPUTS Y SELECTS MODERNOS --- */
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+        .input-pro:focus {
+            border-color: #6366f1; /* Foco distintivo índigo */
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+    /* --- BOTONES PREMIUM --- */
+    .btn-search-pro {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 11px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    }
+
+        .btn-search-pro:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+    /* --- TABLA PRO --- */
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+        }
+
+        .table-pro tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #334155;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+
+        .table-pro tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+    /* --- BADGES DE ESTADO EXCLUSIVOS (Look Pastel Pro) --- */
+    .badge-pro {
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        display: inline-block;
+        letter-spacing: 0.3px;
+    }
+
+    .status-pendiente {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-confirmado {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .status-produccion {
+        background: #e0f7fa;
+        color: #006064;
+    }
+
+    .status-listo {
+        background: #dcfce3;
+        color: #16a34a;
+    }
+
+    .status-entregado {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .status-cancelado {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* Badges auxiliares */
+    .delivery-badge {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .total-badge-pro {
+        font-family: monospace;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #0f172a;
+    }
+
+    /* --- ACCIONES --- */
+    .btn-action-pro {
+        padding: 6px 14px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        text-decoration: none;
+    }
+
+    .btn-view-pro {
+        background: #f1f5f9;
+        color: #334155;
+    }
+
+        .btn-view-pro:hover {
+            background: #e2e8f0;
+            transform: scale(1.02);
+            color: #0f172a;
+        }
+</style>
+
+<div class="reserva-panel-container py-4">
+
+    <div class="mb-4">
+        <h3 class="fw-800 text-dark mb-0"> Panel de Control de Reservas</h3>
+    </div>
+
+    <form method="get" class="form-premium-card mb-4">
+        <div class="row g-3 align-items-end">
+
+            <div class="col-md-4">
+                <label class="form-label-pro">Filtrar por Estado</label>
+                <select name="estado" class="form-select input-pro w-100">
+                    <option value="">-- Todos los Estados --</option>
+                    <option value="PENDIENTE" selected="@(Context.Request.Query["estado"] == "PENDIENTE")">PENDIENTE</option>
+                    <option value="CONFIRMADO" selected="@(Context.Request.Query["estado"] == "CONFIRMADO")">CONFIRMADO</option>
+                    <option value="EN_PRODUCCION" selected="@(Context.Request.Query["estado"] == "EN_PRODUCCION")">EN PRODUCCIÓN</option>
+                    <option value="LISTO" selected="@(Context.Request.Query["estado"] == "LISTO")">LISTO</option>
+                    <option value="ENTREGADO" selected="@(Context.Request.Query["estado"] == "ENTREGADO")">ENTREGADO</option>
+                    <option value="CANCELADO" selected="@(Context.Request.Query["estado"] == "CANCELADO")">CANCELADO</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label-pro">Modalidad de Entrega</label>
+                <select name="tipoEntrega" class="form-select input-pro w-100">
+                    <option value="">-- Todos los Tipos --</option>
+                    <option value="DELIVERY" selected="@(Context.Request.Query["tipoEntrega"] == "DELIVERY")">DELIVERY</option>
+                    <option value="RECOJO" selected="@(Context.Request.Query["tipoEntrega"] == "RECOJO")">RECOJO</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-search-pro w-100">
+                    <i class="bi bi-funnel-fill me-1"></i> Filtrar Parámetros
+                </button>
+            </div>
+
+        </div>
+    </form>
+
+    <div class="form-premium-card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table-pro text-nowrap">
+                <thead class="text-center">
+                    <tr>
+                        <th style="width: 100px;">Código</th>
+                        <th class="text-start">Cliente</th>
+                        <th>Teléfono</th>
+                        <th>Total Reserva</th>
+                        <th>Tipo Entrega</th>
+                        <th>Fecha Solicitada</th>
+                        <th>Estado</th>
+                        <th style="width: 150px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var r in Model)
+                        {
+                            <tr>
+                                <td class="text-center font-monospace fw-bold text-primary">@r.CodigoReserva</td>
+                                <td class="text-start fw-bold text-dark">@r.NombreCliente</td>
+                                <td class="text-center text-secondary">@(string.IsNullOrEmpty(r.Telefono) ? "-" : r.Telefono)</td>
+                                <td class="text-center total-badge-pro">S/ @r.Total.ToString("N2")</td>
+                                <td class="text-center"><span class="delivery-badge">@r.TipoEntrega</span></td>
+                                <td class="text-center">@(r.FechaSolicitada?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td class="text-center">
+                                    @if (r.Estado == "PENDIENTE")
+                                    {
+                                        <span class="badge-pro status-pendiente">PENDIENTE</span>
+                                    }
+                                    else if (r.Estado == "CONFIRMADO")
+                                    {
+                                        <span class="badge-pro status-confirmado">CONFIRMADO</span>
+                                    }
+                                    else if (r.Estado == "EN_PRODUCCION")
+                                    {
+                                        <span class="badge-pro status-produccion">EN PRODUCCIÓN</span>
+                                    }
+                                    else if (r.Estado == "LISTO")
+                                    {
+                                        <span class="badge-pro status-listo">LISTO</span>
+                                    }
+                                    else if (r.Estado == "ENTREGADO")
+                                    {
+                                        <span class="badge-pro status-entregado">ENTREGADO</span>
+                                    }
+                                    else if (r.Estado == "CANCELADO")
+                                    {
+                                        <span class="badge-pro status-cancelado">CANCELADO</span>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-2 align-items-center">
+                                        <a asp-controller="Reserva" asp-action="AdminDetalle" asp-route-id="@r.ReservaId" class="btn-action-pro btn-view-pro" title="Ver Detalle">
+                                            <i class="bi bi-eye-fill"></i> Ver
+                                        </a>
+
+                                        @* demás botones igual *@
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="bi bi-journal-x fs-2 d-block mb-2 text-light"></i>
+                                No hay órdenes de reserva registradas con esos filtros.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

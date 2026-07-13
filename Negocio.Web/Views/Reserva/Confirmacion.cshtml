@@ -1,0 +1,375 @@
+﻿@model Negocio.Web.Models.Entities.Reserva
+
+@{
+    Layout = "_LayoutReservaPublic";
+    ViewData["Title"] = "Reserva Confirmada";
+}
+
+<div class="confirmacion-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+
+                @* Card Principal estilo Certificado *@
+                <div class="ticket-card animate-fade-up">
+
+                    @* --- CABECERA DINÁMICA --- *@
+                    @if (Model.Estado == "CANCELADO")
+                    {
+                        <div class="ticket-header" style="background: linear-gradient(135deg, #dc3545, #b02a37);">
+                            <div class="success-icon-wrap" style="color: #dc3545; background: white;">
+                                <i class="bi bi-x-octagon-fill"></i>
+                            </div>
+                            <h2 class="fw-800 text-white mb-1">¡Reserva Cancelada!</h2>
+                            <p class="text-white-50 small mb-0">El proyecto ha sido cancelado y el stock liberado.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ticket-header">
+                            <div class="success-icon-wrap">
+                                <i class="bi bi-patch-check-fill"></i>
+                            </div>
+                            <h2 class="fw-800 text-white mb-1">¡Reserva Exitosa!</h2>
+                            <p class="text-white-50 small mb-0">Hemos recibido tu solicitud de fabricación.</p>
+                        </div>
+                    }
+
+                    <div class="ticket-body">
+
+                        @* 🔥 CONTROL DE INTERFAZ INTELIGENTE (CLIENTE LOGUEADO VS INCÓGNITO) *@
+                        @{
+                            // Detectamos si el usuario tiene una sesión activa en el sistema
+                            bool esClienteRegistrado = Context.Session.GetInt32("USER_ID") != null;
+                        }
+
+                        @if (!esClienteRegistrado)
+                        {
+                            @* 🕵️‍♂️ MODO INCÓGNITO: Muestra la caja gigante tecnológica para copiar el código *@
+                            <div class="code-section text-center">
+                                <span class="label-tech">CÓDIGO DE SEGUIMIENTO</span>
+                                <div class="code-display" id="codigoTexto">@Model.CodigoReserva</div>
+                                <p class="text-muted small px-4">Utiliza este código para rastrear el avance de tu proyecto o realizar consultas por WhatsApp.</p>
+
+                                <button type="button"
+                                        id="btnCopiar"
+                                        class="btn-copy-tech"
+                                        onclick="copiarCodigo()">
+                                    <i class="bi bi-clipboard-check me-2"></i> Copiar Código
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            @* 👤 MODO CLIENTE LOGUEADO: Una vista mucho más limpia, ejecutiva y directa *@
+                            <div class="text-center p-4 rounded-4 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                <span class="text-muted small d-block text-uppercase fw-bold mb-1" style="letter-spacing: 1px;">Código de Orden</span>
+                                <h3 class="font-monospace fw-bold text-dark m-0" style="letter-spacing: 2px;">@Model.CodigoReserva</h3>
+                                <p class="small text-muted mb-0 mt-2">Esta reserva ya se encuentra vinculada y protegida en tu cuenta.</p>
+                            </div>
+                        }
+
+                        @* Resumen de Reserva (Se mantiene idéntico para ambos) *@
+                        <div class="summary-box mt-4">
+                            <h5 class="summary-title"><i class="bi bi-file-earmark-text me-2"></i> Detalles de la orden</h5>
+                            <div class="summary-row">
+                                <span class="text-muted">Estado actual:</span>
+                                @if (Model.Estado == "CANCELADO")
+                                {
+                                    <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold text-white">@Model.Estado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status">@Model.Estado</span>
+                                }
+                            </div>
+                            <div class="summary-row">
+                                <span class="text-muted">Inversión estimada:</span>
+                                <span class="fw-800 text-dark fs-5">S/ @Model.Total.ToString("N2")</span>
+                            </div>
+                            @if (Model.FechaSolicitada != null)
+                            {
+                                <div class="summary-row border-0">
+                                    <span class="text-muted">Fecha de solicitud:</span>
+                                    <span class="fw-bold">@Model.FechaSolicitada.Value.ToString("dd 'de' MMMM, yyyy")</span>
+                                </div>
+                            }
+                        </div>
+
+                        @* --- SECCIÓN DE CONFIANZA DINÁMICA --- *@
+                        @if (Model.Estado != "CANCELADO")
+                        {
+                            <div class="next-steps mt-4">
+                                <h6 class="fw-800 text-primary text-uppercase small mb-3">¿Qué sigue ahora?</h6>
+                                <div class="step-item">
+                                    <div class="step-num">1</div>
+                                    <p class="mb-0"><strong>Validación Técnica:</strong> Un asesor revisará las medidas y stock de materiales.</p>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-num">2</div>
+                                    <p class="mb-0"><strong>Contacto Directo:</strong> Te llamaremos para confirmar detalles de instalación.</p>
+                                </div>
+                                <div class="step-item border-0 pb-0">
+                                    <div class="step-num">3</div>
+                                    <p class="mb-0"><strong>Fabricación:</strong> Iniciamos el proceso una vez confirmado el pedido.</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="next-steps mt-4 text-center p-4 bg-light rounded-4 border">
+                                <i class="bi bi-arrow-counterclockwise text-muted fs-1 mb-2"></i>
+                                <h6 class="fw-bold text-dark">¿Cambiaste de opinión?</h6>
+                                <p class="small text-muted mb-0">No te preocupes, puedes volver a la tienda y armar una nueva cotización cuando lo desees. ¡En <strong>E&E Aluminios</strong> te esperamos!</p>
+                            </div>
+                        }
+
+                        @* --- 🔥 ENRUTAMIENTO DINÁMICO DE BOTONES --- *@
+                        <div class="mt-5 text-center">
+                            @if (esClienteRegistrado)
+                            {
+                                @* 👤 Vista exclusiva para el Cliente con cuenta *@
+                                <a asp-controller="Cliente" asp-action="MisPedidos" class="btn-tech-primary w-100 py-3">
+                                    <span class="btn-content">
+                                        <i class="bi bi-box-seam me-2"></i> Ir a Mis Pedidos
+                                    </span>
+                                </a>
+                                <a asp-controller="Cliente" asp-action="WebPrincipal" class="btn btn-link text-decoration-none mt-3 text-muted fw-bold small">
+                                    <i class="bi bi-house me-1"></i> Volver a la Intranet
+                                </a>
+                            }
+                            else
+                            {
+                                @* 🕵️‍♂️ Vista para el usuario Incógnito *@
+                                <a asp-controller="Reserva" asp-action="Consultar" class="btn-tech-primary w-100 py-3">
+                                    <span class="btn-content">
+                                        <i class="bi bi-search me-2"></i> Ir al Rastreador de Pedidos
+                                    </span>
+                                </a>
+                                <a href="/" class="btn btn-link text-decoration-none mt-3 text-muted fw-bold small">
+                                    <i class="bi bi-house me-1"></i> Volver a la página principal
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+                @* Recordatorio de seguridad *@
+                <p class="text-center text-muted small mt-4">
+                    <i class="bi bi-shield-lock-fill text-success me-1"></i>
+                    Sistema de seguridad **E&E Aluminios** - Reserva Protegida
+                </p>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .confirmacion-container {
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #f8fafc, #e2e8f0);
+        display: flex;
+        align-items: center;
+    }
+
+    /* TICKET CARD DESIGN */
+    .ticket-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+        border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .ticket-header {
+        background: linear-gradient(135deg, #198754 0%, #22c55e 100%);
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .success-icon-wrap {
+        font-size: 3.5rem;
+        color: white;
+        line-height: 1;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+    }
+
+    .ticket-body {
+        padding: 40px;
+    }
+
+    /* CODE SECTION */
+    .code-section {
+        background: #f1f5f9;
+        border-radius: 20px;
+        padding: 25px 15px;
+        border: 2px dashed #cbd5e1;
+        position: relative;
+    }
+
+    .label-tech {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #64748b;
+        letter-spacing: 2px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .code-display {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #0f172a;
+        letter-spacing: 4px;
+        margin-bottom: 10px;
+    }
+
+    .btn-copy-tech {
+        background: #0f172a;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+
+        .btn-copy-tech:hover {
+            background: #1e293b;
+            transform: scale(1.05);
+        }
+
+    /* SUMMARY BOX */
+    .summary-box {
+        background: #fff;
+        border: 1px solid #f1f5f9;
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    .summary-title {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 10px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f8fafc;
+    }
+
+    .badge-status {
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    /* NEXT STEPS */
+    .next-steps {
+        padding: 10px;
+    }
+
+    .step-item {
+        display: flex;
+        gap: 15px;
+        padding-bottom: 15px;
+        border-left: 2px solid #e2e8f0;
+        margin-left: 10px;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .step-num {
+        position: absolute;
+        left: -12px;
+        width: 22px;
+        height: 22px;
+        background: #0071e3;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 800;
+    }
+
+    /* ANIMATION */
+    .animate-fade-up {
+        animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Reuse your tech-primary button style */
+    .btn-tech-primary {
+        background: linear-gradient(135deg, #0f172a 0%, #0071e3 100%);
+        color: white !important;
+        padding: 16px;
+        border-radius: 15px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: block;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+    }
+
+        .btn-tech-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 113, 227, 0.4);
+        }
+
+    @@media (max-width: 576px) {
+        .ticket-body {
+            padding: 25px 20px;
+        }
+
+        .code-display {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+
+<script>
+    function copiarCodigo() {
+        const codigo = '@Model.CodigoReserva';
+        navigator.clipboard.writeText(codigo);
+
+        const btn = document.getElementById("btnCopiar");
+        btn.innerHTML = '<i class="bi bi-check-lg me-2"></i> ¡Copiado!';
+        btn.style.background = "#22c55e";
+
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-clipboard-check me-2"></i> Copiar Código';
+            btn.style.background = "#0f172a";
+        }, 2500);
+    }
+</script>

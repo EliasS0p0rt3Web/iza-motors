@@ -1,0 +1,188 @@
+﻿/* =========================================
+   AJUSTES ESPECÍFICOS – PASAMANOS (PREMIUM)
+========================================= */
+
+/* --- CONTENEDORES DE PASOS --- */
+#pasoMedida, #paso2 {
+    position: relative; /* Necesario para que el Hint flote correctamente */
+}
+
+/* --- TARJETAS DE TUBO Y ACCESORIOS --- */
+.tubo-card img {
+    max-height: 120px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+/* Ajuste específico para que las piezas de pasamanos luzcan más */
+.accesorio-card {
+    padding: 1rem;
+}
+
+    .accesorio-card img {
+        height: 80px;
+        margin-bottom: 0.75rem;
+        object-fit: contain;
+    }
+
+    .accesorio-card b {
+        display: block;
+        margin-top: .25rem;
+        font-size: .85rem;
+        line-height: 1.2;
+    }
+
+    .accesorio-card small {
+        color: #334155;
+        font-size: .75rem;
+    }
+
+    .accesorio-card .precio {
+        font-weight: 700;
+        color: #16a34a; /* Verde de la marca */
+        margin-top: .25rem;
+        font-size: .95rem;
+    }
+
+/* --- DISEÑO DE RESULTADO (TICKET NOCTURNO) --- */
+#resultado {
+    background: #1e293b; /* Azul noche profundo */
+    border-radius: 28px;
+    padding: 2.5rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+    max-width: 550px;
+    margin: 2rem auto;
+}
+
+.resultado-header {
+    text-align: center;
+    color: #10b981;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+/* Cuerpo del ticket con efecto de separación */
+.resultado-body {
+    border-top: 2px dotted rgba(255,255,255,0.15);
+    padding-top: 1.5rem;
+}
+
+/* Estilo de accesorios dentro del ticket */
+.acc-card {
+    background: rgba(255,255,255,0.04);
+    margin-bottom: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- FILA DE TOTAL (DISEÑO CINTA) --- */
+.resultado-total {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-top: 1.5rem;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+}
+
+    .resultado-total::before {
+        content: "TOTAL ESTIMADO";
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        opacity: 0.9;
+    }
+
+/* --- RESPONSIVE WIZARD (COMPACTO) --- */
+@media (max-width: 576px) {
+    .wizard-progress {
+        margin-bottom: 30px !important;
+    }
+
+    .step-circle {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 12px !important;
+    }
+
+    .step-label {
+        font-size: 10px !important;
+    }
+
+    #resultado {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+}
+/* Estilo unificado para las píldoras de medidas (Clon Cortinas) */
+.btn-dimension-pill {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    color: #334155;
+    font-weight: 750;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    width: 100%; /* Móvil: Ocupa todo el ancho en cascada */
+}
+
+    .btn-dimension-pill:hover {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+        color: #10b981;
+    }
+
+    .btn-dimension-pill.active {
+        border-color: #10b981;
+        background-color: #10b981;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+@media (min-width: 768px) {
+    .btn-dimension-pill {
+        width: auto !important; /* PC: Se alínean horizontalmente en su ancho natural */
+    }
+
+    .container-pills-wrapper {
+        padding-left: 2.5rem !important;
+    }
+}
+
+/* Control total de la imagen maestra y su micro-loader */
+.custom-master-img {
+    height: 320px !important;
+    width: 600px !important;
+    object-fit: contain !important;
+    transition: transform 0.3s ease;
+}
+
+    .custom-master-img:hover {
+        transform: scale(1.03);
+    }
+
+@media (max-width: 767.98px) {
+    .custom-master-img {
+        height: 220px !important;
+        width: 220px !important;
+    }
+}
+
+/* Riel divisorio vertical para separar la foto de las píldoras en computadoras */
+@media (min-width: 768px) {
+    .border-end-md {
+        border-right: 2px solid #f1f5f9 !important;
+    }
+}

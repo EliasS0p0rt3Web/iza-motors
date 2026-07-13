@@ -1,0 +1,225 @@
+﻿@model IEnumerable<Negocio.Web.Models.Entities.Usuario>
+@{
+    ViewData["Title"] = "Control de Clientes Registrados";
+    var perfiles = ViewBag.Perfiles as List<Negocio.Web.Models.Entities.PerfilCliente> ?? new List<Negocio.Web.Models.Entities.PerfilCliente>();
+}
+@{
+    ViewData["Title"] = "Configurar Imagen";
+    Layout = "_LayoutSistema";
+}
+
+<div class="container-fluid">
+    <!-- Header de la sección -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Control de Clientes</h2>
+            <p class="text-muted mb-0">Monitoreo de cuentas de beneficios, maestros técnicos y mayoristas web.</p>
+        </div>
+        <div class="bg-white p-2 rounded shadow-sm border">
+            <span class="text-muted small fw-medium">Fecha de Control:</span>
+            <span class="fw-bold text-primary">@DateTime.Now.ToString("dd/MM/yyyy")</span>
+        </div>
+    </div>
+
+    <!-- 📊 MINICONTADORES PREMIUM (KPIs) -->
+    <div class="row g-3 mb-4">
+        <!-- Tarjeta Total -->
+        <div class="col-12 col-sm-6 col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 position-relative overflow-hidden">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block mb-1">Total Registrados</span>
+                        <h3 class="fw-extrabold text-dark mb-0">@ViewBag.TotalClientes</h3>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-primary" style="height: 4px;"></div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Activos -->
+        <div class="col-12 col-sm-6 col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 position-relative overflow-hidden">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block mb-1">Cuentas Activas</span>
+                        <h3 class="fw-extrabold text-success mb-0">@ViewBag.ClientesActivos</h3>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success">
+                        <i class="bi bi-shield-check fs-3"></i>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-success" style="height: 4px;"></div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Bloqueados -->
+        <div class="col-12 col-sm-6 col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 position-relative overflow-hidden">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block mb-1">Cuentas Suspendidas</span>
+                        <h3 class="fw-extrabold text-danger mb-0">@ViewBag.ClientesBloqueados</h3>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-3 text-danger">
+                        <i class="bi bi-shield-x fs-3"></i>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-danger" style="height: 4px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📋 TABLA DE CONTROL DE CLIENTES -->
+    <div class="card border-0 shadow-sm rounded-3 bg-white">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase fs-7 fw-bold border-bottom text-muted">
+                        <tr>
+                            <th class="ps-4 py-3">Usuario / Correo</th>
+                            <th class="py-3">Nombre Completo</th>
+                            <th class="py-3">DNI / RUC</th>
+                            <th class="py-3">Teléfono</th>
+                            <th class="py-3">Segmentación</th>
+                            <th class="py-3 text-center">Estado</th>
+                            <th class="py-3 text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0 fs-6">
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-person-x d-block fs-1 mb-2 text-secondary"></i>
+                                    Aún no se han registrado clientes en la plataforma web.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                // Buscamos si este usuario ya llenó sus datos de perfil
+                                var perfil = perfiles.FirstOrDefault(p => p.IdUsuario == item.IdUsuario);
+
+                                <tr>
+                                    <!-- Credencial de acceso -->
+                                    <td class="ps-4 fw-medium text-dark">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                <i class="bi bi-person text-secondary"></i>
+                                            </div>
+                                            <span>@item.Username</span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Datos en caliente cruzados de la tabla PerfilCliente -->
+                                    <td class="text-secondary">
+                                        @(perfil != null ? perfil.NombreCompleto : "Sin configurar perfil")
+                                    </td>
+
+                                    <td class="text-secondary font-monospace">
+                                        @(perfil != null && !string.IsNullOrEmpty(perfil.Documento) ? perfil.Documento : "—")
+                                    </td>
+
+                                    <td class="text-secondary">
+                                        @(perfil != null ? perfil.Telefono : "—")
+                                    </td>
+
+                                    <!-- Segmentación del tipo de cliente comercial -->
+                                    <td>
+                                        @if (perfil != null)
+                                        {
+                                            switch (perfil.TipoCliente)
+                                            {
+                                                case "MAESTRO_TECNICO":
+                                                    <span class="badge bg-info bg-opacity-10 text-info px-2 py-1.5 rounded-pill fw-semibold"><i class="bi bi-tools me-1"></i> Maestro Técnico</span>
+                                                    break;
+                                                case "MAYORISTA":
+                                                    <span class="badge bg-purple bg-opacity-10 text-purple px-2 py-1.5 rounded-pill fw-semibold" style="color: #6b21a8; background-color: #f3e8ff;"><i class="bi bi-building me-1"></i> Mayorista</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1.5 rounded-pill fw-semibold"><i class="bi bi-cart me-1"></i> Estándar</span>
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted border px-2 py-1.5 rounded-pill fw-normal">Incompleto</span>
+                                        }
+                                    </td>
+
+                                    <!-- Estado de la cuenta -->
+                                    <td class="text-center">
+                                        @if (item.Activo)
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2.5 py-1 fw-bold">Activo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2.5 py-1 fw-bold">Suspendido</span>
+                                        }
+                                    </td>
+
+                                    <!-- Botonera de control directo -->
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <!-- Botón de Suspensión/Activación (Formulario veloz) -->
+                                            <form asp-action="AlternarEstado" method="post" onsubmit="return confirm('¿Seguro que deseas cambiar el estado de acceso para este usuario?');">
+                                                <input type="hidden" name="id" value="@item.IdUsuario" />
+                                                @if (item.Activo)
+                                                {
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning border-0" title="Suspender acceso del cliente">
+                                                        <i class="bi bi-slash-circle fs-5"></i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="submit" class="btn btn-sm btn-outline-success border-0" title="Activar acceso del cliente">
+                                                        <i class="bi bi-check-circle fs-5"></i>
+                                                    </button>
+                                                }
+                                            </form>
+
+                                            <!-- Botón de Eliminación definitiva (Solo visible para ADMINISTRADOR) -->
+                                            @if (User.IsInRole("ADMINISTRADOR"))
+                                            {
+                                                <form asp-action="Eliminar" method="post" onsubmit="return confirm('¡ADVERTENCIA CRÍTICA! Si eliminas esta cuenta, se borrará permanentemente su perfil comercial y sus datos de beneficio. ¿Deseas continuar?');">
+                                                    <input type="hidden" name="id" value="@item.IdUsuario" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Eliminar cuenta permanentemente">
+                                                        <i class="bi bi-trash3 fs-5"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Estilos en caliente para fuentes finas si no vinieran del Layout global -->
+    <style>
+        .fw-extrabold {
+            font-weight: 800 !important;
+        }
+
+        .fs-7 {
+            font-size: 0.75rem !important;
+        }
+
+        .py-1.5 {
+            padding-top: 0.35rem !important;
+            padding-bottom: 0.35rem !important;
+        }
+    </style>
+}

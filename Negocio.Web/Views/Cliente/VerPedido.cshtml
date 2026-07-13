@@ -1,0 +1,488 @@
+﻿@model Negocio.Web.Models.Entities.Reserva
+
+@{
+    Layout = "_LayoutCliente";
+    ViewData["Title"] = "Detalle del Pedido";
+}
+
+@{
+    var saldoPendiente = Model.Total - Model.Adelanto;
+    int progreso = 20;
+    string colorClase = "primary";
+
+    switch (Model.Estado?.ToUpper())
+    {
+        case "PENDIENTE": progreso = 20; colorClase = "warning"; break;
+        case "CONFIRMADO": progreso = 40; colorClase = "primary"; break;
+        case "EN_PRODUCCION": case "PRODUCCION": progreso = 60; colorClase = "info"; break;
+        case "LISTO": progreso = 80; colorClase = "success"; break;
+        case "ENTREGADO": progreso = 100; colorClase = "dark"; break;
+        case "CANCELADO": progreso = 100; colorClase = "danger"; break;
+    }
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<div class="w-100 py-4 px-2 py-md-5" style="background-color: #0f172a; min-height: 100vh;">
+    <div class="container-fluid px-0 mx-auto" style="max-width: 1100px;">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden w-100" style="background: #ffffff;">
+
+            @* CABECERA *@
+            <div class="p-4 p-md-5 text-white text-center" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 4px solid var(--bs-@colorClase);">
+                <h2 class="fw-800 mb-1" style="font-weight: 800; font-size: clamp(22px, 4vw, 30px);">Detalle de mi Reserva</h2>
+                <p class="text-muted small mb-0 mt-2" style="color: #94a3b8 !important;">Código: <strong class="text-warning">@Model.CodigoReserva</strong></p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+
+                @* STEPPER CONTROLLER *@
+                <div class="tracking-stepper mb-5">
+                    <div class="step @(progreso >= 20 ? "active" : "")"><div class="step-icon"><i class="bi bi-clock-history"></i></div><div class="step-label">Pendiente</div></div>
+                    <div class="step @(progreso >= 40 ? "active" : "")"><div class="step-icon"><i class="bi bi-check2-circle"></i></div><div class="step-label">Confirmado</div></div>
+                    <div class="step @(progreso >= 60 ? "active" : "")"><div class="step-icon"><i class="bi bi-gear-wide-connected"></i></div><div class="step-label">Fabricando</div></div>
+                    <div class="step @(progreso >= 80 ? "active" : "")"><div class="step-icon"><i class="bi bi-box-seam"></i></div><div class="step-label">Listo</div></div>
+                    <div class="step @(progreso >= 100 ? "active" : "")"><div class="step-icon"><i class="bi bi-truck"></i></div><div class="step-label">@((Model.Estado == "CANCELADO") ? "Cancelado" : "Entregado")</div></div>
+                </div>
+
+                @* RESUMEN FINANCIERO *@
+                <div class="row g-3 mb-5 mx-0 w-100">
+                    <div class="col-12 col-md-4 px-1"><div class="finance-card"><span class="label">Inversión Total</span><span class="value">S/ @Model.Total.ToString("N2")</span></div></div>
+                    <div class="col-12 col-md-4 px-1"><div class="finance-card"><span class="label">Adelanto Pagado</span><span class="value text-success">S/ @Model.Adelanto.ToString("N2")</span></div></div>
+                    <div class="col-12 col-md-4 px-1"><div class="finance-card" style="border: 1px solid #e2e8f0;"><span class="label">Saldo Pendiente</span><span class="value text-danger">S/ @saldoPendiente.ToString("N2")</span></div></div>
+                    <div class="card border border-light-subtle rounded-4 p-4 bg-white mb-4 shadow-sm text-dark">
+                        <h5 class="fw-800 mb-3 border-bottom pb-2">
+                            <i class="bi bi-truck text-primary me-2"></i>Información de Despacho / Recojo
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-sm-6 col-md-4">
+                                <div class="p-3 bg-light bg-opacity-50 rounded-3 border h-100">
+                                    <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">Contacto</small>
+                                    <span class="fw-bold d-block text-dark">
+                                        <i class="bi bi-person-fill text-muted me-1"></i>@(string.IsNullOrEmpty(Model.NombreCliente) ? "Cliente Registrado" : Model.NombreCliente)
+                                    </span>
+                                    <span class="small text-muted">
+                                        <i class="bi bi-telephone-fill text-muted me-1"></i>@Model.Telefono
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 col-md-4">
+                                <div class="p-3 bg-light bg-opacity-50 rounded-3 border h-100">
+                                    <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">Modalidad de Entrega</small>
+                                    <span class="fw-bold d-block text-dark">
+                                        @if (Model.TipoEntrega?.ToUpper() == "RECOJO")
+                                        {
+                                            <i class="bi bi-shop text-success me-1"></i>
+                                        
+                                            <span>Recojo en Puesto / Tienda</span>
+                                        }
+                                        else if (Model.TipoEntrega?.ToUpper() == "ESTACION")
+                                        {
+                                            <i class="bi bi-train-front text-info me-1"></i>
+                                        
+                                            <span>Entrega en Estación de Tren</span>
+                                        }
+                                        else if (Model.TipoEntrega?.ToUpper() == "SHALOM")
+                                        {
+                                            <i class="bi bi-box-seam text-warning me-1"></i>
+                                        
+                                            <span>Envío por Agencia Shalom</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                                        
+                                            <span>Delivery a Domicilio / Obra</span>
+                                        }
+                                    </span>
+                                    <small class="text-muted">Fecha Solicitada: @(Model.FechaSolicitada?.ToString("dd/MM/yyyy") ?? DateTime.Now.ToString("dd/MM/yyyy"))</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="p-3 rounded-3 border h-100 @(Model.TipoEntrega?.ToUpper() == "SHALOM" ? "bg-warning bg-opacity-10 border-warning-subtle" : "bg-light bg-opacity-50")">
+                                    <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">Dirección Asignada</small>
+                                    <span class="fw-semibold text-dark small d-block">
+                                        <i class="bi bi-geo-fill @(Model.TipoEntrega?.ToUpper() == "SHALOM" ? "text-warning" : "text-secondary") me-1"></i>
+                                        @(string.IsNullOrEmpty(Model.DireccionEntrega) ? "No especificada o Recojo Físico" : Model.DireccionEntrega)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                @* MOTOR DE DESERIALIZACIÓN TRIPLE (RECUPERADO DE TU RASTREADOR) *@
+                @using System.Text.Json
+                @{
+                    JsonElement? detalle = null;
+                    try { if (!string.IsNullOrEmpty(Model.DetalleJson)) detalle = JsonSerializer.Deserialize<JsonElement>(Model.DetalleJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); } catch { }
+                }
+
+                @if (detalle.HasValue)
+                {
+                    var d = detalle.Value;
+
+                    <div class="order-details-box rounded-4 p-4 border bg-light mb-4">
+
+                        @* 🔹 CASO 1: PRODUCTOS DEL CATÁLOGO (E-COMMERCE) *@
+                        @if (d.TryGetProperty("tipo", out JsonElement tipo) && tipo.GetString() == "CATALOGO_PRODUCTOS")
+                        {
+                            <h5 class="fw-800 mb-4 border-bottom pb-2">Materiales Solicitados</h5>
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle m-0">
+                                    <thead>
+                                        <tr class="text-muted small text-uppercase">
+                                            <th>Producto</th>
+                                            <th class="text-center">Cant.</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in d.GetProperty("items").EnumerateArray())
+                                        {
+                                            var tVenta = item.TryGetProperty("TipoVenta", out JsonElement tv) ? tv.GetString() : "UNIDAD";
+                                            string etiquetaUnidad = tVenta == "METRO" ? "m" : (tVenta == "VARILLA" ? "Var." : "und.");
+
+                                            <tr>
+                                                <td>
+                                                    <strong>@(item.TryGetProperty("Descripcion", out JsonElement desc) ? desc.GetString() : "Producto")</strong>
+                                                    <br /><small class="text-muted">📐 @(item.TryGetProperty("Dimensiones", out JsonElement dim) ? dim.GetString() : "-")</small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-white border text-dark px-3">@(item.TryGetProperty("Cantidad", out JsonElement c) ? c.GetRawText() : "1") @etiquetaUnidad</span>
+                                                </td>
+                                                <td class="text-end fw-bold text-primary">S/ @(item.GetProperty("Subtotal").GetDecimal().ToString("0.00"))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        @* 🔹 CASO 2: NUEVO COTIZADOR DE RIELES *@
+                        else if (d.TryGetProperty("Producto", out JsonElement prodName))
+                        {
+                            <h5 class="fw-800 mb-4 border-bottom pb-2">Estructura a Medida</h5>
+                            <div class="text-dark p-2">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <span class="h5 fw-bold m-0">@prodName.GetString()</span>
+                                    <span class="badge bg-primary fs-6 px-4 rounded-pill shadow-sm text-white">
+                                        <i class="bi bi-rulers me-2"></i>@(d.TryGetProperty("Medida", out JsonElement med) ? med.GetString() : "-")
+                                    </span>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <div class="p-3 bg-white rounded-3 border h-100 shadow-sm">
+                                            <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Instalación</small>
+                                            <span class="fw-bold"><i class="bi bi-house-door me-2 text-primary"></i>@(d.TryGetProperty("Instalacion", out JsonElement ins) ? ins.GetString() : "TECHO")</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="p-3 bg-white rounded-3 border h-100 shadow-sm">
+                                            <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Apertura</small>
+                                            <span class="fw-bold"><i class="bi bi-arrows-expand me-2 text-primary"></i>@(d.TryGetProperty("Apertura", out JsonElement ape) ? (ape.GetString() == "AMBOS" ? "AL CENTRO" : "A UN LADO") : "SIMPLE")</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @* 🔹 CASO 3: DISEÑO ANTIGUO / FALLBACK *@
+                        else
+                        {
+                            <h5 class="fw-800 mb-4 border-bottom pb-2">Componentes del Pedido</h5>
+                            <div class="row g-3 text-dark">
+                                <div class="col-md-8">
+                                    <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 mb-3 border shadow-sm">
+                                        <div>
+                                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Estructura Base</small>
+                                            <h5 class="mb-0 fw-bold text-dark">@(d.TryGetProperty("tubo", out JsonElement tubo) ? tubo.GetString() : "PRODUCTO")</h5>
+                                        </div>
+                                        <div class="text-end">
+                                            <small class="text-info d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Medida Total</small>
+                                            <span class="fw-bold fs-5 text-dark">@(d.TryGetProperty("Metros", out JsonElement mtr1) ? mtr1.GetRawText().Replace("\"", "") : (d.TryGetProperty("metros", out JsonElement mtr2) ? mtr2.GetRawText().Replace("\"", "") : "1.00")) <small class="text-muted fw-normal">m</small></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="list-group list-group-flush border rounded-3 overflow-auto" style="max-height: 200px; background: #ffffff;">
+                                        @if (d.TryGetProperty("accesorios", out JsonElement accs) && accs.ValueKind == JsonValueKind.Array)
+                                        {
+                                            foreach (var acc in accs.EnumerateArray())
+                                            {
+                                                <div class="list-group-item d-flex justify-content-between align-items-center p-2 bg-transparent">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-dot text-success fs-4"></i>
+                                                        <div class="ms-1">
+                                                            <h6 class="mb-0 fw-normal" style="font-size: 0.85rem;">@(acc.TryGetProperty("descripcion", out JsonElement aDesc) ? aDesc.GetString() : "Accesorio")</h6>
+                                                            <small class="text-muted" style="font-size: 0.7rem;">📐 @(acc.TryGetProperty("dimension", out JsonElement aDim) ? aDim.GetString() : "-")</small>
+                                                        </div>
+                                                    </div>
+                                                    <span class="badge text-dark fw-bold" style="font-size: 0.8rem; background: #eee;">@(acc.TryGetProperty("cantidad", out JsonElement aCant) ? aCant.GetRawText().Replace("\"", "") : "1") und.</span>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="h-100 d-flex flex-column justify-content-center align-items-center rounded-4 border p-3" style="background-color: #fff5f5; border-color: #fee2e2 !important; min-height: 150px;">
+                                        <small class="text-danger d-block text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Repeticiones</small>
+                                        <div class="text-danger fw-bolder" style="font-size: 3.5rem; line-height: 1;">
+                                            @{
+                                                string combos = "1";
+                                                if (d.TryGetProperty("CantidadPiezas", out JsonElement cp1)) combos = cp1.GetRawText().Replace("\"", "");
+                                                else if (d.TryGetProperty("cantidadPiezas", out JsonElement cp2)) combos = cp2.GetRawText().Replace("\"", "");
+                                                else if (d.TryGetProperty("cantidadPedida", out JsonElement cp3)) combos = cp3.GetRawText().Replace("\"", "");
+                                            }
+                                            x@(combos)
+                                        </div>
+                                        <div class="bg-danger text-white px-3 py-1 rounded-pill mt-2 fw-bold" style="font-size: 0.65rem; text-transform: uppercase;">Módulos Iguales</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @* ==========================================
+                   📦 ACCIONES DE LA ORDEN (BIFURCACIÓN INTELIGENTE)
+                   ========================================== *@
+                <div class="row g-3 mt-4 mx-0 w-100">
+
+                    @if (Model.Estado?.ToUpper() == "PENDIENTE")
+                    {
+                        // 🧠 Evaluamos las reglas de negocio mediante Razor en el HTML
+                        bool requiereCortePrecision = Model.DetalleJson?.ToUpper().Contains("METRO") ?? false;
+                        decimal porcentaje = requiereCortePrecision ? 0.50m : 0.20m;
+                        decimal montoBoton = Model.Total * porcentaje;
+
+                        string textoAlerta = requiereCortePrecision ? "Adelanto del 50% por Corte de Precisión" : "Adelanto del 20%";
+
+                        // 🚨 ALERTA CORPORATIVA: Solo si requiere cortes milimétricos
+                        if (requiereCortePrecision)
+                        {
+                            <div class="col-12 px-1 mb-2">
+                                <div class="alert alert-info py-3 px-4 rounded-3 mb-1 border-0 shadow-sm d-flex align-items-center"
+                                     style="background-color: #ecfdf5; border-left: 5px solid #10b981 !important; color: #065f46;">
+                                    <i class="bi bi-info-circle-fill fs-4 me-3 text-emerald-600"></i>
+                                    <div>
+                                        <span class="fw-bold d-block">Aviso de Fabricación Asegurada:</span>
+                                        Al contener materiales con <strong>cortes a la medida</strong>, el sistema requiere un adelanto obligatorio del 50% para congelar los costos operativos.
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @* 🏪 BIFURCACIÓN: Evaluamos la modalidad seleccionada en la reserva *@
+                        if (Model.TipoEntrega?.ToUpper() == "RECOJO" && !requiereCortePrecision)
+                        {
+                            @* CASO A: RECOJO EN TIENDA SIN CORTES (Muestra ambos botones en paralelo) *@
+                            <div class="col-12 col-md-6 px-1 mb-2">
+                                <button id="btnPagarMercadoPago" class="btn btn-warning w-100 py-3 fw-bold rounded-3 text-dark border-0 shadow-sm" data-id="@Model.ReservaId">
+                                    <i class="bi bi-credit-card-2-back-fill me-2"></i> Pagar @textoAlerta (S/ @montoBoton.ToString("N2"))
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-6 px-1 mb-2">
+                                <button id="btnRecojoPuesto" class="btn btn-light w-100 py-3 fw-bold rounded-3 text-dark border shadow-sm" data-id="@Model.ReservaId" style="background: #f8fafc; border-color: #cbd5e1 !important;">
+                                    <i class="bi bi-shop me-2 text-primary"></i> Reservar y Pagar en Puesto
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            @* CASO B: DELIVERY O CORTES POR METROS (Solo botón amarillo obligatorio) *@
+                            <div class="col-12 px-1 mb-2">
+                                <button id="btnPagarMercadoPago" class="btn btn-warning w-100 py-3 fw-bold rounded-3 text-dark border-0 shadow-sm" data-id="@Model.ReservaId">
+                                    <i class="bi bi-credit-card-2-back-fill me-2"></i> Pagar @textoAlerta (S/ @montoBoton.ToString("N2"))
+                                </button>
+                            </div>
+                        }
+                    }
+
+                    <div class="col-12 col-sm-8 px-1">
+                        <a href="https://wa.me/51921726629?text=Hola E%26E Aluminios, deseo consultar sobre el estado de mi reserva @Model.CodigoReserva" target="_blank" class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow-sm">
+                            <i class="bi bi-whatsapp me-2"></i> Contactar Soporte Técnico
+                        </a>
+                    </div>
+
+                    <div class="col-12 col-sm-4 px-1">
+                        @if (Model.Estado != "CANCELADO" && Model.Estado != "ENTREGADO")
+                        {
+                            <button class="btn btn-outline-danger w-100 py-3 fw-bold rounded-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCancelar">Cancelar Orden</button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@* MODAL CANCELAR CONTROLADO *@
+<div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white border-0 p-3"><h5 class="modal-title fw-bold">Confirmar Cancelación</h5></div>
+            <div class="modal-body text-center p-4">¿Estás seguro de que deseas cancelar la reserva <strong>@Model.CodigoReserva</strong>?</div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Volver</button>
+                <form id="formCancelar" asp-controller="Reserva" asp-action="Cancelar" method="post" style="display:inline;">
+                    <input type="hidden" name="codigo" value="@Model.CodigoReserva" />
+                    <button id="btnSubmitCancelar" type="submit" class="btn btn-danger rounded-3 px-4">Sí, cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* OVERLAY DE PROCESAMIENTO ANTIMULTICLICKS *@
+<div id="loadingOverlay" class="loading-overlay" style="display: none !important;">
+    <div class="text-center text-white">
+        <div class="spinner-border text-light mb-3" style="width: 2.5rem; height: 2.5rem;"></div>
+        <h5 class="fw-bold">Procesando solicitud...</h5>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const overlay = document.getElementById("loadingOverlay");
+        if(overlay) overlay.style.setProperty("display", "none", "important");
+
+        const form = document.getElementById("formCancelar");
+        if(form) {
+            form.addEventListener("submit", function() {
+                if(overlay) overlay.style.setProperty("display", "flex", "important");
+                const btn = document.getElementById("btnSubmitCancelar");
+                if(btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = "Procesando...";
+                }
+            });
+        }
+
+        // =================================================================
+        // 🔥 CONTROLADOR 1: BOTÓN AMARILLO (MERCADO PAGO)
+        // =================================================================
+        const btnPagar = document.getElementById("btnPagarMercadoPago");
+        if (btnPagar) {
+            btnPagar.addEventListener("click", async function () {
+                const idReserva = this.getAttribute("data-id");
+
+                if(overlay) overlay.style.setProperty("display", "flex", "important");
+                this.disabled = true;
+                this.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> Conectando pasarela segura...`;
+
+                try {
+                    const response = await fetch(`/Cliente/IniciarPago/${idReserva}`, {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.location.href = data.urlPago;
+                    } else {
+                        const errorData = await response.json();
+                        alert(errorData.mensaje || "No se pudo generar el enlace de cobro. Revisa el estado de la orden.");
+                        if(overlay) overlay.style.setProperty("display", "none", "important");
+                        this.disabled = false;
+                        this.innerHTML = `<i class="bi bi-credit-card-2-back-fill me-2"></i> Pagar Adelanto`;
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Ocurrió un error de red inesperado.");
+                    if(overlay) overlay.style.setProperty("display", "none", "important");
+                    this.disabled = false;
+                }
+            });
+        }
+
+        // =================================================================
+        // 🔥 CONTROLADOR 2: BOTÓN GRIS (RECOJO EN PUESTO - CONTRA ENTREGA)
+        // =================================================================
+        const btnRecojo = document.getElementById("btnRecojoPuesto");
+        if (btnRecojo) {
+            btnRecojo.addEventListener("click", async function () {
+                const idReserva = this.getAttribute("data-id");
+
+                if(overlay) overlay.style.setProperty("display", "flex", "important");
+                this.disabled = true;
+                this.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> Procesando reserva...`;
+
+                try {
+                    const response = await fetch(`/Cliente/ConfirmarRecojoTienda/${idReserva}`, {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // Redactamos el mensaje corporativo exacto para tu WhatsApp de atención
+                        const mensajeWhatsApp = `¡Hola E%26E Aluminios! He seleccionado la opción de pago contra entrega en el puesto para mi pedido con código: *${data.codigo}* por un monto total de *S/ ${data.total}*. Quedo a la espera de que verifiquen el stock en el taller para pasar a recogerlo. ¡Gracias!`;
+
+                        alert("¡Reserva registrada con éxito, mi bro! Ahora te redirigiremos a WhatsApp para confirmar la atención física.");
+
+                        // Abrimos WhatsApp con el texto automatizado
+                        window.location.href = `https://wa.me/51921726629?text=${mensajeWhatsApp}`;
+                    } else {
+                        const errorData = await response.json();
+                        alert(errorData.mensaje || "No se pudo procesar la reserva en el puesto.");
+                        if(overlay) overlay.style.setProperty("display", "none", "important");
+                        this.disabled = false;
+                        this.innerHTML = `<i class="bi bi-shop me-2 text-primary"></i> Reservar y Pagar en Puesto`;
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Ocurrió un error de conexión al procesar el recojo.");
+                    if(overlay) overlay.style.setProperty("display", "none", "important");
+                    this.disabled = false;
+                }
+            });
+        }
+    })();
+</script>
+
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.9);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tracking-stepper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        padding: 0 10px;
+    }
+
+    .step {
+        width: 75px;
+        text-align: center;
+    }
+
+    .step-icon {
+        width: 45px;
+        height: 45px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        color: #cbd5e1;
+    }
+
+    .step.active .step-icon {
+        background: #0071e3;
+        color: white;
+        border-color: #0071e3;
+    }
+</style>

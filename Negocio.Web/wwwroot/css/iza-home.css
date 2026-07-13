@@ -1,0 +1,1533 @@
+﻿/* ================================================================
+   IZA MOTORS — REDISEÑO VISUAL DE LA HOME PÚBLICA
+   ----------------------------------------------------------------
+   1) Cargar ESTE archivo después de home-estilos.css.
+   2) Agregar class="iza-home" al <body> de la vista padre.
+   3) Este archivo cambia la presentación, no las rutas ni el JS.
+   ================================================================ */
+
+:root {
+    --iza-red: #ed1c24;
+    --iza-red-dark: #c81018;
+    --iza-red-soft: #fff1f2;
+    --iza-black: #090909;
+    --iza-dark: #151515;
+    --iza-dark-2: #222222;
+    --iza-white: #ffffff;
+    --iza-light: #f5f5f5;
+    --iza-light-2: #fafafa;
+    --iza-gray: #6b6b6b;
+    --iza-gray-dark: #333333;
+    --iza-border: #e6e6e6;
+    --iza-shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.07);
+    --iza-shadow-md: 0 14px 38px rgba(0, 0, 0, 0.12);
+    --iza-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.22);
+    --iza-radius-sm: 6px;
+    --iza-radius-md: 10px;
+    --iza-radius-lg: 16px;
+    --iza-header-height: 84px;
+}
+
+/* ================================================================
+   01. BASE GENERAL
+   ================================================================ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+    body.iza-home {
+        margin: 0;
+        padding-top: var(--iza-header-height);
+        background: var(--iza-white);
+        color: var(--iza-black);
+        font-family: "Inter", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+        body.iza-home * {
+            box-sizing: border-box;
+        }
+
+        body.iza-home img {
+            max-width: 100%;
+        }
+
+        body.iza-home a {
+            text-underline-offset: 3px;
+        }
+
+        body.iza-home ::selection {
+            color: var(--iza-white);
+            background: var(--iza-red);
+        }
+
+        body.iza-home #inicio,
+        body.iza-home #trabajos-reales,
+        body.iza-home #como-trabajamos,
+        body.iza-home #envios,
+        body.iza-home #preguntas,
+        body.iza-home #cotizar,
+        body.iza-home #contacto {
+            scroll-margin-top: calc(var(--iza-header-height) + 12px);
+        }
+
+        body.iza-home .fw-800 {
+            font-weight: 800 !important;
+        }
+
+        body.iza-home .text-success {
+            color: var(--iza-red) !important;
+        }
+
+        body.iza-home .bg-success {
+            background-color: var(--iza-red) !important;
+        }
+
+        body.iza-home .btn-success {
+            background-color: var(--iza-red) !important;
+            border-color: var(--iza-red) !important;
+        }
+
+            body.iza-home .btn-success:hover,
+            body.iza-home .btn-success:focus {
+                background-color: var(--iza-red-dark) !important;
+                border-color: var(--iza-red-dark) !important;
+            }
+
+        /* ================================================================
+   02. HEADER / TOPBAR
+   ================================================================ */
+
+        body.iza-home .topbar-sticky {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 9999;
+            min-height: var(--iza-header-height);
+            padding: 0 6% !important;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.98);
+            border-bottom: 1px solid var(--iza-border);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+            body.iza-home .topbar-sticky > .d-flex {
+                min-height: var(--iza-header-height);
+            }
+
+            /* El menú central queda oculto para acercarnos al header de referencia. */
+            body.iza-home .topbar-sticky .central-nav-tabs {
+                display: none !important;
+            }
+
+            body.iza-home .topbar-sticky a[title="E&E Aluminios"],
+            body.iza-home .topbar-sticky a[title="Iza Motors"] {
+                min-width: 180px;
+            }
+
+        body.iza-home .iza-header-logo {
+            width: 190px;
+            max-height: 62px;
+            display: block;
+            object-fit: contain;
+            object-position: left center;
+        }
+
+        /* Mientras todavía se usa el bloque textual anterior. */
+        body.iza-home .topbar-sticky .text-white {
+            color: var(--iza-black) !important;
+        }
+
+        body.iza-home .topbar-sticky span[style*="rgba(255,255,255,0.55)"] {
+            color: var(--iza-gray) !important;
+        }
+
+        body.iza-home .topbar-sticky .dot {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+        }
+
+        body.iza-home .topbar-sticky .dropdown-menu {
+            min-width: 230px;
+            padding: 8px;
+            background: var(--iza-white) !important;
+            border: 1px solid var(--iza-border) !important;
+            border-radius: 10px;
+            box-shadow: var(--iza-shadow-md);
+        }
+
+            body.iza-home .topbar-sticky .dropdown-menu .dropdown-item,
+            body.iza-home .topbar-sticky .dropdown-menu .text-light,
+            body.iza-home .topbar-sticky .dropdown-menu .text-white-50 {
+                color: var(--iza-gray-dark) !important;
+            }
+
+            body.iza-home .topbar-sticky .dropdown-menu .dropdown-item {
+                padding: 10px 12px;
+                border-radius: 7px;
+                font-size: 0.88rem;
+            }
+
+                body.iza-home .topbar-sticky .dropdown-menu .dropdown-item:hover,
+                body.iza-home .topbar-sticky .dropdown-menu .dropdown-item:focus {
+                    color: var(--iza-red) !important;
+                    background: var(--iza-red-soft) !important;
+                }
+
+        body.iza-home .topbar-sticky .dropdown-divider {
+            border-color: var(--iza-border) !important;
+        }
+
+        /* Acceso visual a repuestos/carrito sin exigir lógica nueva. */
+        body.iza-home .iza-header-action {
+            min-height: 38px;
+            padding: 0 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--iza-red);
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-radius: 7px;
+            transition: background-color 0.2s ease;
+        }
+
+            body.iza-home .iza-header-action:hover {
+                color: var(--iza-red-dark);
+                background: var(--iza-red-soft);
+            }
+
+            body.iza-home .iza-header-action i {
+                font-size: 1.35rem;
+            }
+
+        /* Buscador conservado, pero con aspecto claro. */
+        body.iza-home .search-mockup {
+            width: clamp(180px, 20vw, 270px);
+            min-height: 40px;
+            padding: 5px 13px;
+            display: flex;
+            align-items: center;
+            background: #f7f7f7;
+            border: 1px solid #dddddd;
+            border-radius: 7px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+            body.iza-home .search-mockup:focus-within {
+                border-color: var(--iza-red);
+                box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.11);
+            }
+
+            body.iza-home .search-mockup > i {
+                color: #777777 !important;
+            }
+
+            body.iza-home .search-mockup input {
+                width: 100%;
+                min-width: 0;
+                color: var(--iza-black);
+                background: transparent;
+                border: 0;
+                outline: 0;
+                font-size: 0.82rem;
+            }
+
+                body.iza-home .search-mockup input::placeholder {
+                    color: #8b8b8b;
+                }
+
+        body.iza-home #listaResultadosTop {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            left: auto;
+            z-index: 10020;
+            width: min(360px, 88vw);
+            max-height: 390px;
+            overflow-y: auto;
+            background: var(--iza-white);
+            border: 1px solid var(--iza-border);
+            border-radius: 10px;
+            box-shadow: var(--iza-shadow-md);
+        }
+
+            body.iza-home #listaResultadosTop .hover-bg:hover {
+                background: #f8f8f8;
+            }
+
+            body.iza-home #listaResultadosTop .text-primary {
+                color: var(--iza-red) !important;
+            }
+
+            body.iza-home #listaResultadosTop::-webkit-scrollbar {
+                width: 7px;
+            }
+
+            body.iza-home #listaResultadosTop::-webkit-scrollbar-thumb {
+                background: #cccccc;
+                border-radius: 99px;
+            }
+
+        /* Cuenta y hamburguesa. */
+        body.iza-home .btn-login-lock,
+        body.iza-home .btn-menu-burger {
+            min-width: 38px;
+            width: 38px !important;
+            height: 38px !important;
+            margin: 0 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--iza-red) !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 7px;
+            box-shadow: none !important;
+            text-decoration: none;
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+
+            body.iza-home .btn-login-lock:hover,
+            body.iza-home .btn-login-lock:focus,
+            body.iza-home .btn-menu-burger:hover,
+            body.iza-home .btn-menu-burger:focus {
+                color: var(--iza-red-dark) !important;
+                background: var(--iza-red-soft) !important;
+                transform: none !important;
+            }
+
+            body.iza-home .btn-login-lock i,
+            body.iza-home .btn-menu-burger i {
+                color: inherit !important;
+                font-size: 1.35rem;
+                animation: none !important;
+                transform: none !important;
+            }
+
+        /* ================================================================
+   03. OFFCANVAS / MENÚ MÓVIL
+   ================================================================ */
+
+        body.iza-home .menu-movil-dark {
+            width: min(330px, 88vw) !important;
+            color: var(--iza-white);
+            background: var(--iza-black) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.09) !important;
+        }
+
+            body.iza-home .menu-movil-dark .offcanvas-header {
+                min-height: 76px;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+
+            body.iza-home .menu-movil-dark .offcanvas-title i,
+            body.iza-home .menu-movil-dark .menu-movil-item i.text-success {
+                color: var(--iza-red) !important;
+            }
+
+        body.iza-home .menu-movil-item {
+            padding: 1.15rem 1.35rem !important;
+            color: #eeeeee !important;
+            background: transparent !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            font-size: 0.93rem;
+            font-weight: 600;
+        }
+
+            body.iza-home .menu-movil-item:hover,
+            body.iza-home .menu-movil-item:focus,
+            body.iza-home .menu-movil-item:active {
+                padding-left: 1.55rem !important;
+                color: var(--iza-white) !important;
+                background: rgba(237, 28, 36, 0.12) !important;
+            }
+
+        body.iza-home .menu-movil-subitem {
+            padding: 0.88rem 1.4rem 0.88rem 2.6rem !important;
+            color: #bdbdbd !important;
+            background: #141414 !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+            body.iza-home .menu-movil-subitem:hover,
+            body.iza-home .menu-movil-subitem:focus {
+                color: var(--iza-white) !important;
+                background: #202020 !important;
+            }
+
+        /* ================================================================
+   04. HERO — COMPATIBLE CON EL MARKUP ACTUAL Y EL NUEVO
+   ================================================================ */
+
+        body.iza-home .hero,
+        body.iza-home .iza-hero {
+            position: relative;
+            min-height: 555px;
+            padding: 70px 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            color: var(--iza-white);
+            background-color: var(--iza-black);
+            background-image: url("/img/iza/hero-taller.webp");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            isolation: isolate;
+        }
+
+            body.iza-home .hero::before,
+            body.iza-home .iza-hero::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                z-index: -2;
+                background: linear-gradient( 90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.80) 45%, rgba(0, 0, 0, 0.46) 100% );
+            }
+
+            body.iza-home .hero::after,
+            body.iza-home .iza-hero::after {
+                content: "";
+                position: absolute;
+                inset: auto -8% -34% 40%;
+                z-index: -1;
+                height: 70%;
+                background: radial-gradient(circle, rgba(237, 28, 36, 0.27), transparent 66%);
+                pointer-events: none;
+            }
+
+            body.iza-home .hero > .container,
+            body.iza-home .iza-hero > .container {
+                position: relative;
+                z-index: 2;
+                width: 100%;
+            }
+
+        body.iza-home .hero-layout {
+            width: 100%;
+            min-height: 390px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        body.iza-home .hero-content {
+            max-width: 610px;
+            padding: 0;
+            animation: izaFadeUp 0.7s ease both;
+        }
+
+        body.iza-home .hero h1,
+        body.iza-home .iza-hero-copy h1 {
+            margin: 0 0 20px;
+            color: var(--iza-white);
+            background: none;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
+            font-family: "Oswald", "Arial Narrow", Arial, sans-serif;
+            font-size: clamp(3rem, 5.2vw, 5.25rem);
+            font-weight: 700;
+            line-height: 0.98;
+            letter-spacing: -1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        body.iza-home .hero p,
+        body.iza-home .iza-hero-copy p {
+            max-width: 560px;
+            margin: 0 0 26px;
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 1.05rem;
+            line-height: 1.65;
+        }
+
+        body.iza-home .iza-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--iza-red);
+            font-size: 0.77rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.7px;
+        }
+
+            body.iza-home .iza-eyebrow::before {
+                content: "";
+                width: 28px;
+                height: 3px;
+                background: var(--iza-red);
+            }
+
+        /* Botones del hero actual. */
+        body.iza-home .panel-botones-flotantes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: min(360px, 100%);
+        }
+
+        body.iza-home .btn-tech-primary,
+        body.iza-home .iza-btn-red {
+            min-height: 52px;
+            padding: 14px 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--iza-white) !important;
+            background: var(--iza-red) !important;
+            background-image: none !important;
+            border: 1px solid var(--iza-red) !important;
+            border-radius: 5px;
+            box-shadow: 0 10px 24px rgba(237, 28, 36, 0.28);
+            font-size: 0.94rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+            body.iza-home .btn-tech-primary::before {
+                display: none !important;
+            }
+
+            body.iza-home .btn-tech-primary:hover,
+            body.iza-home .iza-btn-red:hover {
+                color: var(--iza-white) !important;
+                background: var(--iza-red-dark) !important;
+                border-color: var(--iza-red-dark) !important;
+                box-shadow: 0 13px 30px rgba(237, 28, 36, 0.32);
+                transform: translateY(-2px);
+            }
+
+        body.iza-home .btn-tech-outline,
+        body.iza-home .iza-btn-outline {
+            min-height: 52px;
+            padding: 14px 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--iza-white) !important;
+            background: rgba(0, 0, 0, 0.38) !important;
+            border: 1px solid rgba(255, 255, 255, 0.55) !important;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+            body.iza-home .btn-tech-outline:hover,
+            body.iza-home .iza-btn-outline:hover {
+                color: var(--iza-black) !important;
+                background: var(--iza-white) !important;
+                border-color: var(--iza-white) !important;
+                transform: translateY(-2px);
+            }
+
+        body.iza-home .iza-btn-white {
+            min-height: 50px;
+            padding: 13px 23px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--iza-black) !important;
+            background: var(--iza-white);
+            border: 1px solid var(--iza-white);
+            border-radius: 4px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+            body.iza-home .iza-btn-white:hover {
+                color: var(--iza-red) !important;
+                background: #f4f4f4;
+            }
+
+        /* Selector de vehículo del nuevo hero. */
+        body.iza-home .iza-vehicle-selector {
+            width: 100%;
+            max-width: 350px;
+            padding: 28px;
+            color: var(--iza-black);
+            background: var(--iza-white);
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            border-radius: 8px;
+            box-shadow: var(--iza-shadow-lg);
+        }
+
+            body.iza-home .iza-vehicle-selector h3 {
+                margin: 0 0 18px;
+                color: var(--iza-dark);
+                font-size: 1.32rem;
+                font-weight: 800;
+            }
+
+            body.iza-home .iza-vehicle-selector .form-select,
+            body.iza-home .iza-vehicle-selector .form-control {
+                min-height: 50px;
+                color: var(--iza-gray-dark);
+                background-color: #fafafa;
+                border: 1px solid #dddddd;
+                border-radius: 6px;
+                box-shadow: none;
+                font-size: 0.9rem;
+            }
+
+                body.iza-home .iza-vehicle-selector .form-select:focus,
+                body.iza-home .iza-vehicle-selector .form-control:focus {
+                    border-color: var(--iza-red);
+                    box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.11);
+                }
+
+                body.iza-home .iza-vehicle-selector .form-select:disabled {
+                    color: #666666;
+                    opacity: 1;
+                }
+
+        body.iza-home .iza-hero-product {
+            width: 100%;
+            max-width: 520px;
+            max-height: 450px;
+            object-fit: contain;
+            filter: drop-shadow(0 24px 35px rgba(0, 0, 0, 0.52));
+            animation: izaProductFloat 5s ease-in-out infinite;
+        }
+
+@keyframes izaFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes izaProductFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-9px);
+    }
+}
+
+/* ================================================================
+   05. ENCABEZADOS DE SECCIÓN
+   ================================================================ */
+
+body.iza-home section h2,
+body.iza-home section h3 {
+    color: var(--iza-dark);
+}
+
+body.iza-home section .display-5,
+body.iza-home section .display-6 {
+    font-family: "Oswald", "Arial Narrow", Arial, sans-serif;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+}
+
+body.iza-home #trabajos-reales .bg-success,
+body.iza-home section .mx-auto.bg-success {
+    width: 70px !important;
+    height: 4px !important;
+    background: var(--iza-red) !important;
+    border-radius: 0 !important;
+}
+
+/* ================================================================
+   06. PROYECTOS / SWIPER
+   ================================================================ */
+
+body.iza-home #trabajos-reales {
+    padding: 58px 0 64px !important;
+    background: var(--iza-white) !important;
+    border-color: var(--iza-border) !important;
+}
+
+    body.iza-home #trabajos-reales .trabajo-item-card,
+    body.iza-home .trabajo-item-card {
+        height: 100%;
+        overflow: hidden;
+        background: var(--iza-white) !important;
+        border: 1px solid var(--iza-border);
+        border-radius: 8px;
+        box-shadow: var(--iza-shadow-sm);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+        body.iza-home .trabajo-item-card:hover {
+            border-color: rgba(237, 28, 36, 0.35);
+            box-shadow: var(--iza-shadow-md);
+            transform: translateY(-5px);
+        }
+
+body.iza-home .trabajo-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 305px;
+    overflow: hidden;
+    background: #e9e9e9 !important;
+    border-bottom: 4px solid var(--iza-red);
+}
+
+    body.iza-home .trabajo-img-wrapper img,
+    body.iza-home .swiper-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+        transition: transform 0.45s ease;
+    }
+
+body.iza-home .trabajo-item-card:hover .trabajo-img-wrapper img {
+    transform: scale(1.055);
+}
+
+body.iza-home .trabajo-overlay {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    left: auto;
+    padding: 0;
+    background: transparent !important;
+}
+
+    body.iza-home .trabajo-overlay span {
+        display: inline-flex;
+        padding: 7px 12px;
+        color: var(--iza-white) !important;
+        background: var(--iza-red) !important;
+        border-radius: 4px;
+        font-size: 0.7rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        text-shadow: none !important;
+    }
+
+body.iza-home .trabajo-item-card h6,
+body.iza-home .trabajo-item-card h4 {
+    color: var(--iza-dark);
+    font-weight: 800;
+}
+
+body.iza-home .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: #bcbcbc;
+    opacity: 1;
+}
+
+body.iza-home .swiper-pagination-bullet-active {
+    width: 25px;
+    border-radius: 99px;
+    background: var(--iza-red);
+}
+
+/* ================================================================
+   07. CÓMO TRABAJAMOS
+   ================================================================ */
+
+body.iza-home .work-flow-minimal {
+    padding: 76px 0;
+    background: var(--iza-black) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+    body.iza-home .work-flow-minimal h2,
+    body.iza-home .work-flow-minimal h5 {
+        color: var(--iza-white) !important;
+    }
+
+    body.iza-home .work-flow-minimal .text-success {
+        color: var(--iza-red) !important;
+    }
+
+    body.iza-home .work-flow-minimal .bg-success {
+        background: var(--iza-red) !important;
+    }
+
+body.iza-home .minimal-step-card {
+    padding: 1.6rem;
+    background: #131313;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    transition: border-color 0.22s ease, background-color 0.22s ease;
+}
+
+    body.iza-home .minimal-step-card:hover {
+        background: #181818;
+        border-color: rgba(237, 28, 36, 0.45);
+    }
+
+    body.iza-home .minimal-step-card.highlight-minimal {
+        background: rgba(237, 28, 36, 0.08);
+        border-color: rgba(237, 28, 36, 0.45);
+    }
+
+    body.iza-home .minimal-step-card .step-num {
+        color: rgba(255, 255, 255, 0.18);
+        font-family: "Oswald", "Arial Narrow", Arial, sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    body.iza-home .minimal-step-card .text-success,
+    body.iza-home .minimal-step-card .highlight-minimal .step-num {
+        color: var(--iza-red) !important;
+    }
+
+body.iza-home .btn-tutorial {
+    color: #efefef !important;
+    background: transparent;
+    border: 0;
+    font-size: 0.76rem;
+}
+
+    body.iza-home .btn-tutorial:hover {
+        color: var(--iza-red) !important;
+        opacity: 1;
+    }
+
+/* ================================================================
+   08. LOGÍSTICA / ENTREGA
+   ================================================================ */
+
+body.iza-home .delivery-section {
+    padding: 78px 0;
+    background: var(--iza-light-2) !important;
+    border-color: var(--iza-border) !important;
+}
+
+body.iza-home .delivery-card {
+    padding: 2rem;
+    background: var(--iza-white);
+    border: 1px solid var(--iza-border);
+    border-radius: 9px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+
+    body.iza-home .delivery-card:hover {
+        background: var(--iza-white);
+        border-color: #cccccc;
+        box-shadow: var(--iza-shadow-md);
+        transform: translateY(-4px);
+    }
+
+    body.iza-home .delivery-card.highlight {
+        background: var(--iza-red-soft) !important;
+        border: 2px solid var(--iza-red) !important;
+    }
+
+        body.iza-home .delivery-card.highlight:hover {
+            box-shadow: 0 18px 38px rgba(237, 28, 36, 0.13);
+        }
+
+body.iza-home .delivery-icon {
+    width: 54px;
+    height: 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--iza-white) !important;
+    background: var(--iza-red) !important;
+    border-radius: 8px;
+    font-size: 1.45rem;
+}
+
+    body.iza-home .delivery-icon.truck,
+    body.iza-home .delivery-icon.shop,
+    body.iza-home .delivery-icon.train {
+        color: var(--iza-white) !important;
+        background: var(--iza-red) !important;
+    }
+
+body.iza-home .delivery-card h5,
+body.iza-home .delivery-card h6 {
+    color: var(--iza-dark) !important;
+}
+
+body.iza-home .price-tag {
+    color: var(--iza-red) !important;
+    background: var(--iza-white);
+    border: 1px solid var(--iza-border);
+    box-shadow: none;
+}
+
+body.iza-home .delivery-list li {
+    color: #505050;
+}
+
+    body.iza-home .delivery-list li i.text-success,
+    body.iza-home .delivery-list li i.text-primary {
+        color: var(--iza-red) !important;
+    }
+
+/* ================================================================
+   09. FAQ
+   ================================================================ */
+
+body.iza-home .faq-section {
+    padding: 78px 0;
+    background: var(--iza-white) !important;
+}
+
+body.iza-home .custom-faq .accordion-item {
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: var(--iza-white);
+    border: 1px solid var(--iza-border) !important;
+    border-radius: 8px !important;
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    body.iza-home .custom-faq .accordion-item:hover {
+        border-color: #cfcfcf !important;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        transform: none;
+    }
+
+body.iza-home .custom-faq .accordion-button {
+    padding: 1.35rem 1.4rem;
+    color: var(--iza-dark);
+    background: var(--iza-white);
+    border-radius: 8px !important;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+    body.iza-home .custom-faq .accordion-button i {
+        color: var(--iza-red);
+    }
+
+    body.iza-home .custom-faq .accordion-button:not(.collapsed) {
+        color: var(--iza-white);
+        background: var(--iza-red);
+        border-bottom-color: var(--iza-red);
+        border-radius: 8px 8px 0 0 !important;
+    }
+
+        body.iza-home .custom-faq .accordion-button:not(.collapsed) i {
+            color: var(--iza-white);
+        }
+
+        body.iza-home .custom-faq .accordion-button:not(.collapsed)::after {
+            filter: brightness(0) invert(1);
+        }
+
+body.iza-home .custom-faq .accordion-body {
+    padding: 1.4rem;
+    color: #4d4d4d;
+    background: var(--iza-white);
+    line-height: 1.7;
+}
+
+/* ================================================================
+   10. COTIZADOR / TARJETAS DE SERVICIOS
+   ================================================================ */
+
+body.iza-home .cotizador-section {
+    padding: 78px 0;
+    background: var(--iza-light) !important;
+    border-color: var(--iza-border) !important;
+}
+
+    body.iza-home .cotizador-section::before {
+        background-image: linear-gradient(rgba(237, 28, 36, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(237, 28, 36, 0.035) 1px, transparent 1px);
+        background-size: 32px 32px;
+    }
+
+body.iza-home .cotizador-pro-card {
+    padding: 1rem;
+    overflow: hidden;
+    background: var(--iza-white);
+    border: 1px solid var(--iza-border);
+    border-radius: 9px;
+    box-shadow: var(--iza-shadow-sm);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+    body.iza-home .cotizador-pro-card:hover {
+        border-color: rgba(237, 28, 36, 0.55);
+        box-shadow: 0 18px 38px rgba(0, 0, 0, 0.12);
+        transform: translateY(-7px);
+    }
+
+body.iza-home .img-tech-container {
+    height: 180px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+    background: #eeeeee;
+    border-radius: 6px;
+}
+
+    body.iza-home .img-tech-container::after {
+        display: none;
+    }
+
+body.iza-home .card-tech-info h5 {
+    color: var(--iza-dark);
+    font-weight: 800;
+}
+
+body.iza-home .card-tech-info p {
+    color: var(--iza-gray);
+}
+
+body.iza-home .cotizador-pro-card:hover .card-tech-info h5 {
+    color: var(--iza-red);
+}
+
+body.iza-home .btn-tech-start {
+    min-height: 43px;
+    color: var(--iza-gray-dark);
+    background: #eeeeee;
+    border-radius: 5px;
+    font-weight: 800;
+}
+
+    body.iza-home .btn-tech-start i {
+        color: var(--iza-white);
+        background: var(--iza-red);
+        box-shadow: none;
+    }
+
+body.iza-home .cotizador-pro-card:hover .btn-tech-start {
+    color: var(--iza-white);
+    background: var(--iza-red);
+    box-shadow: none;
+}
+
+    body.iza-home .cotizador-pro-card:hover .btn-tech-start i {
+        color: var(--iza-red);
+        background: var(--iza-white);
+    }
+
+/* ================================================================
+   11. BOTONES FLOTANTES
+   ================================================================ */
+
+body.iza-home .whatsapp-float,
+body.iza-home .video-float-btn,
+body.iza-home .reserva-float-m {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+body.iza-home .whatsapp-float {
+    right: 28px;
+    bottom: 26px;
+    background: #25d366;
+    animation: none;
+}
+
+    body.iza-home .whatsapp-float:hover {
+        background: #1fbd59;
+        transform: translateY(-3px);
+    }
+
+body.iza-home .video-tutorial-wrapper {
+    right: 28px;
+    bottom: 96px;
+}
+
+body.iza-home .video-float-btn {
+    color: var(--iza-white) !important;
+    background: var(--iza-red);
+    border: 0;
+    box-shadow: 0 8px 24px rgba(237, 28, 36, 0.28);
+}
+
+    body.iza-home .video-float-btn:hover {
+        background: var(--iza-red-dark);
+        transform: translateY(-3px);
+    }
+
+body.iza-home .video-menu-panel {
+    right: 0;
+    bottom: 68px;
+    overflow: hidden;
+    background: var(--iza-white);
+    border: 1px solid var(--iza-border);
+    border-radius: 10px;
+    box-shadow: var(--iza-shadow-md);
+}
+
+body.iza-home .video-menu-header {
+    background: var(--iza-black);
+}
+
+body.iza-home .btn-ver-video {
+    color: var(--iza-red);
+    background: var(--iza-red-soft);
+}
+
+    body.iza-home .btn-ver-video:hover {
+        color: var(--iza-white);
+        background: var(--iza-red);
+    }
+
+body.iza-home .reserva-float-m {
+    right: 28px;
+    bottom: 166px !important;
+    color: var(--iza-white) !important;
+    background: var(--iza-black);
+    animation: none !important;
+}
+
+    body.iza-home .reserva-float-m .icon-box-m {
+        width: 56px;
+        height: 56px;
+    }
+
+    body.iza-home .reserva-float-m.expanded {
+        width: 228px;
+        background: var(--iza-red);
+    }
+
+        body.iza-home .reserva-float-m.expanded .text-box-m {
+            max-width: 170px;
+        }
+
+/* ================================================================
+   12. PRELOADER
+   ================================================================ */
+
+body.iza-home #custom-preloader {
+    background: var(--iza-black) !important;
+}
+
+    body.iza-home #custom-preloader .stroke-green {
+        stroke: var(--iza-red);
+        color: var(--iza-red);
+    }
+
+    body.iza-home #custom-preloader .stroke-gray {
+        stroke: #f0f0f0;
+        color: #f0f0f0;
+    }
+
+    body.iza-home #custom-preloader .loader-text-status {
+        color: var(--iza-white);
+        letter-spacing: 0.3px;
+    }
+
+/* ================================================================
+   13. MODALES
+   ================================================================ */
+
+body.iza-home .modal-backdrop {
+    z-index: 10040 !important;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+body.iza-home .modal.fade {
+    z-index: 10050 !important;
+}
+
+body.iza-home .modal-content {
+    border-radius: 10px !important;
+}
+
+body.iza-home .modal-header.bg-dark {
+    background: var(--iza-black) !important;
+}
+
+body.iza-home .modal-header.bg-success {
+    background: var(--iza-red) !important;
+}
+
+body.iza-home .modal .btn-secondary {
+    color: var(--iza-white);
+    background: var(--iza-gray-dark);
+    border-color: var(--iza-gray-dark);
+}
+
+body.iza-home .btn-close-custom:hover {
+    color: var(--iza-white);
+    background: var(--iza-red);
+}
+
+/* ================================================================
+   14. FOOTER
+   ================================================================ */
+
+body.iza-home footer,
+body.iza-home .footer-cotizacion {
+    color: #d8d8d8;
+    background: var(--iza-black) !important;
+}
+
+    body.iza-home .footer-cotizacion h5,
+    body.iza-home .footer-cotizacion h6 {
+        color: var(--iza-white);
+    }
+
+    body.iza-home .footer-cotizacion .footer-link:hover {
+        color: var(--iza-red);
+    }
+
+body.iza-home .footer-divider {
+    border-color: rgba(255, 255, 255, 0.11);
+}
+
+/* ================================================================
+   15. SKELETON DEL BUSCADOR
+   ================================================================ */
+
+body.iza-home .skeleton-item {
+    background: var(--iza-white);
+}
+
+body.iza-home .skeleton-img,
+body.iza-home .skeleton-text-title,
+body.iza-home .skeleton-text-price {
+    background: #e9e9e9;
+}
+
+/* ================================================================
+   16. RESPONSIVE
+   ================================================================ */
+
+@media (min-width: 1200px) {
+    body.iza-home .btn-menu-burger {
+        display: inline-flex !important;
+    }
+
+    /* Botonera actual del hero, colocada como la referencia. */
+    body.iza-home .hero .panel-botones-flotantes {
+        position: absolute !important;
+        top: 50% !important;
+        right: 5.5% !important;
+        width: 340px !important;
+        transform: translateY(-50%) !important;
+    }
+
+    body.iza-home .hero .hero-content {
+        width: 52%;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    :root {
+        --iza-header-height: 76px;
+    }
+
+    body.iza-home .topbar-sticky,
+    body.iza-home .topbar-sticky > .d-flex {
+        min-height: var(--iza-header-height);
+    }
+
+    body.iza-home .topbar-sticky {
+        padding: 0 24px !important;
+    }
+
+    body.iza-home .search-mockup {
+        width: 190px !important;
+        margin-right: 0 !important;
+    }
+
+    body.iza-home .hero-layout {
+        min-height: 360px;
+    }
+
+    body.iza-home .panel-botones-flotantes {
+        width: 310px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    :root {
+        --iza-header-height: 72px;
+    }
+
+    body.iza-home .topbar-sticky {
+        padding: 0 16px !important;
+    }
+
+        body.iza-home .topbar-sticky > .d-flex {
+            min-height: var(--iza-header-height);
+        }
+
+    body.iza-home .iza-header-logo {
+        width: 145px;
+        max-height: 50px;
+    }
+
+    body.iza-home .topbar-sticky a[title="E&E Aluminios"],
+    body.iza-home .topbar-sticky a[title="Iza Motors"] {
+        min-width: auto;
+    }
+
+    body.iza-home .search-mockup {
+        width: 160px !important;
+    }
+
+    body.iza-home .hero,
+    body.iza-home .iza-hero {
+        min-height: auto;
+        padding: 54px 0;
+        text-align: center;
+        background-position: center;
+    }
+
+        body.iza-home .hero::before,
+        body.iza-home .iza-hero::before {
+            background: rgba(0, 0, 0, 0.82);
+        }
+
+    body.iza-home .hero-layout {
+        min-height: 0;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+    }
+
+    body.iza-home .hero-content {
+        max-width: 680px;
+        text-align: center;
+    }
+
+    body.iza-home .hero h1,
+    body.iza-home .iza-hero-copy h1 {
+        font-size: clamp(2.4rem, 8vw, 4rem);
+        letter-spacing: -0.8px;
+    }
+
+    body.iza-home .hero p,
+    body.iza-home .iza-hero-copy p {
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    body.iza-home .panel-botones-flotantes {
+        width: min(430px, 100%) !important;
+        margin: 0 auto !important;
+        position: static !important;
+        transform: none !important;
+    }
+
+    body.iza-home .iza-vehicle-selector {
+        margin: 0 auto;
+    }
+
+    body.iza-home .iza-eyebrow {
+        justify-content: center;
+    }
+
+    body.iza-home .iza-hero-product {
+        max-height: 300px;
+    }
+
+    body.iza-home .delivery-section,
+    body.iza-home .faq-section,
+    body.iza-home .cotizador-section,
+    body.iza-home .work-flow-minimal {
+        padding: 60px 0;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.iza-home .topbar-sticky {
+        padding: 0 12px !important;
+    }
+
+        body.iza-home .topbar-sticky .search-mockup {
+            display: none !important;
+        }
+
+        body.iza-home .topbar-sticky .gap-2,
+        body.iza-home .topbar-sticky .gap-sm-3 {
+            gap: 4px !important;
+        }
+
+    body.iza-home .iza-header-logo {
+        width: 124px;
+    }
+
+    /* Si todavía se usa el bloque textual anterior, compactarlo. */
+    body.iza-home .topbar-sticky .d-flex.flex-column span:first-child {
+        font-size: 0.78rem !important;
+    }
+
+    body.iza-home .topbar-sticky .d-flex.flex-column span:last-child {
+        display: none !important;
+    }
+
+    body.iza-home .hero,
+    body.iza-home .iza-hero {
+        padding: 42px 0 48px;
+    }
+
+        body.iza-home .hero h1,
+        body.iza-home .iza-hero-copy h1 {
+            font-size: clamp(2rem, 11vw, 3.25rem);
+        }
+
+        body.iza-home .hero p,
+        body.iza-home .iza-hero-copy p {
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+
+    body.iza-home .iza-vehicle-selector {
+        padding: 21px;
+    }
+
+    body.iza-home #trabajos-reales {
+        padding: 46px 0 52px !important;
+    }
+
+    body.iza-home .trabajo-img-wrapper {
+        height: 285px;
+    }
+
+    body.iza-home .horizontal-mobile-card {
+        padding: 11px 12px !important;
+        gap: 12px !important;
+        border-radius: 8px !important;
+    }
+
+        body.iza-home .horizontal-mobile-card .img-tech-container {
+            width: 68px !important;
+            min-width: 68px !important;
+            height: 68px !important;
+            border-radius: 5px !important;
+        }
+
+        body.iza-home .horizontal-mobile-card .btn-tech-start i {
+            color: var(--iza-white) !important;
+            background: var(--iza-red) !important;
+        }
+
+    body.iza-home .delivery-card,
+    body.iza-home .minimal-step-card {
+        border-radius: 8px !important;
+    }
+
+    body.iza-home .whatsapp-float,
+    body.iza-home .video-tutorial-wrapper,
+    body.iza-home .reserva-float-m {
+        right: 18px;
+    }
+
+    body.iza-home .whatsapp-float {
+        bottom: 18px;
+    }
+
+    body.iza-home .video-tutorial-wrapper {
+        bottom: 86px;
+    }
+
+    body.iza-home .reserva-float-m {
+        bottom: 154px !important;
+    }
+
+    body.iza-home .video-menu-panel {
+        width: min(270px, calc(100vw - 36px));
+    }
+}
+
+@media (max-width: 575.98px) {
+    body.iza-home .hero .container,
+    body.iza-home .iza-hero .container {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    body.iza-home .hero h1,
+    body.iza-home .iza-hero-copy h1 {
+        font-size: 2.35rem;
+    }
+
+    body.iza-home .btn-tech-primary,
+    body.iza-home .btn-tech-outline,
+    body.iza-home .iza-btn-red,
+    body.iza-home .iza-btn-white,
+    body.iza-home .iza-btn-outline {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 16px;
+        font-size: 0.84rem;
+    }
+
+    body.iza-home .iza-vehicle-selector {
+        max-width: none;
+    }
+
+        body.iza-home .iza-vehicle-selector h3 {
+            font-size: 1.15rem;
+        }
+
+        body.iza-home .iza-vehicle-selector .form-select,
+        body.iza-home .iza-vehicle-selector .form-control {
+            min-height: 46px;
+            font-size: 0.83rem;
+        }
+
+    body.iza-home section .display-5,
+    body.iza-home section .display-6 {
+        font-size: 1.75rem !important;
+    }
+
+    body.iza-home .trabajo-img-wrapper {
+        height: 260px;
+    }
+
+    body.iza-home .custom-faq .accordion-button,
+    body.iza-home .custom-faq .accordion-body {
+        padding: 1.1rem;
+    }
+
+    body.iza-home .custom-faq .accordion-button {
+        font-size: 0.9rem;
+    }
+}
+
+/* ================================================================
+   17. ACCESIBILIDAD: REDUCIR MOVIMIENTO
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    body.iza-home *,
+    body.iza-home *::before,
+    body.iza-home *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

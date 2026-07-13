@@ -1,0 +1,244 @@
+﻿:root {
+    --tech-green: #198754;
+    --tech-dark: #0f172a;
+    --tech-gray: #64748b;
+    --filter-bg: rgba(255, 255, 255, 0.95);
+}
+
+.product-navbar-filter {
+    position: sticky;
+    top: 56px;
+    z-index: 1000;
+    background: var(--filter-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e2e8f0;
+    margin-top: -40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+/* 2. LA IMAGEN REAL: Aquí está el truco para el "Full Width" */
+.product-real-img {
+    width: 100%; /* Ocupa todo el ancho */
+    height: 100%; /* Ocupa todo el alto del contenedor (220px) */
+    object-fit: cover; /* 🚀 CRUCIAL: Llena el espacio sin deformarse (corta un poquito los bordes si es necesario) */
+    z-index: 2;
+    padding: 0; /* ❌ Quitamos el padding para que pegue a los bordes */
+    transition: transform 0.5s ease;
+    display: block;
+}
+
+/* Efecto sutil al pasar el mouse por la imagen */
+.modern-type-card:hover .product-real-img {
+    transform: scale(1.05);
+}
+
+/* Contenedor del icono cuando no hay imagen */
+.fallback-icon {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+/* Asegurar que el contenido visual sea relativo */
+.visual-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.filter-flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-section-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-regresar {
+    text-decoration: none !important;
+    color: var(--tech-gray);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-right: 10px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+    .btn-regresar:hover {
+        background: var(--tech-dark);
+        color: white !important;
+        transform: translateX(-3px);
+    }
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--tech-green);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+}
+
+.badge-seccion {
+    font-weight: 800;
+    font-size: 0.75rem;
+    color: var(--tech-dark);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.filter-tool-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--tech-gray);
+    text-transform: uppercase;
+}
+
+.custom-select-wrapper {
+    position: relative;
+    min-width: 220px;
+}
+
+.filter-icon-main {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tech-green);
+    z-index: 5;
+    font-size: 0.9rem;
+}
+
+.select-tech {
+    padding-left: 40px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--tech-dark);
+    background-color: #fff;
+    height: 42px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .select-tech:focus {
+        border-color: var(--tech-green);
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+    }
+
+/* 🛠️ CARDS SIN ZOOM */
+.modern-type-card {
+    border-radius: 28px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease; /* Transición más rápida y suave */
+    overflow: hidden;
+    background: white;
+    text-decoration: none !important;
+}
+
+    .modern-type-card:hover {
+        /* 🚀 SE QUITÓ EL TRANSFORM (Elevación) */
+        border-color: var(--tech-green);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); /* Sombra más sutil */
+    }
+
+/* 1. EL CONTENEDOR VISUAL: Quitamos cualquier restricción de centrado extra */
+.type-visual {
+    height: 220px; /* Le subí un poquito la altura para que luzca más */
+    background: #f8fafc;
+    position: relative;
+    display: block; /* Cambiamos flex por block para que el hijo mande */
+    overflow: hidden;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.blueprint-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.5;
+}
+
+.visual-content {
+    position: relative;
+    text-align: center;
+}
+
+.visual-icon {
+    font-size: 3.5rem;
+    color: #cbd5e1;
+    transition: color 0.3s ease; /* Solo transiciona el color */
+}
+
+.visual-brand {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 900;
+    color: #94a3b8;
+    letter-spacing: 2px;
+    margin-top: 10px;
+}
+
+.modern-type-card:hover .visual-icon {
+    color: var(--tech-green);
+    /* 🚀 SE QUITÓ EL SCALE (Zoom del icono) */
+}
+
+.type-title {
+    font-weight: 800;
+    color: var(--tech-dark);
+    font-size: 1.15rem;
+    margin: 0;
+}
+
+.type-desc {
+    font-size: 0.85rem;
+    color: var(--tech-gray);
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+.card-footer-action {
+    padding: 20px;
+    background: #fcfdfe;
+    border-top: 1px solid #f1f5f9;
+    text-align: center;
+}
+
+.btn-explore {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--tech-green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.item-animado {
+    transition: opacity 0.4s ease; /* Solo opacidad para el filtrado */
+}

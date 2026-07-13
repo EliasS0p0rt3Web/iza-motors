@@ -1,0 +1,101 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    // 1️⃣ DETECTAMOS LA SESIÓN: Si el string "USER" no es nulo, es porque es un cliente logueado
+    var esClienteLogueado = !string.IsNullOrEmpty(Context.Session.GetString("USER"));
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | E&E Aluminios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    @RenderSection("Styles", required: false)
+
+    <style>
+        body {
+            /* 2️⃣ CAMBIO DINÁMICO DE FONDO: Si es cliente, adoptamos el fondo oscuro de su panel privado */
+            background-color: @(esClienteLogueado ? "#0f172a" : "#ffffff");
+            font-family: 'Inter', sans-serif;
+            color: @(esClienteLogueado ? "#f1f5f9" : "#1f2937");
+        }
+
+        .galeria-nav {
+            background: @(esClienteLogueado ? "#1e293b" : "#ffffff");
+            border-bottom: 1px solid @(esClienteLogueado ? "rgba(255,255,255,0.05)" : "#f3f4f6");
+            padding: 1rem 0;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            color: @(esClienteLogueado ? "#ffffff" : "#111827");
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .galeria-main {
+            min-height: 80vh;
+            padding: 2rem 0;
+        }
+
+        .btn-regresar {
+            font-weight: 600;
+            color: #6b7280;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+            .btn-regresar:hover {
+                color: #10b981; /* Verde esmeralda para hacer match con tu panel */
+            }
+
+        footer {
+            color: #94a3b8 !important;
+            border-top: 1px solid @(esClienteLogueado ? "rgba(255,255,255,0.05)" : "#f3f4f6") !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="galeria-nav">
+        <div class="container d-flex justify-content-between align-items-center">
+
+            @if (esClienteLogueado)
+            {
+                <a href="@Url.Action("WebPrincipal", "Cliente")" class="btn-regresar" style="color: #38bdf8;">
+                    <i class="bi bi-arrow-left"></i> <span class="ms-1">Atrás al Panel</span>
+                </a>
+            }
+            else
+            {
+                <a href="/" class="btn-regresar">
+                    <i class="bi bi-arrow-left"></i> <span class="d-none d-md-inline ms-1">Inicio</span>
+                </a>
+            }
+
+            <div class="fw-bold text-uppercase text-truncate px-2"
+                 style="letter-spacing: 1px; font-size: 0.85rem; max-width: 50%; color: #94a3b8;">
+                <span class="d-none d-md-inline">E&E ALUMINIOS - </span>
+                Galería - @ViewData["Title"]
+            </div>
+
+            <span class="nav-brand d-none d-md-block">E&E ALUMINIOS</span>
+        </div>
+    </nav>
+
+    <main class="galeria-main">
+        @RenderBody()
+    </main>
+
+    <footer class="text-center py-4 border-top">
+        <p>&copy; @DateTime.Now.Year E&E Aluminios - Trabajos en Vidrio y Aluminio</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,266 @@
+﻿@model Negocio.Web.Models.ViewModels.ReporteVentasProductoViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Ventas por Producto";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- VARIABLES Y BASE --- */
+    .venta-list-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+        padding-bottom: 60px;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        padding: 1.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+        .input-pro:focus {
+            border-color: #0071e3;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            outline: none;
+        }
+
+    /* --- BOTONES PREMIUM --- */
+    .btn-search-pro {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 11px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    }
+
+        .btn-search-pro:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+    /* --- CONTENEDORES DE MÉTRICAS --- */
+    .metric-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .metric-box-success {
+        background: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        border-radius: 16px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .total-badge-pro {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+    }
+</style>
+
+<div class="venta-list-container py-4">
+
+    <!-- CABECERA -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-0" style="font-weight: 800;"> Ventas por Producto</h3>
+        </div>
+    </div>
+
+    <!-- FORMULARIO DE FILTROS -->
+    <div class="mb-4">
+        <form method="get" class="form-premium-card">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label-pro">Desde</label>
+                    <input type="date" name="desde"
+                           value="@Model.Desde?.ToString("yyyy-MM-dd")"
+                           class="form-control input-pro w-100" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label-pro">Hasta</label>
+                    <input type="date" name="hasta"
+                           value="@Model.Hasta?.ToString("yyyy-MM-dd")"
+                           class="form-control input-pro w-100" required />
+                </div>
+
+                <!-- AREA -->
+                <div class="col-md-2">
+                    <label class="form-label-pro">Área</label>
+                    <select id="areaSelect" name="area" class="form-select input-pro w-100" required>
+                        <option value="">-- Seleccionar --</option>
+                        @foreach (var a in ViewBag.Areas)
+                        {
+                            <option value="@a">@a</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- PRODUCTO -->
+                <div class="col-md-2">
+                    <label class="form-label-pro">Producto</label>
+                    <select id="productoSelect"
+                            name="producto"
+                            class="form-select input-pro w-100"
+                            disabled
+                            required>
+                        <option value="">-- Seleccionar --</option>
+                    </select>
+                </div>
+
+                <!-- DIMENSION -->
+                <div class="col-md-2">
+                    <label class="form-label-pro">Dimensión</label>
+                    <select id="dimensionSelect"
+                            name="dimension"
+                            class="form-select input-pro w-100"
+                            disabled>
+                        <option value="">-- Todas --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12 mt-3">
+                    <button type="submit" class="btn btn-search-pro w-100">
+                        <i class="bi bi-search me-2"></i> Consultar Reporte
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- TARJETA DE RESULTADOS -->
+    @if (!string.IsNullOrWhiteSpace(Model.NombreProducto))
+    {
+        <div class="form-premium-card shadow-sm mt-4">
+            <div class="floating-title mb-3 pb-2" style="font-size: 0.9rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f1f5f9;">
+                <i class="bi bi-bar-chart-line-fill text-primary me-1"></i> Resultado de la Consulta
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6">
+                    <p class="mb-1 text-secondary" style="font-size: 0.9rem;">
+                        <strong class="text-dark">Producto:</strong> @Model.NombreProducto
+                    </p>
+                </div>
+                <div class="col-sm-6 text-sm-end">
+                    <p class="mb-1 text-secondary" style="font-size: 0.9rem;">
+                        <strong class="text-dark">Periodo:</strong>
+                        <span class="total-badge-pro">
+                            @Model.Desde?.ToString("dd/MM/yyyy") - @Model.Hasta?.ToString("dd/MM/yyyy")
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <hr style="border-top: 1px dashed #e2e8f0; margin: 1.5rem 0;" />
+
+            <div class="row g-3 text-center">
+                <div class="col-md-6">
+                    <div class="metric-box">
+                        <h6 class="form-label-pro mb-2" style="color: #64748b;">Cantidad Vendida</h6>
+                        <h3 class="fw-bold text-dark mb-0" style="font-weight: 800;">
+                            @Model.TotalCantidad <span class="fs-6 text-secondary fw-normal">@Model.Unidad</span>
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="metric-box-success">
+                        <h6 class="form-label-pro mb-2" style="color: #2e7d32;">Total Vendido</h6>
+                        <h3 class="fw-bold mb-0" style="color: #16a34a; font-weight: 800;">
+                            S/ @Model.TotalImporte.ToString("N2")
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    const areaSelect = document.getElementById("areaSelect");
+    const productoSelect = document.getElementById("productoSelect");
+    const dimensionSelect = document.getElementById("dimensionSelect");
+
+    areaSelect.addEventListener("change", function () {
+        const area = this.value;
+
+        productoSelect.innerHTML = `<option>-- Seleccionar --</option>`;
+        productoSelect.disabled = true;
+
+        dimensionSelect.innerHTML = `<option>-- Todas --</option>`;
+        dimensionSelect.disabled = true;
+
+        if (!area) return;
+
+        fetch(`/Reporte/ObtenerProductos?area=${area}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(p => {
+                    productoSelect.innerHTML +=
+                        `<option value="${p}">${p}</option>`;
+                });
+
+                productoSelect.disabled = false;
+            });
+    });
+
+    productoSelect.addEventListener("change", function () {
+        const producto = this.value;
+
+        dimensionSelect.innerHTML = `<option value="">-- Todas --</option>`;
+        dimensionSelect.disabled = true;
+
+        if (!producto) return;
+
+        fetch(`/Reporte/ObtenerDimensiones?producto=${producto}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(d => {
+                    dimensionSelect.innerHTML +=
+                        `<option value="${d}">${d ?? ""}</option>`;
+                });
+
+                dimensionSelect.disabled = false;
+            });
+    });
+</script>

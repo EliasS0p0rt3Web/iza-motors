@@ -1,0 +1,555 @@
+﻿@model Negocio.Web.Models.Entities.Reserva
+
+@{
+    Layout = "_LayoutReservaPublic";
+    ViewData["Title"] = "Seguimiento de Reserva";
+}
+
+@{
+    var saldoPendiente = Model.Total - Model.Adelanto;
+    int progreso = 20;
+    string colorClase = "primary";
+    string estadoTexto = Model.Estado;
+
+    // Lógica de estados y colores
+    switch (Model.Estado)
+    {
+        case "PENDIENTE": progreso = 20; colorClase = "warning"; break;
+        case "CONFIRMADO": progreso = 40; colorClase = "primary"; break;
+        case "EN_PRODUCCION": progreso = 60; colorClase = "info"; break;
+        case "LISTO": progreso = 80; colorClase = "success"; break;
+        case "ENTREGADO": progreso = 100; colorClase = "dark"; break;
+        case "CANCELADO": progreso = 100; colorClase = "danger"; break;
+    }
+}
+
+<div class="tracking-container py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+
+                @* CARD PRINCIPAL *@
+                <div class="card border-0 shadow-xl rounded-4 overflow-hidden animate-fade-in">
+
+                    @* HEADER DINÁMICO *@
+                    <div class="bg-@colorClase p-4 p-md-5 text-white text-center position-relative">
+                        
+                        <h2 class="fw-800 mb-1">Rastreador de Proyecto</h2>
+                        <p class="opacity-75 mb-0">Código: <strong>@Model.CodigoReserva</strong></p>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5 bg-white">
+
+                        @* STEPPER MODERNO *@
+                        <div class="tracking-stepper mb-5">
+                            <div class="step @(progreso >= 20 ? "active" : "")">
+                                <div class="step-icon"><i class="bi bi-clock-history"></i></div>
+                                <div class="step-label">Pendiente</div>
+                            </div>
+                            <div class="step @(progreso >= 40 ? "active" : "")">
+                                <div class="step-icon"><i class="bi bi-check2-circle"></i></div>
+                                <div class="step-label">Confirmado</div>
+                            </div>
+                            <div class="step @(progreso >= 60 ? "active" : "")">
+                                <div class="step-icon"><i class="bi bi-gear-wide-connected"></i></div>
+                                <div class="step-label">Fabricando</div>
+                            </div>
+                            <div class="step @(progreso >= 80 ? "active" : "")">
+                                <div class="step-icon"><i class="bi bi-box-seam"></i></div>
+                                <div class="step-label">Listo</div>
+                            </div>
+                            <div class="step @(progreso >= 100 ? "active" : "")">
+                                <div class="step-icon"><i class="bi bi-truck"></i></div>
+                                <div class="step-label">Entregado</div>
+                            </div>
+                        </div>
+
+                        @* RESUMEN FINANCIERO *@
+                        <div class="row g-3 mb-5">
+                            <div class="col-md-4">
+                                <div class="finance-card">
+                                    <span class="label">Inversión Total</span>
+                                    <span class="value">S/ @Model.Total.ToString("0.00")</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="finance-card">
+                                    <span class="label">Adelanto Pagado</span>
+                                    <span class="value text-success">S/ @Model.Adelanto.ToString("0.00")</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="finance-card border-@((saldoPendiente > 0) ? "danger" : "success")">
+                                    <span class="label">Saldo Pendiente</span>
+                                    <span class="value @((saldoPendiente > 0) ? "text-danger" : "text-success")">
+                                        S/ @saldoPendiente.ToString("0.00")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* DETALLE DE PRODUCTOS (JSON) *@
+                        @using System.Text.Json
+                        @{
+                            JsonElement? detalle = null;
+                            try { if (!string.IsNullOrEmpty(Model.DetalleJson)) detalle = JsonSerializer.Deserialize<JsonElement>(Model.DetalleJson); } catch { }
+                        }
+
+                        @if (detalle.HasValue)
+                        {
+                            var d = detalle.Value;
+                            <div class="order-details-box rounded-4 p-4 border bg-light">
+                                <h5 class="fw-800 mb-4 border-bottom pb-2">Artículos en Producción</h5>
+
+                                @* 🔹 CASO 1: PRODUCTOS DEL CATÁLOGO *@
+                                @if (d.TryGetProperty("tipo", out JsonElement tipo) && tipo.GetString() == "CATALOGO_PRODUCTOS")
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless align-middle m-0">
+                                            <thead>
+                                                <tr class="text-muted small text-uppercase">
+                                                    <th class="pb-3">Producto</th>
+                                                    <th class="text-center pb-3">Cant.</th>
+                                                    <th class="text-end pb-3">Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in d.GetProperty("items").EnumerateArray())
+                                                {
+                                                    var tVenta = item.TryGetProperty("TipoVenta", out JsonElement tv) ? tv.GetString() : "UNIDAD";
+                                                    string etiquetaUnidad = tVenta == "METRO" ? "m" : (tVenta == "VARILLA" ? "Var." : "und.");
+                                                    <tr>
+                                                        <td>
+                                                            <div class="fw-bold text-dark">@(item.TryGetProperty("Descripcion", out JsonElement desc) ? desc.GetString() : "Producto")</div>
+                                                            <small class="text-muted">📐 @(item.TryGetProperty("Dimensiones", out JsonElement dim) ? dim.GetString() : "-")</small>
+                                                        </td>
+                                                        <td class="text-center"><span class="badge bg-white border text-dark px-3">@(item.TryGetProperty("Cantidad", out JsonElement c) ? c.GetRawText() : "1") @etiquetaUnidad</span></td>
+                                                        <td class="text-end fw-bold text-@colorClase">S/ @(item.GetProperty("Subtotal").GetDecimal().ToString("0.00"))</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                @* 🔹 CASO 2: NUEVO COTIZADOR DE RIELES (Tu nueva lógica) *@
+                                else if (d.TryGetProperty("Producto", out JsonElement prodName))
+                                {
+                                    <div class="riel-client-card text-dark">
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <span class="h5 fw-bold m-0">@prodName.GetString()</span>
+                                            <span class="badge bg-@colorClase fs-6 px-4 rounded-pill shadow-sm">
+                                                <i class="bi bi-rulers me-2"></i>@(d.TryGetProperty("Medida", out JsonElement med) ? med.GetString() : "-")
+                                            </span>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-sm-6">
+                                                <div class="p-3 bg-white rounded-3 border h-100 shadow-sm">
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.6rem;">Instalación</small>
+                                                    <span class="fw-bold"><i class="bi bi-house-door me-2 text-primary"></i>@(d.TryGetProperty("Instalacion", out JsonElement ins) ? ins.GetString() : "TECHO")</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="p-3 bg-white rounded-3 border h-100 shadow-sm">
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.6rem;">Apertura</small>
+                                                    <span class="fw-bold"><i class="bi bi-arrows-expand me-2 text-primary"></i>@(d.TryGetProperty("Apertura", out JsonElement ape) ? (ape.GetString() == "AMBOS" ? "AL CENTRO" : "A UN LADO") : "SIMPLE")</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @* 🔹 CASO 3: DISEÑO ANTIGUO / OTROS *@
+                                else
+                                {
+                                    <div class="bg-white border rounded-4 shadow-sm overflow-hidden mt-3">
+                                        <div class="p-4">
+                                            <div class="row g-3">
+                                                <div class="col-md-8">
+                                                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3 mb-3 border">
+                                                        <div class="overflow-hidden">
+                                                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Producto Principal</small>
+                                                            <h5 class="mb-0 fw-bold text-dark text-truncate">
+                                                                @(d.TryGetProperty("tubo", out JsonElement tubo) ? tubo.GetString() : "PRODUCTO")
+                                                            </h5>
+                                                        </div>
+                                                        <div class="text-end ms-3" style="min-width: 90px;">
+                                                            <small class="text-info d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Largo</small>
+                                                            @{
+                                                                string metrosTexto = "1.00";
+                                                                JsonElement metrosElement;
+
+                                                                bool tieneMetros =
+                                                                d.TryGetProperty(
+                                                                "metrosTotales",
+                                                                out metrosElement
+                                                                ) ||
+                                                                d.TryGetProperty(
+                                                                "MetrosTotales",
+                                                                out metrosElement
+                                                                ) ||
+                                                                d.TryGetProperty(
+                                                                "Metros",
+                                                                out metrosElement
+                                                                ) ||
+                                                                d.TryGetProperty(
+                                                                "metros",
+                                                                out metrosElement
+                                                                );
+
+                                                                if (tieneMetros)
+                                                                {
+                                                                    if (
+                                                                    metrosElement.ValueKind ==
+                                                                    JsonValueKind.Number &&
+                                                                    metrosElement.TryGetDecimal(
+                                                                    out decimal metrosDecimal
+                                                                    )
+                                                                    )
+                                                                    {
+                                                                        metrosTexto =
+                                                                        metrosDecimal.ToString("0.00");
+                                                                    }
+                                                                    else if (
+                                                                    metrosElement.ValueKind ==
+                                                                    JsonValueKind.String
+                                                                    )
+                                                                    {
+                                                                        metrosTexto =
+                                                                        metrosElement.GetString()
+                                                                        ?? "1.00";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        metrosTexto =
+                                                                        metrosElement
+                                                                        .GetRawText()
+                                                                        .Replace("\"", "");
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            <span class="fw-bold fs-5 text-dark">
+                                                                @metrosTexto
+                                                                <small class="text-muted fw-normal">
+                                                                    metros
+                                                                </small>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <small class="text-muted fw-bold d-block mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">COMPONENTES DEL DISEÑO</small>
+                                                    <div class="list-group list-group-flush border rounded-3 overflow-auto" style="max-height: 200px;">
+                                                        @if (d.TryGetProperty("accesorios", out JsonElement accs) && accs.ValueKind == JsonValueKind.Array)
+                                                        {
+                                                            foreach (var acc in accs.EnumerateArray())
+                                                            {
+                                                                <div class="list-group-item d-flex justify-content-between align-items-center p-2 bg-transparent">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <i class="bi bi-dot text-success fs-4"></i>
+                                                                        <div class="ms-1">
+                                                                            <h6 class="mb-0 fw-normal" style="font-size: 0.85rem;">@(acc.TryGetProperty("descripcion", out JsonElement aDesc) ? aDesc.GetString() : "Accesorio")</h6>
+                                                                            <small class="text-muted" style="font-size: 0.7rem;">@(acc.TryGetProperty("dimension", out JsonElement aDim) ? aDim.GetString() : "-")</small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="badge text-dark fw-bold" style="font-size: 0.8rem; background: #eee;">
+                                                                        @(acc.TryGetProperty("cantidad", out JsonElement aCant) ? aCant.GetRawText().Replace("\"", "") : "1") und.
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="h-100 d-flex flex-column justify-content-center align-items-center rounded-4 border-start border-danger border-4"
+                                                         style="background-color: #fff5f5; min-height: 180px; border: 1px solid #fee2e2;">
+
+                                                        <small class="text-danger d-block text-uppercase fw-bolder mb-1" style="font-size: 0.7rem; letter-spacing: 1px;">REPETICIONES</small>
+
+                                                        <div class="text-danger fw-bolder" style="font-size: 4.5rem; line-height: 1; letter-spacing: -2px;">
+                                                            @{
+                                                                string combos = "1";
+                                                                if (d.TryGetProperty("CantidadPiezas", out JsonElement cp1)) combos = cp1.GetRawText().Replace("\"", "");
+                                                                else if (d.TryGetProperty("cantidadPiezas", out JsonElement cp2)) combos = cp2.GetRawText().Replace("\"", "");
+                                                                else if (d.TryGetProperty("cantidadPedida", out JsonElement cp3)) combos = cp3.GetRawText().Replace("\"", "");
+                                                            }
+                                                            x@(combos)
+                                                        </div>
+
+                                                        <div class="bg-danger text-white px-3 py-1 rounded-pill mt-2 fw-bold" style="font-size: 0.7rem; text-uppercase;">
+                                                            Combo(s) Iguales
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @* ACCIONES *@
+                        <div class="mt-5 d-flex flex-wrap gap-3">
+                            @* Botón de WhatsApp con Mensaje Pre-llenado *@
+                            <a href="https://wa.me/51921726629?text=Hola%20E%26E%20Aluminios!%20Vengo%20desde%20el%20Rastreador%20de%20Pedidos.%20Mi%20código%20de%20reserva%20es:%20*@Model.CodigoReserva*%20-%20Quisiera%20consultar%20sobre%20el%20estado%20de%20mi%20proyecto."
+                               target="_blank"
+                               class="btn btn-whatsapp-pro flex-fill">
+                                <i class="bi bi-whatsapp"></i> Hablar con Asesor Técnico
+                            </a>
+
+                            @if (Model.Estado != "CANCELADO" && Model.Estado != "EN_PRODUCCION")
+                            {
+                                <button class="btn btn-outline-danger px-4" data-bs-toggle="modal" data-bs-target="#modalCancelar">
+                                    Cancelar Reserva
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/" class="text-decoration-none text-muted small fw-bold"><i class="bi bi-arrow-left"></i> Volver a la Tienda</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 🚀 ESTILOS RASTREO LIVE */
+    .tracking-container {
+        min-height: 100vh;
+        background: #f8fafc;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* Indicador Live */
+    .live-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.2);
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+        .live-indicator .dot {
+            height: 8px;
+            width: 8px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+    @@keyframes pulse-dot {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    /* Stepper UI */
+    .tracking-stepper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        padding: 0 10px;
+    }
+
+        .tracking-stepper::before {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+    .step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 80px;
+    }
+
+    .step-icon {
+        width: 45px;
+        height: 45px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        color: #cbd5e1;
+        transition: all 0.3s;
+    }
+
+    .step.active .step-icon {
+        background: #0071e3;
+        color: white;
+        border-color: #0071e3;
+        box-shadow: 0 0 15px rgba(0,113,227,0.3);
+    }
+
+    .step-label {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #94a3b8;
+    }
+
+    .step.active .step-label {
+        color: #0f172a;
+    }
+
+    /* Finance Cards */
+    .finance-card {
+        padding: 1.5rem;
+        background: white;
+        border: 1px solid #f1f5f9;
+        border-radius: 18px;
+        text-align: center;
+        height: 100%;
+    }
+
+        .finance-card .label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .finance-card .value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+    /* WhatsApp Button */
+    .btn-whatsapp-pro {
+        background: #25D366;
+        color: white !important;
+        font-weight: 800;
+        padding: 15px;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+
+        .btn-whatsapp-pro:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37,211,102,0.3);
+        }
+
+    @@media (max-width: 768px) {
+        .tracking-stepper::before {
+            display: none;
+        }
+
+        .tracking-stepper {
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .step {
+            width: 30%;
+        }
+    }
+
+    /* --- ESTILOS DEL OVERLAY DE CARGA --- */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.85); /* Fondo oscuro azulado pro */
+        z-index: 1060; /* Tiene que ser mayor que el z-index de Bootstrap Modal (1055) */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+</style>
+
+@* --- MODAL CANCELAR (Se mantiene tu lógica) --- *@
+<div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title fw-bold">Confirmar Cancelación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-exclamation-octagon text-danger fs-1 mb-3"></i>
+                <p class="mb-0">¿Estás seguro de cancelar la reserva <strong>@Model.CodigoReserva</strong>?</p>
+                <p class="text-muted small">Esta acción notificará al taller y liberará el stock.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Volver</button>
+                <form id="formCancelar" asp-controller="Reserva" asp-action="Cancelar" method="post">
+                    <input type="hidden" name="codigo" value="@Model.CodigoReserva" />
+                    <button id="btnSubmitCancelar" type="submit" class="btn btn-danger rounded-3 px-4">Sí, cancelar</button>
+                </form>
+
+                @section Scripts {
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const formCancelar = document.getElementById("formCancelar");
+
+                            if (formCancelar) {
+                                formCancelar.addEventListener("submit", function () {
+                                    // 1. Mostrar la pantalla negra de carga
+                                    document.getElementById("loadingOverlay").classList.remove("d-none");
+
+                                    // 2. Apagar el botón para evitar doble click
+                                    const btn = document.getElementById("btnSubmitCancelar");
+                                    btn.disabled = true;
+                                    btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...`;
+
+                                    // 3. Cerrar el modal actual para que no estorbe al overlay
+                                    var myModalEl = document.getElementById('modalCancelar');
+                                    var modal = bootstrap.Modal.getInstance(myModalEl);
+                                    if(modal) { modal.hide(); }
+                                });
+                            }
+                        });
+                    </script>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- OVERLAY DE CARGA PARA BLOQUEAR LA PANTALLA --- *@
+<div id="loadingOverlay" class="loading-overlay d-none">
+    <div class="text-center">
+        <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Procesando...</span>
+        </div>
+        <h5 class="text-white mt-3 fw-bold">Cancelando Reserva...</h5>
+        <p class="text-white-50 small">Por favor, no cierres esta ventana.</p>
+    </div>
+</div>

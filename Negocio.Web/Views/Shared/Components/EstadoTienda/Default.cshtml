@@ -1,0 +1,8 @@
+﻿@model Negocio.Web.Models.Entities.ConfiguracionTienda
+
+<div class="d-flex align-items-center" title="@(Model.EstaAbierto ? "Tienda Abierta" : "Sin atención")">
+    <span class="dot @(Model.EstaAbierto ? "bg-success" : "bg-danger")"></span>
+    <span class="ms-2 d-none d-md-inline" style="font-size: 0.75rem; color: #fff;">
+        @(Model.EstaAbierto ? "Atendiendo" : "Cerrado")
+    </span>
+</div>

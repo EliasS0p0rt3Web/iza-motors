@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h2 class="mb-4">🏠 Dashboard</h2>
+
+<!-- ===================== -->
+<!-- ACCESOS RÁPIDOS -->
+<!-- ===================== -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <a asp-controller="Venta" asp-action="Registrar" class="card text-decoration-none shadow-sm">
+            <div class="card-body text-center">
+                <h5>📄 Venta</h5>
+                <p class="text-muted">Registrar venta</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a asp-controller="Gasto" asp-action="Registrar" class="card text-decoration-none shadow-sm">
+            <div class="card-body text-center">
+                <h5>💰 Gasto</h5>
+                <p class="text-muted">Registrar gasto</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a asp-controller="Ingreso" asp-action="Registrar" class="card text-decoration-none shadow-sm">
+            <div class="card-body text-center">
+                <h5>📦 Ingreso</h5>
+                <p class="text-muted">Registro de entrada</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a asp-controller="Stock" asp-action="Index" class="card text-decoration-none shadow-sm">
+            <div class="card-body text-center">
+                <h5>📈 Stock</h5>
+                <p class="text-muted">Consultar stock</p>
+            </div>
+        </a>
+    </div>
+
+</div>
+
+<!-- ===================== -->
+<!-- RESUMEN RÁPIDO -->
+<!-- ===================== -->
+<div class="row g-3">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Ventas Hoy</h6>
+                <h4 class="fw-bold">S/ @ViewBag.VentasTotal</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Efectivo</h6>
+                <h4 class="fw-bold text-success">S/ @ViewBag.VentasEfectivo</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Yape</h6>
+                <h4 class="fw-bold text-primary">S/ @ViewBag.VentasYape</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Resultado</h6>
+                <h4 class="fw-bold @(ViewBag.ResultadoHoy >= 0 ? "text-success" : "text-danger")">
+                    S/ @ViewBag.ResultadoHoy
+                </h4>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,253 @@
+﻿@model List<Negocio.Web.Controllers.ProductoPublicVm>
+
+@{
+    ViewData["Title"] = ViewBag.Nombre;
+    Layout = "_LayoutProductos";
+
+    // Tomamos la variante por defecto (la primera de la lista) para pintar la UI inicial
+    var def = Model.FirstOrDefault() ?? new Negocio.Web.Controllers.ProductoPublicVm();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/productoPublic/productoDetalle.css" asp-append-version="true" />
+}
+
+<div class="row g-4 g-lg-5 m-0 pt-1 pt-lg-4 mt-0 js-product-master-container w-100">
+
+    <!-- 📱 CABECERA EXCLUSIVA PARA MÓVIL (Sale arriba de la imagen solo en celulares) -->
+    <div class="col-12 d-block d-lg-none text-center mt-0 pt-0 mb-1">
+        <h2 class="fw-extrabold text-dark tracking-tight mb-0" style="font-size: 1.6rem;">@ViewBag.Nombre</h2>
+    </div>
+
+    <!-- 📱 SELECTOR EXCLUSIVO PARA MÓVIL (Píldoras arriba de la imagen) -->
+    <div class="col-12 d-block d-lg-none mb-3">
+        <div class="variant-selector-wrapper text-center">
+            <span class="text-secondary fw-bold small uppercase d-block mb-2">Selecciona la Dimensión:</span>
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                @foreach (var variant in Model)
+                {
+                    <button type="button"
+                            class="btn btn-variant-pill js-variant-btn"
+                            data-id="@variant.IdProducto"
+                            data-dimension="@variant.Dimensiones"
+                            data-stock="@variant.StockTotal.ToString("0")"
+                            data-imagen="@variant.ImagenUrl"
+                            data-unidad="@variant.Unidad"
+                            data-factor="@variant.ConversionFactor.ToString("0.00")"
+                            data-precio-varilla="@variant.PrecioUnitario.ToString("0.00")"
+                            data-precio-metro="@(variant.ConversionFactor > 0 ? Math.Ceiling(variant.PrecioUnitario / variant.ConversionFactor).ToString("0.00") : "0.00")">
+                        @(string.IsNullOrWhiteSpace(variant.Dimensiones) ? "Estándar" : variant.Dimensiones)
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6 text-center">
+        <div class="sticky-lg-top" style="top: 20px; z-index: 1;">
+            <div class="main-product-image-box border shadow-sm rounded-4 bg-white d-flex align-items-center justify-content-center p-3">
+                <!-- 🟢 Badge de Stock original (Derecha) -->
+                <span id="masterStockBadge" class="badge-sticker"></span>
+
+                <!-- 📱 PRECIO FLOTANTE EXCLUSIVO PARA MÓVIL (Izquierda) -->
+                <div class="price-badge-mobile d-flex d-lg-none align-items-baseline">
+                    <span class="price-mobile-currency fw-bold">S/</span>
+                    <span id="masterPriceIntegerMobile" class="price-mobile-integer fw-extrabold">0</span>
+                    <span id="masterPriceDecimalMobile" class="price-mobile-decimal fw-bold">.00</span>
+                    <small id="masterUnitDisplayMobile" class="price-mobile-unit ms-1"></small>
+                </div>
+
+                <!-- 🔄 Loader Premium -->
+                <div id="productImageBoxLoader" class="product-box-loader d-none">
+                    <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <span class="mt-2 fw-bold text-dark small">Actualizando medida...</span>
+                </div>
+
+                <img id="masterProductImg" src="@def.ImagenUrl" alt="@def.Descripcion" class="img-fluid js-img-zoom rounded-3 d-none" style="max-height: 420px; object-fit: contain; cursor: zoom-in;" title="Clic para ampliar" />
+
+                <div id="masterProductPlaceholder" class="product-image-placeholder d-none w-100 h-100 flex-column justify-content-center align-items-center text-muted fw-bold">
+                    <span style="font-size: 3rem;">🖼️</span>
+                    <span>Sin imagen disponible</span>
+                </div>
+            </div>
+            <small id="zoomImageAlertText" class="text-muted d-block mt-2"><i class="bi bi-search"></i> Clic sobre la imagen para hacer zoom dinámico</small>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+
+        <!-- 💻 CABECERA EXCLUSIVA PARA PC (Se oculta en celulares y reaparece en pantallas grandes) -->
+        <div class="product-header-info border-bottom pb-3 mb-3 d-none d-lg-block">
+            <h2 class="fw-extrabold text-dark tracking-tight mb-1">@ViewBag.Nombre</h2>
+        </div>
+
+        <div class="variant-selector-wrapper mb-4 d-none d-lg-block">
+            <span class="text-secondary fw-bold small uppercase d-block mb-2">Selecciona la Dimensión:</span>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var variant in Model)
+                {
+                    <button type="button"
+                            class="btn btn-variant-pill js-variant-btn"
+                            data-id="@variant.IdProducto"
+                            data-dimension="@variant.Dimensiones"
+                            data-stock="@variant.StockTotal.ToString("0")"
+                            data-imagen="@variant.ImagenUrl"
+                            data-unidad="@variant.Unidad"
+                            data-factor="@variant.ConversionFactor.ToString("0.00")"
+                            data-precio-varilla="@variant.PrecioUnitario.ToString("0.00")"
+                            data-precio-metro="@(variant.ConversionFactor > 0 ? Math.Ceiling(variant.PrecioUnitario / variant.ConversionFactor).ToString("0.00") : "0.00")">
+                        @(string.IsNullOrWhiteSpace(variant.Dimensiones) ? "Estándar" : variant.Dimensiones)
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="price-display-clean mb-4 d-none d-lg-flex align-items-baseline">
+            
+            <span class="currency-symbol fw-extrabold text-dark me-1">S/</span>
+            <span id="masterPriceInteger" class="price-integer tracking-tighter text-dark fw-extrabold">0</span>
+            <span id="masterPriceDecimal" class="price-decimal text-dark fw-bold">.00</span>
+            <small id="masterUnitDisplay" class="text-muted js-unit-display ms-2"></small>
+            <span class="text-secondary fw-bold small text-uppercase me-2"> </span>
+            <span class="text-secondary fw-bold small text-uppercase me-2"> </span>
+            <span class="text-secondary fw-bold small text-uppercase me-2"> </span>
+            <span class="text-secondary fw-bold small text-uppercase me-2"> </span>
+            <span class="text-secondary fw-bold small text-uppercase me-2"> </span>
+            <span class="text-secondary fw-bold small text-uppercase me-2"> Precio Online</span>
+        </div>
+
+        <form asp-action="AgregarAlCarrito" method="post" id="masterAddCartForm" class="add-cart-form">
+            <input type="hidden" name="idProducto" id="hiddenProductId" value="@def.IdProducto" />
+            <input type="hidden" name="tipoVenta" id="hiddenTipoVenta" value="VARILLA" />
+            <input type="hidden" name="cantidad" id="hiddenQuantityFinal" value="1" />
+
+            <!-- 📦 CONTENEDOR MODAL ADAPTATIVO (Bottom Sheet en Celular / Bloque normal en PC) -->
+            <div class="modal fade bottom-sheet-modal" id="bottomSheetMedidas" tabindex="-1" aria-labelledby="bottomSheetMedidasLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-bottom-sheet">
+                    <div class="modal-content border-0">
+
+                        <!-- Cabecera del modal (Solo visible en móviles para poder cerrarlo) -->
+                        <div class="modal-header d-flex d-lg-none border-0 pb-0 justify-content-center position-relative">
+                            <div class="bottom-sheet-drag-handle"></div> <!-- Línea decorativa tipo iPhone -->
+                            <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body p-0 p-lg-0">
+                            <!-- Mantenemos exactamente tu mismo ID para que tu JS no se rompa -->
+                            <div id="unitSelectorSection" class="unit-selector-box p-3 bg-white rounded-4 border-0 border-lg d-none">
+                                <h6 class="fw-extrabold text-dark mb-3 d-block d-lg-none text-center">Personaliza las Dimensiones de Corte</h6>
+
+                                <div class="btn-group btn-group-sm w-100 mb-3" role="group">
+                                    <input type="radio" class="btn-check js-radio-tipo" name="tipoVentaRadio" id="radioVarilla" value="VARILLA" checked>
+                                    <label class="btn btn-outline-success fw-bold py-2" for="radioVarilla">Varilla</label>
+
+                                    <input type="radio" class="btn-check js-radio-tipo" name="tipoVentaRadio" id="radioMetro" value="METRO">
+                                    <label class="btn btn-outline-success fw-bold py-2" for="radioMetro">Por Metros</label>
+                                </div>
+
+                                <div id="wrapperVarilla" class="js-wrapper-varilla">
+                                    <div class="quantity-stepper">
+                                        <button type="button" class="btn-step" id="btnMinusVarilla">−</button>
+                                        <input type="number" id="inputVarillaQty" value="1" class="form-control quantity-input-clean" readonly />
+                                        <button type="button" class="btn-step" id="btnPlusVarilla">+</button>
+                                    </div>
+                                    <small class="text-muted d-block text-center mt-2">Cantidad de piezas / varillas requeridas</small>
+                                </div>
+
+                                <div id="wrapperMetro" class="js-wrapper-metro d-none">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="d-flex gap-3 justify-content-center mb-2">
+                                            <div class="text-center">
+                                                <div class="quantity-stepper d-flex align-items-center mb-1">
+                                                    <button type="button" class="btn-step" id="btnMinusM">-</button>
+                                                    <input type="number" id="inputM" value="0" class="form-control quantity-input-clean" style="width:55px!important" min="0" max="5" />
+                                                    <button type="button" class="btn-step" id="btnPlusM">+</button>
+                                                </div>
+                                                <small class="text-muted font-monospace" style="font-size:0.65rem">Metros</small>
+                                            </div>
+
+                                            <div class="text-center">
+                                                <div class="quantity-stepper d-flex align-items-center mb-1">
+                                                    <button type="button" class="btn-step" id="btnMinusCm">-</button>
+                                                    <input type="number" id="inputCm" value="1" class="form-control quantity-input-clean" style="width:55px!important" min="0" max="99" />
+                                                    <button type="button" class="btn-step" id="btnPlusCm">+</button>
+                                                </div>
+                                                <small class="text-muted font-monospace" style="font-size:0.65rem">Centímetros</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="progress-w-container js-progress-container" id="progressBarContainer" style="cursor: pointer;">
+                                            <div class="progress-w-bar" id="masterProgressBar">
+                                                <span class="progress-w-text" id="masterProgressText">0.01m</span>
+                                                <div class="progress-w-handle"></div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted mt-1" style="font-size: 0.6rem;">Capacidad de corte máxima: 5.95m por varilla</small>
+                                    </div>
+                                </div>
+
+                                <!-- 📱 PRECIO EN VIVO DENTRO DEL MODAL MÓVIL (Limpio de sufijos) -->
+                                <div class="modal-price-display d-flex d-lg-none justify-content-center align-items-baseline my-3 pt-2 border-top">
+                                    <span id="masterLabelModal" class="text-secondary small fw-bold me-2 text-uppercase" style="font-size: 0.75rem;">Precio por Varilla:</span>
+                                    <span class="price-mobile-currency fw-bold text-success">S/</span>
+                                    <span id="masterPriceIntegerModal" class="price-mobile-integer fw-extrabold text-success" style="font-size: 1.8rem;">0</span>
+                                    <span id="masterPriceDecimalModal" class="price-mobile-decimal fw-bold text-success" style="font-size: 1.1rem;">.00</span>
+                                    <!-- 🟢 Aquí ya no va la etiqueta small del UnitDisplay -->
+                                </div>
+
+                                <!-- Botón para cerrar el modal y confirmar en móviles -->
+                                <button type="button" class="btn btn-success w-100 py-2 mt-3 d-block d-lg-none rounded-pill fw-bold" data-bs-dismiss="modal">
+                                    Listo, guardar medida
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📱 CAPA COMPACTA DE ACCIONES FIJAS ABAJO EN MÓVILES (PC se dibuja inline) -->
+            <div class="fixed-bottom-mobile-wrapper">
+
+                <!-- 📏 BOTÓN DE CONFIGURAR MEDIDA ESTÁTICO (Sale arriba del botón naranja solo en móvil) -->
+                <button type="button" class="btn btn-outline-customize-mobile d-flex d-lg-none w-100 justify-content-between align-items-center p-2 mb-2" data-bs-toggle="modal" data-bs-target="#bottomSheetMedidas">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 1.1rem;">📏</span>
+                        <div class="text-start">
+                            <span class="d-block fw-bold text-dark" style="font-size: 0.75rem; line-height:1.2;">CONFIGURAR MEDIDA</span>
+                            <small class="text-muted" id="mobileSummaryText" style="font-size: 0.7rem;">Por Varilla entera o Metros exactos</small>
+                        </div>
+                    </div>
+                    <i class="bi bi-chevron-right text-secondary small"></i>
+                </button>
+
+                <!-- 🛒 BOTÓN DE AGREGAR AL CARRITO PRINCIPAL -->
+                <button type="submit" id="masterSubmitCartBtn" class="btn btn-add-cart w-100 py-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                    </svg>
+                    <span id="cartBtnText">Agregar al pedido</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalZoomImagen" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0 p-0">
+            <div class="modal-header border-0 p-0 position-absolute top-0 end-0" style="z-index: 1050;">
+                <button type="button" class="btn-close btn-close-white m-2 m-md-3 shadow" data-bs-dismiss="modal" aria-label="Cerrar" style="background-color: rgba(0,0,0,0.6); border-radius: 50%; padding: 12px;"></button>
+            </div>
+            <div class="modal-body text-center p-0 d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                <img id="imagenZoomada" src="" class="img-fluid rounded-4 shadow-lg" alt="Vista ampliada" style="max-height: 95vh; width: auto; object-fit: contain; background: white; padding: 0.5rem;">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/productoPublic/productoDetalle.js" asp-append-version="true"></script>
+}

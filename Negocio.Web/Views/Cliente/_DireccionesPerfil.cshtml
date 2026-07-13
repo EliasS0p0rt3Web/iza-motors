@@ -1,0 +1,505 @@
+﻿@{
+    var direcciones = ViewBag.Direcciones as List<Negocio.Web.Models.Entities.DireccionCliente> ?? new List<Negocio.Web.Models.Entities.DireccionCliente>();
+}
+
+<style>
+    .section-card-dark {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 20px !important;
+        color: #f1f5f9 !important;
+    }
+
+    .dir-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .btn-delete-dir {
+        background: rgba(239, 68, 68, 0.1);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 8px;
+        padding: 6px 10px;
+        transition: all 0.2s;
+    }
+
+        .btn-delete-dir:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    .btn-add-custom {
+        background: rgba(22, 163, 74, 0.2) !important;
+        color: #4ade80 !important;
+        border: 1px solid rgba(22, 163, 74, 0.4) !important;
+        transition: all 0.3s ease;
+    }
+
+        .btn-add-custom:hover {
+            background: #16a34a !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+    .empty-addresses-box {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px dashed rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* 🌊 ANIMACIÓN DE OLAS (SKELETON COMPONENT) */
+    .skeleton-item {
+        padding: 12px;
+        background: #1e293b;
+        border-bottom: 1px solid #334155;
+    }
+
+    .skeleton-line {
+        height: 14px;
+        background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+        background-size: 200% 100%;
+        animation: olasCarga 1.5s infinite linear;
+        border-radius: 6px;
+    }
+
+        .skeleton-line.short {
+            width: 40%;
+            height: 10px;
+            margin-top: 6px;
+        }
+
+    @@keyframes olasCarga {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    /* GPS Botón Fuera del Mapa con Efecto Pulso */
+    .btn-gps-premium {
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #10b981 !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+        .btn-gps-premium:hover {
+            background: #10b981 !important;
+            color: white !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+    /* Desactivar botones de Leaflet por defecto ya que controlamos todo desde fuera */
+    .leaflet-control-zoom {
+        display: none !important;
+    }
+</style>
+
+<div class="card section-card-dark p-4 mt-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-geo-alt-fill text-success fs-4"></i>
+        <h4 class="fw-bold text-white m-0">Mis Direcciones</h4>
+    </div>
+
+    <p class="text-white-50 small mb-4">Registra tus domicilios frecuentes o agencias de Shalom para seleccionarlas rápidamente al pasar por el carrito.</p>
+
+    @if (TempData["ExitoDireccion"] != null)
+    {
+        <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 rounded-3 small mb-3" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10b981;">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>@TempData["ExitoDireccion"]</span>
+        </div>
+    }
+
+    @if (!direcciones.Any())
+    {
+        <div class="text-center py-5 rounded-3 empty-addresses-box mb-4">
+            <i class="bi bi-mailbox2 text-white opacity-50 fs-1 mb-2 d-block"></i>
+            <p class="text-white small m-0 mt-2 fw-medium">Aún no tienes direcciones guardadas en tu cuenta.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive mb-4">
+            <table class="table table-dark table-hover align-middle m-0" style="--bs-table-bg: transparent; min-width: 600px;">
+                <thead>
+                    <tr class="text-white-50 small" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <th style="width: 18%;">Tipo / Distrito</th>
+                        <th style="width: 37%;">Calle / Agencia</th>
+                        <th style="width: 35%;">Referencia / Receptor</th>
+                        <th style="width: 10%;" class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var dir in direcciones)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td>
+                                <span class="dir-badge d-inline-block mb-1.5 @(dir.TipoUbicacion == "SHALOM" ? "bg-warning bg-opacity-10 text-warning border border-warning border-opacity-20" : "bg-success bg-opacity-10 text-success border border-success border-opacity-20")">
+                                    @dir.TipoUbicacion
+                                </span>
+                                <div class="fw-bold text-success" style="color: #4ade80 !important; font-size: 14px;">@dir.Distrito</div>
+                            </td>
+                            <td class="text-white fw-semibold small">@dir.DireccionTexto</td>
+                            <td class="small">
+                                @if (!string.IsNullOrEmpty(dir.Referencia))
+                                {
+                                    <span class="text-white-50 d-block" style="font-size: 13px;">
+                                        <i class="bi bi-info-circle me-1 text-info"></i>@dir.Referencia
+                                    </span>
+                                }
+                                @if (!string.IsNullOrEmpty(dir.DatosReceptorAgencia))
+                                {
+                                    <span class="d-block text-warning mt-1" style="color: #fbbf24 !important; font-size: 13px;">
+                                        <i class="bi bi-person-bounding-box me-1"></i>Recoge: @dir.DatosReceptorAgencia
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <!-- Botón modernizado: Ya no envía el formulario, abre el modal de advertencia -->
+                                <button type="button" class="btn-delete-dir btn-abrir-modal-eliminar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarDireccion"
+                                        data-id="@dir.IdDireccion"
+                                        data-texto="@dir.DireccionTexto"
+                                        title="Eliminar dirección">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <button type="button" class="btn btn-add-custom btn-sm w-100 py-2.5 rounded-3 fw-semibold" data-bs-toggle="collapse" data-bs-target="#collapseFormDireccion">
+        <i class="bi bi-plus-circle me-1"></i> Agregar Nueva Dirección de Despacho
+    </button>
+
+    <div class="collapse mt-3" id="collapseFormDireccion">
+        <form asp-action="RegistrarDireccion" method="post" class="border-top border-secondary border-opacity-20 pt-3">
+            <div class="row g-2">
+
+                <div class="col-sm-4 mb-2">
+                    <label class="text-white-50 small mb-1">Tipo de Envío</label>
+                    <select name="tipoUbicacion" id="selectTipoUbicacion" class="form-select bg-dark text-white border-secondary py-2">
+                        <option value="DOMICILIO">Envío a Domicilio / Obra</option>
+                        <option value="SHALOM">Agencia Shalom (Provincia)</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-8 mb-2 d-flex align-items-end" id="wrapperGps">
+                    <button type="button" id="btnGpsPremium" class="btn btn-gps-premium w-100 py-2 rounded-3">
+                        <i class="bi bi-geo-alt-fill me-2 plan-pulse"></i> Usar mi ubicación actual por GPS
+                    </button>
+                </div>
+
+                <div class="col-12" id="seccionBuscadorMaestro">
+                    <label class="text-white-50 small mb-1 fw-bold text-success"> Escribe tu dirección (Calle, avenida o urbanización)</label>
+                    <div class="input-group mb-2" style="position: relative;">
+                        <span class="input-group-text bg-secondary border-secondary text-white"><i class="bi bi-search"></i></span>
+                        <input type="text" id="inputBuscarMapPerfil" class="form-control bg-dark text-white border-secondary py-2" placeholder="Ej: Av Próceres de la Independencia 1540, SJL..." autocomplete="off" />
+
+                        <div id="resultadosBusquedaPerfil" class="list-group position-absolute w-100" style="top: 100%; left: 0; z-index: 1050; max-height: 220px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);">
+                        </div>
+                    </div>
+
+                    <div id="mapaRegistroPerfil" style="width: 100%; height: 260px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px; z-index: 1;"></div>
+                </div>
+
+                <div class="col-sm-4" id="colDistrito">
+                    <label class="text-white-50 small mb-1">Distrito Auto-detectado</label>
+                    <input type="text" name="distrito" id="perfilDistrito" class="form-control bg-dark text-white border-secondary" required readonly value="SJL" />
+                </div>
+
+                <div class="col-sm-8" id="colDireccion">
+                    <label class="text-white-50 small mb-1" id="lblDireccion">Dirección de Despacho Procesada</label>
+                    <input type="text" name="direccionTexto" id="perfilDireccionTexto" class="form-control bg-dark text-white border-secondary" required readonly placeholder="Mueve el pin o busca arriba" />
+                </div>
+
+                <div class="col-12" id="colReferencia">
+                    <label class="text-white-50 small mb-1">Referencia Manual Exigida (Nro dpto, piso, color fachada) *</label>
+                    <input type="text" name="referencia" id="perfilReferencia" class="form-control bg-dark text-white border-secondary" placeholder="Ej: Piso 3, portón negro al costado de la botica" required />
+                </div>
+
+                <div class="col-12 d-none" id="colReceptor">
+                    <label class="text-white-50 small mb-1">Datos de quien recoge en counter (DNI y Nombre) *</label>
+                    <input type="text" name="datosReceptor" id="inputReceptor" class="form-control bg-dark text-white border-secondary" placeholder="Ej: DNI 77889900 - Elias Canchanya" />
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button type="submit" class="btn btn-success btn-sm px-4 py-2 rounded-3 fw-bold">
+                    <i class="bi bi-save me-1"></i> Guardar Dirección en mi Cuenta
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    let mapaPerfil = null;
+    let marcadorPerfil = null;
+    let timeoutBusquedaPerfil;
+
+    const latSJL = -11.985143;
+    const lngSJL = -77.004821;
+
+    function inicializarMapaPerfil() {
+        if (mapaPerfil !== null) return;
+
+        mapaPerfil = L.map('mapaRegistroPerfil').setView([latSJL, lngSJL], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(mapaPerfil);
+
+        marcadorPerfil = L.marker([latSJL, lngSJL], { draggable: true }).addTo(mapaPerfil);
+
+        marcadorPerfil.on('dragend', async function () {
+            const posicion = marcadorPerfil.getLatLng();
+            await obtenerDireccionReversa(posicion.lat, posicion.lng);
+        });
+
+        // Configuración del Buscador Predictivo Maestro
+        const inputBuscar = document.getElementById('inputBuscarMapPerfil');
+        const listaResultados = document.getElementById('resultadosBusquedaPerfil');
+
+        if (inputBuscar && listaResultados) {
+            inputBuscar.addEventListener('input', function() {
+                clearTimeout(timeoutBusquedaPerfil);
+                const query = this.value.trim();
+
+                if (query.length < 3) {
+                    listaResultados.style.display = 'none';
+                    return;
+                }
+
+                // 🌊 UX CRÍTICA: Activar las Olas de Carga (Skeleton Layer) al Instante
+                inyectarOlasLoading(listaResultados);
+
+                timeoutBusquedaPerfil = setTimeout(() => {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&countrycodes=pe&limit=5`)
+                        .then(response => response.json())
+                        .then(data => {
+                            listaResultados.innerHTML = '';
+                            if (data.length === 0) {
+                                listaResultados.innerHTML = '<div class="list-group-item bg-dark text-muted border-secondary small py-2 text-center">No se encontraron resultados en el mapa.</div>';
+                                return;
+                            }
+
+                            data.forEach(lugar => {
+                                const boton = document.createElement('button');
+                                boton.type = 'button';
+                                boton.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary small py-2.5 px-3';
+                                boton.style.textAlign = 'left';
+                                boton.innerText = lugar.display_name;
+
+                                boton.onclick = function() {
+                                    const lat = parseFloat(lugar.lat);
+                                    const lon = parseFloat(lugar.lon);
+
+                                    mapaPerfil.setView([lat, lon], 17);
+                                    marcadorPerfil.setLatLng([lat, lon]);
+                                    inputBuscar.value = lugar.display_name;
+                                    listaResultados.style.display = 'none';
+
+                                    procesarDireccionOSM(lugar.address, lugar.display_name);
+                                };
+                                listaResultados.appendChild(boton);
+                            });
+                        })
+                        .catch(() => {
+                            listaResultados.style.display = 'none';
+                        });
+                }, 500); // Debounce de protección de red
+            });
+        }
+
+        // Cerrar combobox al hacer clic afuera
+        document.addEventListener('click', (e) => {
+            if (inputBuscar && e.target !== inputBuscar) {
+                listaResultados.style.display = 'none';
+            }
+        });
+    }
+
+    // Genera la interfaz de las Olas de Carga
+    function inyectarOlasLoading(contenedor) {
+        contenedor.innerHTML = `
+            <div class="skeleton-item"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-item"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-item"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        `;
+        contenedor.style.display = 'block';
+    }
+
+    async function obtenerDireccionReversa(lat, lng) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.address) {
+                    procesarDireccionOSM(data.address, data.display_name);
+                    const inputBuscar = document.getElementById('inputBuscarMapPerfil');
+                    if (inputBuscar) inputBuscar.value = data.display_name;
+                }
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+        // REEMPLAZA SOLO ESTA FUNCIÓN EN TU BLOQUE <script>
+    function procesarDireccionOSM(address, displayName) {
+        // 1️⃣ Extraemos el distrito con las variables que maneja OpenStreetMap
+        let distrito = address.suburb || address.neighbourhood || address.city_district || address.city || "San Juan de Lurigancho";
+
+        // 2️⃣ 🧠 CAPTURA INTELIGENTE DE ZONAS (Urbanización, Barrio, Asociación, Asentamiento Humano)
+        // OpenStreetMap suele mandar zonas populares en 'neighbourhood', 'residential', 'allotments' o 'suburb'
+        let zonaOBarrio = address.neighbourhood || address.residential || address.allotments || "";
+
+        // Si la zona detectada es idéntica al distrito, la limpiamos para no repetir (ej: Rímac - Rímac)
+        if (zonaOBarrio.toLowerCase() === distrito.toLowerCase()) {
+            zonaOBarrio = "";
+        }
+
+        // 3️⃣ Armamos la calle principal
+        let calle = address.road || address.pedestrian || address.house_number || displayName.split(',')[0];
+
+        // 4️⃣ 🔥 FUSIÓN UX PREMIUM: Si detecta una zona/urbanización, la acoplamos elegantemente a la calle
+        let direccionCompleta = calle.trim();
+        if (zonaOBarrio) {
+            direccionCompleta += " - " + zonaOBarrio.trim(); // Ej del usuario: "Vía de Evitamiento - Cantagallo"
+        }
+
+        // 5️⃣ Inyectamos los datos procesados en tus inputs nativos que viajan a C#
+        document.getElementById('perfilDireccionTexto').value = direccionCompleta;
+        document.getElementById('perfilDistrito').value = distrito.trim();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectTipo = document.getElementById('selectTipoUbicacion');
+        const seccionBuscador = document.getElementById('seccionBuscadorMaestro');
+        const wrapperGps = document.getElementById('wrapperGps');
+        const colDistrito = document.getElementById('colDistrito');
+        const colDireccion = document.getElementById('colDireccion');
+        const colReferencia = document.getElementById('colReferencia');
+        const colReceptor = document.getElementById('colReceptor');
+        const btnGps = document.getElementById('btnGpsPremium');
+
+        // Lógica del botón GPS Premium reposicionado fuera del mapa
+        if(btnGps) {
+            btnGps.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Localizando tu predio...';
+                this.disabled = true;
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const miLat = position.coords.latitude;
+                            const miLng = position.coords.longitude;
+
+                            inicializarMapaPerfil();
+                            mapaPerfil.setView([miLat, miLng], 17);
+                            marcadorPerfil.setLatLng([miLat, miLng]);
+
+                            await obtenerDireccionReversa(miLat, miLng);
+
+                            this.innerHTML = '<i class="bi bi-geo-alt-fill me-2"></i> Usar mi ubicación actual por GPS';
+                            this.disabled = false;
+                        },
+                        () => {
+                            this.innerHTML = '<i class="bi bi-geo-alt-fill me-2"></i> Usar mi ubicación actual por GPS';
+                            this.disabled = false;
+                            alert("Acceso denegado al GPS. Por favor escribe tu dirección en la barra superior.");
+                        }
+                    );
+                } else {
+                    alert("Geolocalización no soportada en este navegador.");
+                }
+            });
+        }
+
+        const miCollapse = document.getElementById('collapseFormDireccion');
+        if (miCollapse) {
+            miCollapse.addEventListener('shown.bs.collapse', function () {
+                if (selectTipo.value === "DOMICILIO") {
+                    inicializarMapaPerfil();
+                    setTimeout(() => {
+                        if (mapaPerfil) mapaPerfil.invalidateSize();
+                    }, 200);
+                }
+            });
+        }
+
+        if (selectTipo) {
+            selectTipo.addEventListener('change', function() {
+                if(this.value === "SHALOM") {
+                    seccionBuscador.classList.add('d-none');
+                    wrapperGps.classList.add('d-none');
+                    colDistrito.classList.add('d-none');
+                    colReferencia.classList.add('d-none');
+                    colReceptor.classList.remove('d-none');
+
+                    document.getElementById('perfilDireccionTexto').readOnly = false;
+                    document.getElementById('perfilDireccionTexto').value = "";
+                    document.getElementById('lblDireccion').innerText = "Ciudad y Nombre de Agencia Shalom *";
+                    document.getElementById('perfilDistrito').value = "PROVINCIA";
+                    document.getElementById('inputReceptor').required = true;
+                } else {
+                    seccionBuscador.classList.remove('d-none');
+                    wrapperGps.classList.remove('d-none');
+                    colDistrito.classList.remove('d-none');
+                    colReferencia.classList.remove('d-none');
+                    colReceptor.classList.add('d-none');
+
+                    document.getElementById('perfilDireccionTexto').readOnly = true;
+                    document.getElementById('lblDireccion').innerText = "Dirección de Despacho Procesada";
+                    document.getElementById('perfilDistrito').value = "SJL";
+                    document.getElementById('inputReceptor').required = false;
+
+                    inicializarMapaPerfil();
+                    setTimeout(() => {
+                        if (mapaPerfil) {
+                            mapaPerfil.invalidateSize();
+                            mapaPerfil.setView(marcadorPerfil.getLatLng());
+                        }
+                    }, 200);
+                }
+            });
+        }
+    });
+
+        // =================================================================
+    // 🗑️ CONTROL INYECTOR PARA EL MODAL DE ELIMINACIÓN DE DIRECCIONES
+    // =================================================================
+    document.addEventListener("DOMContentLoaded", () => {
+        const botonesEliminar = document.querySelectorAll(".btn-abrir-modal-eliminar");
+        const inputHiddenId = document.getElementById("inputHiddenIdDireccion");
+        const textDireccion = document.getElementById("textDireccionAEliminar");
+
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener("click", function() {
+                // Extraemos la data del botón presionado
+                const idDireccion = this.getAttribute("data-id");
+                const direccionTexto = this.getAttribute("data-texto");
+
+                // Inyectamos los valores en caliente dentro del modal
+                if (inputHiddenId) inputHiddenId.value = idDireccion;
+                if (textDireccion) textDireccion.innerText = direccionTexto;
+            });
+        });
+    });
+</script>

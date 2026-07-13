@@ -1,0 +1,193 @@
+﻿@model Negocio.Web.Models.ViewModels.RegistrarIngresoViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Registrar Ingreso";
+}
+
+<h4 class="mb-3">Registrar Ingreso de Mercadería</h4>
+
+<form asp-action="Registrar" method="post" class="card shadow-sm p-4">
+
+    <div class="row">
+        <!-- ÁREA -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Área</label>
+            <select class="form-control" id="area">
+                <option value="">-- Seleccione --</option>
+                @foreach (var a in Model.Areas)
+                {
+                    <option value="@a">@a</option>
+                }
+            </select>
+        </div>
+
+        <!-- PRODUCTO -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Producto</label>
+            <select class="form-control" id="producto">
+                <option value="">-- Seleccione --</option>
+            </select>
+
+            <input type="hidden" asp-for="Ingreso.IdProducto" id="idProductoHidden" />
+            <span asp-validation-for="Ingreso.IdProducto" class="text-danger"></span>
+        </div>
+
+        <!-- DIMENSIONES -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Dimensiones</label>
+            <select asp-for="Dimensiones" class="form-control" id="dimensiones">
+                <option value="">-- Seleccione --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <label class="form-label">Fecha de Ingreso</label>
+        <input asp-for="Ingreso.FechaIngreso"
+               type="date"
+               class="form-control" />
+        <span asp-validation-for="Ingreso.FechaIngreso"
+              class="text-danger"></span>
+    </div>
+
+    <div class="row">
+        <!-- CANTIDAD -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Cantidad</label>
+            <input asp-for="Ingreso.Cantidad" class="form-control" />
+            <span asp-validation-for="Ingreso.Cantidad" class="text-danger"></span>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- CHECKBOX PRECIOS -->
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="chkUnitario" checked />
+        <label class="form-check-label fw-semibold">
+            Usar precio unitario
+        </label>
+    </div>
+
+    <div class="row">
+        <!-- PRECIO UNITARIO -->
+        <div class="col-md-4 mb-3" id="precioUnitarioDiv">
+            <label class="form-label">Precio Unitario</label>
+            <input asp-for="Ingreso.PrecioUnitario" class="form-control" />
+        </div>
+
+        <!-- PRECIO VARILLA -->
+        <div class="col-md-4 mb-3 d-none" id="precioVarillaDiv">
+            <label class="form-label">Precio por Varilla</label>
+            <input asp-for="Ingreso.PrecioPorVarilla" class="form-control" />
+        </div>
+
+        <!-- PRECIO METRO -->
+        <div class="col-md-4 mb-3 d-none" id="precioMetroDiv">
+            <label class="form-label">Precio por Metro</label>
+            <input asp-for="Ingreso.PrecioPorMetro" class="form-control" />
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+        <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+                const idProductoHidden = document.getElementById("idProductoHidden");
+
+        // ÁREA → DESCRIPCIONES
+        area.addEventListener("change", async () => {
+
+            producto.innerHTML = '<option>Cargando...</option>';
+            dimensiones.innerHTML = '<option value="">-- Seleccione --</option>';
+            idProductoHidden.value = "";
+
+            if (!area.value) {
+                producto.innerHTML = '<option value="">-- Seleccione --</option>';
+                return;
+            }
+
+            const res = await fetch(`/Ingreso/ObtenerProductosPorArea?area=${area.value}`);
+            const data = await res.json();
+
+            producto.innerHTML = '<option value="">-- Seleccione --</option>';
+            data.forEach(d => {
+                producto.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+        });
+
+        // DESCRIPCIÓN → DIMENSIONES
+        producto.addEventListener("change", async () => {
+
+            dimensiones.innerHTML = '<option>Cargando...</option>';
+            idProductoHidden.value = "";
+
+            if (!producto.value) {
+                dimensiones.innerHTML = '<option value="">-- Seleccione --</option>';
+                return;
+            }
+
+            const res = await fetch(
+                `/Ingreso/ObtenerDimensiones?area=${area.value}&descripcion=${producto.value}`
+            );
+
+            const data = await res.json();
+
+            dimensiones.innerHTML = '<option value="">-- Seleccione --</option>';
+            data.forEach(d => {
+                dimensiones.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+        });
+
+        // DIMENSIÓN → PRODUCTO REAL
+        dimensiones.addEventListener("change", async () => {
+
+            if (!dimensiones.value) return;
+
+            const res = await fetch(
+                `/Ingreso/ObtenerProductoFinal?area=${area.value}&descripcion=${producto.value}&dimensiones=${dimensiones.value}`
+            );
+
+            const p = await res.json();
+
+            idProductoHidden.value = p.idProducto;
+        });
+
+
+        
+        const chkUnitario = document.getElementById("chkUnitario");
+        const precioUnitarioDiv = document.getElementById("precioUnitarioDiv");
+        const precioVarillaDiv = document.getElementById("precioVarillaDiv");
+        const precioMetroDiv = document.getElementById("precioMetroDiv");
+
+        function actualizarPrecios() {
+            if (chkUnitario.checked) {
+                // Mostrar unitario
+                precioUnitarioDiv.classList.remove("d-none");
+
+                // Ocultar metro y varilla
+                precioVarillaDiv.classList.add("d-none");
+                precioMetroDiv.classList.add("d-none");
+            } else {
+                // Ocultar unitario
+                precioUnitarioDiv.classList.add("d-none");
+
+                // Mostrar metro y varilla
+                precioVarillaDiv.classList.remove("d-none");
+                precioMetroDiv.classList.remove("d-none");
+            }
+        }
+
+        // Ejecutar al cargar
+        actualizarPrecios();
+
+        // Escuchar cambios
+        chkUnitario.addEventListener("change", actualizarPrecios);
+  
+    </script>
+}

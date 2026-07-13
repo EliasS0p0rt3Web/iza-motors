@@ -1,0 +1,358 @@
+﻿@* Views/Shared/_PreloaderPublico.cshtml
+   Preloader visual para Iza Motors.
+   No usa PNG ni SVG externo: el logotipo se dibuja con texto y trazos SVG.
+*@
+
+<div id="custom-preloader"
+     class="iza-preloader"
+     role="status"
+     aria-live="polite"
+     aria-label="Cargando Iza Motors"
+     style="display:none;">
+
+    <div id="loader-brand-box" class="iza-loader-brand">
+
+        <svg class="iza-drawn-logo"
+             viewBox="0 0 760 250"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-hidden="true">
+
+            <!-- Trazos decorativos tipo pincel -->
+            <path class="iza-brush iza-brush-top"
+                  d="M72 70 C145 40, 230 49, 300 42
+                     C395 34, 492 43, 675 28" />
+
+            <path class="iza-brush iza-brush-bottom"
+                  d="M78 178 C190 196, 310 183, 420 194
+                     C530 205, 618 188, 682 176" />
+
+            <!-- Nombre principal -->
+            <text x="380"
+                  y="150"
+                  text-anchor="middle"
+                  class="iza-logo-word">
+                IZA MOTORS
+            </text>
+        </svg>
+
+        <div class="iza-loader-subtitle">
+            MECÁNICA EN GENERAL · REPUESTOS · MULTIMARCA
+        </div>
+
+        <div class="iza-loader-status">
+            Preparando Iza Motors para ti<span class="iza-loading-dots"></span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .iza-preloader {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 42%, rgba(237, 28, 36, 0.07), transparent 34%), #ffffff;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity .55s ease, visibility .55s ease;
+    }
+
+        .iza-preloader.is-leaving {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+    .iza-loader-brand {
+        width: min(620px, 92vw);
+        text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
+        transform-origin: center;
+    }
+
+    .iza-drawn-logo {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .08));
+    }
+
+    .iza-logo-word {
+        fill: transparent;
+        stroke: #ed1c24;
+        stroke-width: 3px;
+        stroke-linejoin: round;
+        paint-order: stroke fill;
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+        font-size: 102px;
+        font-weight: 900;
+        font-style: italic;
+        letter-spacing: 3px;
+        stroke-dasharray: 1250;
+        stroke-dashoffset: 1250;
+        animation: izaDrawText 1.05s cubic-bezier(.2, .8, .2, 1) forwards, izaFillText .35s ease .82s forwards;
+    }
+
+    .iza-brush {
+        fill: none;
+        stroke: #ed1c24;
+        stroke-width: 16px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: .95;
+        stroke-dasharray: 820;
+        stroke-dashoffset: 820;
+    }
+
+    .iza-brush-top {
+        animation: izaDrawBrush .72s ease .12s forwards;
+    }
+
+    .iza-brush-bottom {
+        animation: izaDrawBrush .72s ease .32s forwards;
+    }
+
+    .iza-loader-subtitle {
+        margin-top: -20px;
+        color: #ed1c24;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: clamp(.55rem, 1.4vw, .72rem);
+        font-weight: 800;
+        letter-spacing: .13em;
+        opacity: 0;
+        transform: translateY(8px);
+        animation: izaFadeUp .45s ease .88s forwards;
+    }
+
+    .iza-loader-status {
+        margin-top: 30px;
+        color: #525252;
+        font-family: "Inter", Arial, sans-serif;
+        font-size: clamp(.84rem, 2vw, 1rem);
+        font-weight: 600;
+        letter-spacing: .02em;
+        opacity: 0;
+        transform: translateY(8px);
+        animation: izaFadeUp .45s ease 1.02s forwards;
+    }
+
+    .iza-loader-brand.is-waiting {
+        animation: izaBreathing 1.8s ease-in-out infinite;
+    }
+
+    .iza-loader-brand.is-exiting {
+        animation: izaExit .48s cubic-bezier(.22, 1, .36, 1) forwards;
+    }
+
+    .iza-loading-dots::after {
+        content: "";
+        display: inline-block;
+        width: 1.4em;
+        text-align: left;
+        animation: izaDots 1.25s steps(4, end) infinite;
+    }
+
+    @@keyframes izaDrawText {
+        to
+
+    {
+        stroke-dashoffset: 0;
+    }
+
+    }
+
+    @@keyframes izaFillText {
+        to
+
+    {
+        fill: #ed1c24;
+        stroke-width: 1.3px;
+    }
+
+    }
+
+    @@keyframes izaDrawBrush {
+        to
+
+    {
+        stroke-dashoffset: 0;
+    }
+
+    }
+
+    @@keyframes izaFadeUp {
+        to
+
+    {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes izaBreathing {
+        0%, 100%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(.975);
+    }
+
+    }
+
+    @@keyframes izaExit {
+        to
+
+    {
+        opacity: 0;
+        transform: scale(1.08);
+        filter: blur(5px);
+    }
+
+    }
+
+    @@keyframes izaDots {
+        0%
+
+    {
+        content: "";
+    }
+
+    25% {
+        content: ".";
+    }
+
+    50% {
+        content: "..";
+    }
+
+    75%, 100% {
+        content: "...";
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .iza-loader-brand
+
+    {
+        width: min(390px, 94vw);
+    }
+
+    .iza-logo-word {
+        font-size: 92px;
+    }
+
+    .iza-loader-subtitle {
+        margin-top: -14px;
+        letter-spacing: .08em;
+    }
+
+    .iza-loader-status {
+        margin-top: 22px;
+    }
+
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .iza-logo-word, .iza-brush, .iza-loader-subtitle, .iza-loader-status, .iza-loader-brand, .iza-loading-dots::after
+
+    {
+        animation: none !important;
+    }
+
+    .iza-logo-word {
+        fill: #ed1c24;
+        stroke-dashoffset: 0;
+    }
+
+    .iza-brush {
+        stroke-dashoffset: 0;
+    }
+
+    .iza-loader-subtitle,
+    .iza-loader-status {
+        opacity: 1;
+        transform: none;
+    }
+
+    }</style>
+
+<script>
+    (() => {
+        "use strict";
+
+        const STORAGE_KEY = "izaPreloaderShown";
+        const MIN_VISIBLE_MS = 1500;
+        const MAX_VISIBLE_MS = 8000;
+
+        const preloader = document.getElementById("custom-preloader");
+        const brandBox = document.getElementById("loader-brand-box");
+
+        if (!preloader || !brandBox) return;
+
+        // Mostrarlo una sola vez por pestaña/sesión.
+        if (sessionStorage.getItem(STORAGE_KEY) === "true") {
+            preloader.remove();
+            return;
+        }
+
+        preloader.style.display = "flex";
+
+        let minimumTimeFinished = false;
+        let pageFinishedLoading = document.readyState === "complete";
+        let alreadyClosed = false;
+
+        const closePreloader = () => {
+            if (alreadyClosed || !minimumTimeFinished || !pageFinishedLoading) return;
+
+            alreadyClosed = true;
+            brandBox.classList.remove("is-waiting");
+            brandBox.classList.add("is-exiting");
+            preloader.classList.add("is-leaving");
+
+            sessionStorage.setItem(STORAGE_KEY, "true");
+
+            window.setTimeout(() => {
+                preloader.remove();
+            }, 600);
+        };
+
+        window.setTimeout(() => {
+            minimumTimeFinished = true;
+            closePreloader();
+        }, MIN_VISIBLE_MS);
+
+        if (!pageFinishedLoading) {
+            window.addEventListener("load", () => {
+                pageFinishedLoading = true;
+                closePreloader();
+            }, { once: true });
+        }
+
+        window.setTimeout(() => {
+            if (!pageFinishedLoading && !alreadyClosed) {
+                brandBox.classList.add("is-waiting");
+            }
+        }, 1400);
+
+        // Failsafe: evita que el preloader quede bloqueado por una imagen o recurso externo.
+        window.setTimeout(() => {
+            if (alreadyClosed) return;
+
+            minimumTimeFinished = true;
+            pageFinishedLoading = true;
+            closePreloader();
+        }, MAX_VISIBLE_MS);
+    })();
+</script>

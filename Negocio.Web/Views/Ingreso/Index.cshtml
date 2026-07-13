@@ -1,0 +1,312 @@
+﻿@model List<Negocio.Web.Models.Entities.Ingreso>
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Entradas de Mercadería";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- VARIABLES Y BASE PRO --- */
+    .ingreso-list-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        padding: 1.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+        .input-pro:focus {
+            border-color: #0f172a;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.08);
+            outline: none;
+        }
+
+    /* --- BOTONES MODERNOS --- */
+    .btn-new-pro {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        color: white !important;
+        border: none;
+        padding: 10px 24px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-new-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(34, 197, 94, 0.35);
+        }
+
+    .btn-search-pro {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 11px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    }
+
+        .btn-search-pro:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+    /* --- TABLA PRO --- */
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+        }
+
+        .table-pro tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #334155;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+
+        .table-pro tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+    .qty-badge {
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-weight: 700;
+    }
+
+    .price-badge {
+        font-family: monospace;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #1e293b;
+    }
+
+    /* --- BOTONES DE ACCIÓN (Tabla) --- */
+    .btn-action {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            transform: scale(1.05);
+            color: #d97706;
+        }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+        .btn-delete:hover {
+            background: #fecaca;
+            transform: scale(1.05);
+            color: #dc2626;
+        }
+
+    /* --- FILTRO DESPLEGABLE MÓVIL --- */
+    .btn-filter-trigger {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.75rem 1.2rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #334155;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.02);
+        transition: all 0.3s ease;
+        text-align: left;
+    }
+
+        .btn-filter-trigger[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+    .chevron-icon {
+        transition: transform 0.3s ease;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    @@media (min-width: 768px) {
+        #filtrosIngresosCollapse.collapse:not(.show)
+
+    {
+        display: block !important;
+    }
+
+    }
+</style>
+
+<div class="ingreso-list-container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-800 text-dark mb-0"> Entradas de Mercadería</h3>
+        </div>
+        <a asp-action="Registrar" class="btn-new-pro">
+            <i class="bi bi-plus-lg"></i> Nuevo Ingreso
+        </a>
+    </div>
+
+    <div class="mb-4">
+        <button type="button" class="btn btn-filter-trigger d-md-none w-100 d-flex align-items-center mb-2"
+                data-bs-toggle="collapse" data-bs-target="#filtrosIngresosCollapse" aria-expanded="false">
+            <span><i class="bi bi-calendar-range-fill text-primary me-2"></i> Rango de Ingreso Stock</span>
+            <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+        </button>
+
+        <div class="collapse" id="filtrosIngresosCollapse">
+            <form method="get" class="form-premium-card">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label-pro">Desde</label>
+                        <input type="date" name="desde" class="form-control input-pro w-100" value="@ViewBag.Desde" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label-pro">Hasta</label>
+                        <input type="date" name="hasta" class="form-control input-pro w-100" value="@ViewBag.Hasta" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-search-pro w-100">
+                            <i class="bi bi-search me-2"></i> Filtrar Entradas
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="form-premium-card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table-pro text-nowrap">
+                <thead class="text-center">
+                    <tr>
+                        <th>Fecha</th>
+                        <th class="text-start">Producto</th>
+                        <th>Dimensión</th>
+                        <th>Cantidad</th>
+                        <th class="text-end">Precio Unit.</th>
+                        <th class="text-end">Precio Metro</th>
+                        <th class="text-end">Precio Varilla</th>
+                        <th style="width:110px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var i in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@i.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                                <td class="text-start fw-bold text-dark">@i.Producto?.Descripcion</td>
+                                <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1 font-monospace">@(i.Producto?.Dimensiones ?? "-")</span></td>
+                                <td class="text-center"><span class="qty-badge">@i.Cantidad</span></td>
+                                <td class="text-end price-badge text-secondary">@(i.PrecioUnitario?.ToString("C2") ?? "S/ 0.00")</td>
+                                <td class="text-end price-badge text-dark">@(i.PrecioPorMetro?.ToString("C2") ?? "S/ 0.00")</td>
+                                <td class="text-end price-badge text-primary">@(i.PrecioPorVarilla?.ToString("C2") ?? "S/ 0.00")</td>
+
+                                <td class="text-center">
+                                    <a asp-action="Editar" asp-route-id="@i.IdIngreso" class="btn-action btn-edit" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+
+                                    <form asp-action="Eliminar" asp-route-id="@i.IdIngreso" method="post" class="d-inline"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar este ingreso?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-action btn-delete ms-1" title="Eliminar">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-light"></i>
+                                No hay ingresos registrados en este rango
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

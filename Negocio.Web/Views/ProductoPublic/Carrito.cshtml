@@ -1,0 +1,506 @@
+﻿@model List<Negocio.Web.Models.ViewModels.CarritoItemVm>
+
+@{
+    ViewData["Title"] = "Carrito de Compras";
+    Layout = "_LayoutProductos";
+}
+
+<div class="container py-4">
+    @if (!Model.Any())
+    {
+        @* --- ESTADO VACÍO PRO --- *@
+        <div class="text-center py-5 shadow-sm bg-white rounded-4 border">
+            <div class="mb-4 mt-3">
+                <i class="bi bi-cart-x opacity-25" style="font-size: 6rem; color: #64748b;"></i>
+            </div>
+            <h2 class="fw-800 text-dark">Tu carrito está vacío</h2>
+            <p class="text-muted mb-4">Parece que aún no has seleccionado materiales para tu proyecto.</p>
+            <a asp-action="Index" class="btn btn-dark btn-lg px-5 rounded-pill fw-bold">
+                Explorar Catálogo
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @* --- COLUMNA IZQUIERDA: PRODUCTOS --- *@
+            <div class="col-lg-8">
+                <div class="bg-white rounded-4 border shadow-sm p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="fw-800 m-0">🛒 Mi Carrito</h2>
+                        <span class="badge rounded-pill bg-light text-dark border px-3 py-2 fw-bold">
+                            @Model.Count @(Model.Count == 1 ? "ítem" : "ítems")
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle custom-cart-table">
+                            <thead>
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="border-0 pb-3">Detalle del Producto</th>
+                                    <th class="border-0 pb-3 text-center">Cant.</th>
+                                    <th class="border-0 pb-3 text-end">Subtotal</th>
+                                    <th class="border-0 pb-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="py-3">
+                                            <div class="fw-bold text-dark fs-5">@item.Descripcion</div>
+                                            <div class="d-flex gap-2 align-items-center mt-1">
+                                                <span class="text-muted small">Dim: @item.Dimensiones</span>
+                                                @if (item.TipoVenta == "VARILLA")
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border-success-subtle" style="font-size: 0.65rem;">PERFIL COMPLETO</span>
+                                                }
+                                            </div>
+                                            <div class="text-primary small fw-bold mt-1">S/ @item.PrecioUnitario.ToString("0.00") unit.</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-inline-block px-3 py-1 bg-light rounded-pill border fw-800">
+                                                @item.Cantidad
+                                                <span class="opacity-50 ms-1 small text-lowercase">
+                                                    @(item.TipoVenta == "METRO" ? "mts" : (item.TipoVenta == "VARILLA" ? "var" : "und"))
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-800 text-dark fs-5">
+                                            S/ @item.Subtotal.ToString("0.00")
+                                        </td>
+                                        <td class="text-end ps-3">
+                                            <form asp-action="QuitarDelCarrito" method="post" class="m-0">
+                                                <input type="hidden" name="idProducto" value="@item.IdProducto" />
+                                                <input type="hidden" name="tipoVenta" value="@item.TipoVenta" />
+                                                <button type="submit" class="btn-remove" title="Eliminar ítem">
+                                                    <i class="bi bi-trash3-fill"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-link text-decoration-none text-muted p-0 fw-bold">
+                            <i class="bi bi-arrow-left me-2"></i> Seguir agregando productos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @* --- COLUMNA DERECHA: RESUMEN (Sticky en PC) --- *@
+            <div class="col-lg-4">
+                <div class="summary-card shadow-lg border-0 rounded-4 p-4 sticky-lg-top" style="top: 100px;">
+                    <h5 class="fw-800 mb-4 text-uppercase letter-spacing-1 text-white">Resumen de Orden</h5>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="opacity-75">Suma de productos</span>
+                        <span class="fw-bold">S/ @Model.Sum(x => x.Subtotal).ToString("0.00")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="opacity-75">Gastos de envío</span>
+                        <span class="text-success fw-bold small">Se calcula en reserva</span>
+                    </div>
+
+                    <div class="divider-dashed my-4"></div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h5 fw-800 mb-0 text-white">TOTAL ESTIMADO</span>
+                        <div class="text-end">
+                            <span class="h3 fw-800 text-white d-block mb-0">S/ @Model.Sum(x => x.Subtotal).ToString("0.00")</span>
+                            <small class="text-white-50" style="font-size: 0.7rem;">Sujeto a tipo de entrega</small>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-reserve-action w-100 py-3 mb-3" data-bs-toggle="modal" data-bs-target="#reservaModal">
+                        <span class="d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-calendar-check-fill fs-5"></i>
+                            CONTINUAR RESERVA
+                        </span>
+                    </button>
+
+                    <div class="p-3 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                        <div class="d-flex gap-2 align-items-start">
+                            <i class="bi bi-shield-lock-fill text-success"></i>
+                            <p class="small text-white-50 m-0">
+                                Tu reserva será revisada por un técnico para validar stock y dimensiones antes del pago.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    /* 🚀 ESTILOS DE INGENIERÍA PRO */
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 1px;
+    }
+
+    .custom-cart-table tbody td {
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .btn-remove {
+        background: #fff1f2;
+        color: #e11d48;
+        border: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+        .btn-remove:hover {
+            background: #e11d48;
+            color: white;
+            transform: scale(1.1);
+        }
+
+    /* Tarjeta de Resumen Oscura Pro */
+    .summary-card {
+        background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+        color: white;
+    }
+
+    .divider-dashed {
+        border-top: 1px dashed rgba(255,255,255,0.2);
+    }
+
+    /* Botón de Acción Especial */
+    .btn-reserve-action {
+        background: #22c55e;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+        .btn-reserve-action:hover {
+            background: #16a34a;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(34, 197, 94, 0.5);
+        }
+
+    /* Ajustes móviles */
+    @@media (max-width: 991.98px) {
+        .summary-card {
+            margin-top: 1rem;
+            position: relative !important;
+            top: 0 !important;
+        }
+    }
+</style>
+
+@* --- MANTENEMOS TU JS INTACTO (Sin tocar lógica) --- *@
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1️⃣ ELEMENTOS DEL DOM
+        const btnConfirmar = document.getElementById('btnConfirmarReserva');
+        const selectEntrega = document.getElementById('clienteEntrega');
+        const clienteNombre = document.getElementById('clienteNombre');
+        const clienteTelefono = document.getElementById('clienteTelefono');
+        const clienteCorreo = document.getElementById('clienteCorreo');
+
+        const grupoDireccionDinamica = document.getElementById('grupoDireccionDinamica');
+        const grupoShalomDinamico = document.getElementById('grupoShalomDinamico');
+        const grupoEstaciones = document.getElementById('grupoEstaciones');
+        const grupoDireccionManual = document.getElementById('grupoDireccion');
+
+        const comboDirFrecuentes = document.getElementById('comboDireccionesFrecuentes');
+        const comboAgenciasFrecuentes = document.getElementById('comboAgenciasFrecuentes');
+        const campoShalomManual = document.getElementById('campoShalomManual');
+
+        const tipoFecha = document.getElementById('tipoFecha');
+        const grupoFecha = document.getElementById('grupoFecha');
+        const clienteFecha = document.getElementById('clienteFecha');
+
+        // Estado de login desde Razor
+        const estaLogueado = @(Context.Session.GetInt32("USER_ID") != null ? "true" : "false");
+
+        // 🎛️ CONTROL DE INTERRUPTORES DE VISTAS SEGÚN SESIÓN Y ENTREGA
+        if (selectEntrega) {
+            selectEntrega.addEventListener('change', function() {
+                // Apagamos todo por defecto
+                grupoDireccionManual?.classList.add('d-none');
+                grupoDireccionDinamica?.classList.add('d-none');
+                grupoShalomDinamico?.classList.add('d-none');
+                grupoEstaciones?.classList.add('d-none');
+
+                if (this.value === "DELIVERY") {
+                    // 🛡️ CANDADO INCOGNITO: Si no está logueado, va directo a caja manual sin combos
+                    if (estaLogueado && comboDirFrecuentes && comboDirFrecuentes.options.length > 0 && comboDirFrecuentes.value !== "MANUAL") {
+                        grupoDireccionDinamica.classList.remove("d-none");
+                    } else {
+                        grupoDireccionManual?.classList.remove("d-none");
+                    }
+                } else if (this.value === "ESTACION") {
+                    grupoEstaciones?.classList.remove("d-none");
+                } else if (this.value === "SHALOM") {
+                    // Si está de incógnito, forzamos que se muestre el campo manual dentro del bloque shalom
+                    if (!estaLogueado && campoShalomManual) {
+                        campoShalomManual.classList.remove('d-none');
+                    }
+                    grupoShalomDinamico?.classList.remove("d-none");
+                }
+            });
+        }
+
+        // CONTROL DE FECHAS
+        if (tipoFecha) {
+            tipoFecha.addEventListener("change", function() {
+                if (this.value === "FECHA") {
+                    grupoFecha?.classList.remove("d-none");
+                } else {
+                    grupoFecha?.classList.add("d-none");
+                    if (clienteFecha) clienteFecha.value = "";
+                }
+            });
+        }
+
+        // VALIDACIÓN DE FORMULARIO
+        function validarFormulario() {
+            const nombre = clienteNombre ? clienteNombre.value.trim() : "";
+            const telefono = clienteTelefono ? clienteTelefono.value.trim() : "";
+            if (btnConfirmar) {
+                btnConfirmar.disabled = !(nombre && telefono && telefono.length >= 9);
+            }
+        }
+
+        if (clienteNombre) clienteNombre.addEventListener("input", validarFormulario);
+        if (clienteTelefono) {
+            clienteTelefono.addEventListener("input", function() {
+                this.value = this.value.replace(/\D/g, "");
+                validarFormulario();
+            });
+        }
+
+        // 📥 CARGA ASÍNCRONA DE DIRECCIONES DE SOCIOS LOGUEADOS
+        if (estaLogueado) {
+            fetch('/Cliente/ObtenerDirecciones')
+                .then(response => response.ok ? response.json() : null)
+                .then(data => {
+                    if (data) {
+                        // A. Rellenar domicilios frecuentes
+                        if (comboDirFrecuentes) {
+                            let htmlOptions = "";
+                            if (data.direcciones && data.direcciones.length > 0) {
+                                data.direcciones.forEach(d => {
+                                    htmlOptions += `<option value="DOMICILIO: ${d.distrito} - ${d.direccionTexto} (Ref: ${d.referencia || 'Ninguna'})">🏠 ${d.distrito} - ${d.direccionTexto}</option>`;
+                                });
+                            }
+                            // Insertamos el "+" manual para Delivery también
+                            htmlOptions += '<option value="MANUAL">➕ Ingresar otra dirección manual...</option>';
+                            comboDirFrecuentes.innerHTML = htmlOptions;
+                        }
+
+                        // B. Rellenar agencias Shalom (🔥 CORREGIDO EL VALUE PARA EVITAR EL ID "3")
+                        if (comboAgenciasFrecuentes) {
+                            let optionsSha = "";
+                            if (data.agencias && data.agencias.length > 0) {
+                                data.agencias.forEach(a => {
+                                    // Guardamos la cadena de texto completa en el value en lugar del ID numérico
+                                    optionsSha += `<option value="AGENCIA SHALOM: ${a.agenciaProvincia} | RECOGE: ${a.datosReceptor}">📦 ${a.agenciaProvincia}</option>`;
+                                });
+                            }
+                            optionsSha += '<option value="MANUAL">➕ Usar otra agencia manual...</option>';
+                            comboAgenciasFrecuentes.innerHTML = optionsSha;
+
+                            if (!data.agencias || data.agencias.length === 0) {
+                                campoShalomManual?.classList.remove('d-none');
+                            }
+                        }
+                    }
+                }).catch(e => console.error("Error al inyectar combos logísticos:", e));
+        }
+
+        // Escuchadores de combos para prender cajas manuales si eligen "MANUAL"
+        if (comboDirFrecuentes) {
+            comboDirFrecuentes.addEventListener('change', function() {
+                if (this.value === "MANUAL") {
+                    grupoDireccionDinamica.classList.add("d-none");
+                    grupoDireccionManual?.classList.remove("d-none");
+                }
+            });
+        }
+
+        if (comboAgenciasFrecuentes) {
+            comboAgenciasFrecuentes.addEventListener('change', function() {
+                if (campoShalomManual) {
+                    campoShalomManual.classList.toggle('d-none', this.value !== "MANUAL");
+                }
+            });
+        }
+
+        // 🚀 PROCESADOR FINAL DEL BOTÓN DE RESERVA ASÍNCRONO
+        if (btnConfirmar) {
+            btnConfirmar.onclick = null;
+
+            btnConfirmar.addEventListener('click', async function(e) {
+                e.preventDefault();
+
+                const nombreVal = clienteNombre ? clienteNombre.value.trim() : "";
+                const telefonoVal = clienteTelefono ? clienteTelefono.value.trim() : "";
+                const correoVal = clienteCorreo ? clienteCorreo.value.trim() : "";
+                const tipoEntregaVal = selectEntrega ? selectEntrega.value : "RECOJO";
+
+                if (!nombreVal || !telefonoVal) {
+                    alert("⚠️ Por favor, ingresa tu nombre y teléfono.");
+                    return;
+                }
+
+                let direccionFinalTexto = "";
+
+                if (tipoEntregaVal === "RECOJO") {
+                    direccionFinalTexto = "RECOJO EN TIENDA (CANTAGALLO)";
+                } else if (tipoEntregaVal === "ESTACION") {
+                    const tren = document.getElementById('estacionTren')?.value || "No especificada";
+                    direccionFinalTexto = "ENTREGA EN ESTACION: " + tren;
+                    } else if (tipoEntregaVal === "DELIVERY") {
+        if (estaLogueado && comboDirFrecuentes && comboDirFrecuentes.value !== "MANUAL") {
+            direccionFinalTexto = comboDirFrecuentes.value;
+        } else {
+            // 🔥 JUNTAMOS LOS TRES CAMPOS NUEVOS EN CALIENTE
+            const dist = document.getElementById('manualDistrito')?.value.trim() || "";
+            const dirText = document.getElementById('manualDireccionTexto')?.value.trim() || "";
+            const ref = document.getElementById('manualReferencia')?.value.trim() || "Ninguna";
+
+            direccionFinalTexto = `DOMICILIO: ${dist} - ${dirText} (Ref: ${ref})`;
+        }
+    } else if (tipoEntregaVal === "SHALOM") {
+                    if (estaLogueado && comboAgenciasFrecuentes && comboAgenciasFrecuentes.value !== "MANUAL") {
+                        direccionFinalTexto = comboAgenciasFrecuentes.value;
+                    } else {
+                        const ag = document.getElementById('clienteShalomAgencia')?.value.trim() || "";
+                        const rec = document.getElementById('clienteShalomReceptor')?.value.trim() || "";
+                        direccionFinalTexto = `AGENCIA SHALOM: ${ag} | RECOGE: ${rec}`;
+                    }
+                }
+
+                    const modalRegistroEl =
+        document.getElementById('reservaModal');
+
+    const modalCargaEl =
+        document.getElementById('loadingReservaModal');
+
+    if (!modalRegistroEl || !modalCargaEl) {
+        console.error(
+            'No se encontró reservaModal o loadingReservaModal.'
+        );
+
+        alert(
+            'No se pudo iniciar el registro de la reserva.'
+        );
+
+        return;
+    }
+
+    const modalRegistro =
+        bootstrap.Modal.getOrCreateInstance(
+            modalRegistroEl
+        );
+
+    const modalCarga =
+        bootstrap.Modal.getOrCreateInstance(
+            modalCargaEl
+        );
+
+    // Evita que _ModalReserva limpie los campos
+    // mientras se está procesando el pedido.
+    window.preservarDatosReservaAlOcultar = true;
+
+    await new Promise(resolve => {
+        modalRegistroEl.addEventListener(
+            'hidden.bs.modal',
+            resolve,
+            { once: true }
+        );
+
+        modalRegistro.hide();
+    });
+
+    modalCarga.show();
+
+                let totalBase = @Model.Sum(x => x.Subtotal).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                let totalCalculado = parseFloat(totalBase);
+                if (tipoEntregaVal === "ESTACION") {
+                    totalCalculado += 3.00;
+                }
+
+                const idUsuarioLogueado = @(Context.Session.GetInt32("USER_ID") != null ? Context.Session.GetInt32("USER_ID").ToString() : "null");
+
+                const itemsList = [
+                    @foreach (var item in Model)
+                    {
+                            <text>
+                            {
+                                Descripcion: "@item.Descripcion",
+                                Dimensiones: "@(item.Dimensiones ?? "-")",
+                                Cantidad: @item.Cantidad,
+                                PrecioUnitario: @item.PrecioUnitario.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                                Subtotal: @item.Subtotal.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                                TipoVenta: "@item.TipoVenta"
+                            },
+                            </text>
+                    }
+                ];
+
+                const payload = {
+                    nombreCliente: nombreVal,
+                    telefono: telefonoVal,
+                    correo: correoVal,
+                    tipoEntrega: tipoEntregaVal,
+                    direccionEntrega: direccionFinalTexto,
+                    total: totalCalculado,
+                    idUsuario: idUsuarioLogueado,
+                    detalleJson: JSON.stringify({
+                        tipo: "CATALOGO_PRODUCTOS",
+                        items: itemsList
+                    }),
+                    fechaSolicitada: (tipoFecha && tipoFecha.value === "HOY")
+                        ? new Date().toISOString()
+                        : (clienteFecha?.value || new Date().toISOString())
+                };
+
+                try {
+                    const response = await fetch('/Reserva/Crear', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok || response.redirected) {
+                        document.querySelectorAll('.cart-count').forEach(el => el.innerText = '0');
+                        window.location.href = response.url;
+                    } else {
+                        alert("Ocurrió un error al procesar tu reserva.");
+                        modalCarga.hide();
+                        if (modalRegistro) modalRegistro.show();
+                    }
+                } catch (err) {
+                    console.error("Error en la petición:", err);
+                    modalCarga.hide();
+                    if (modalRegistro) modalRegistro.show();
+                }
+            });
+        }
+    });
+</script>
+@await Html.PartialAsync("_ModalReserva")

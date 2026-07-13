@@ -1,0 +1,214 @@
+﻿@model Negocio.Web.Models.ViewModels.ConfigurarImagenVm
+@{
+    ViewData["Title"] = "Configurar Imagen";
+    Layout = "_LayoutSistema";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PREMIUM --- */
+    .identity-container {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
+        padding: 2.25rem;
+    }
+
+    .panel-header-pro {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.85rem;
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- INPUTS Y SELECTS MODERNOS --- */
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+        .input-pro:focus {
+            border-color: #6366f1; /* Foco morado/indigo creativo para diseño */
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .input-pro:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+    /* --- BOTÓN GUARDAR DISEÑO --- */
+    .btn-save-pro {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: white !important;
+        border: none;
+        padding: 14px 32px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+    }
+
+        .btn-save-pro:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.35);
+        }
+</style>
+
+<div class="identity-container py-4">
+
+    <div class="mb-4">
+        
+        <h3 class="fw-800 text-dark mb-0">IMAGEN DE DESCRIPCIÓN</h3>
+    </div>
+
+    <div class="form-premium-card">
+        <div class="panel-header-pro">
+            <i class="bi bi-image-fill text-primary"></i> Asignación de Catálogo General
+        </div>
+
+        <form asp-action="ConfigurarImagen" method="post" enctype="multipart/form-data" id="formImagenIdentity">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <label class="form-label-pro">1. Selecciona el Área</label>
+                    <select asp-for="Area" id="selectArea" asp-items="Model.Areas" class="form-select input-pro w-100">
+                        <option value="">-- Elige un área de operaciones --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label-pro">2. Familia de Producto</label>
+                    <select asp-for="Descripcion" id="selectDescripcion" class="form-select input-pro w-100" disabled>
+                        <option value="">-- Selecciona primero el área --</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label-pro">3. Cargar Imagen Corporativa (Recomendado: Fondo Blanco PNG/JPG)</label>
+                    <input asp-for="Archivo" type="file" id="inputArchivo" class="form-control input-pro w-100" accept="image/*" />
+                </div>
+
+                <div class="col-12 text-end pt-2">
+                    <button type="submit" class="btn btn-save-pro">
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar Identidad Visual
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const selectArea = document.getElementById("selectArea");
+        const selectDesc = document.getElementById("selectDescripcion");
+        const inputArchivo = document.getElementById("inputArchivo");
+        const formIdentity = document.getElementById("formImagenIdentity");
+
+        // ⚡ CARGA ASÍNCRONA DINÁMICA DE FAMILIAS
+        selectArea.addEventListener("change", async function() {
+            const area = this.value;
+
+            // Resetear validaciones personalizadas
+            selectArea.setCustomValidity("");
+
+            if (!area) {
+                selectDesc.innerHTML = '<option value="">-- Selecciona primero el área --</option>';
+                selectDesc.disabled = true;
+                return;
+            }
+
+            try {
+                // 🚀 Reutiliza tu endpoint nativo de VentaController
+                const response = await fetch(`/Venta/ObtenerProductosPorArea?area=${area}`);
+                const data = await response.json();
+
+                selectDesc.innerHTML = '<option value="">-- Selecciona la descripción de familia --</option>';
+                data.forEach(item => {
+                    const opt = document.createElement("option");
+                    opt.value = item.descripcion;
+                    opt.text = item.descripcion;
+                    selectDesc.add(opt);
+                });
+
+                selectDesc.disabled = false;
+            } catch (error) {
+                console.error("Error cargando familias:", error);
+            }
+        });
+
+        // Limpieza de estados de error al interactuar
+        selectDesc.addEventListener("change", () => selectDesc.setCustomValidity(""));
+        inputArchivo.addEventListener("change", () => inputArchivo.setCustomValidity(""));
+
+        // ⚡ CONTROLADORES DE BURBUJAS DE VALIDACIÓN PREMIUM (Evita alerts del sistema)
+        formIdentity.addEventListener("submit", function(e) {
+            selectArea.setCustomValidity("");
+            selectDesc.setCustomValidity("");
+            inputArchivo.setCustomValidity("");
+
+            if (!selectArea.value) {
+                e.preventDefault();
+                selectArea.setCustomValidity("Por favor, elija el área para clasificar la imagen.");
+                selectArea.reportValidity();
+                return;
+            }
+
+            if (!selectDesc.disabled && !selectDesc.value) {
+                e.preventDefault();
+                selectDesc.setCustomValidity("Debe especificar a qué familia de productos le asignará esta imagen.");
+                selectDesc.reportValidity();
+                return;
+            }
+
+            if (!inputArchivo.value) {
+                e.preventDefault();
+                inputArchivo.setCustomValidity("Por favor, cargue un archivo de imagen válido antes de guardar.");
+                inputArchivo.reportValidity();
+                return;
+            }
+        });
+    </script>
+}

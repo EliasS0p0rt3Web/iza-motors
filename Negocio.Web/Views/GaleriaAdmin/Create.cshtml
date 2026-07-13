@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Subir foto - Galería";
+    Layout = "_LayoutSistema";
+}
+
+<h3 class="mb-4">📸 Nueva imagen a la Galería</h3>
+
+<div class="card p-4 shadow-sm" style="max-width: 600px;">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Título del Trabajo</label>
+            <input name="titulo" class="form-control" placeholder="Ej: Vitrina LED 3 niveles" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Categoría</label>
+            <select id="selectCategoria" class="form-select" onchange="gestionarCategoria(this.value)" required>
+                <option value="">-- Seleccione una opción --</option>
+                <option value="Exhibidora">Exhibidoras Vidrio y LED</option>
+                <option value="Cortina">Tubos y Cortinas</option>
+                <option value="Pasamanos">Pasamanos de Seguridad</option>
+                <option value="Riel">Rieles Hoteleros</option>
+                <option value="Ducha">Barras de Ducha</option>
+                <option value="Otro">Otro (Escribir personalizado)</option>
+            </select>
+
+            <input type="text" id="inputCategoriaManual" class="form-control mt-2"
+                   placeholder="Escribe la nueva categoría..." style="display:none;" />
+
+            <input type="hidden" id="finalCategoria" name="categoria" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Descripción (Opcional)</label>
+            <textarea name="descripcion" class="form-control" rows="2" placeholder="Detalle extra del trabajo..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Foto del Trabajo</label>
+            <input type="file" name="imagen" class="form-control" accept="image/*" required />
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-success" onclick="sincronizarCategoria()">💾 Guardar y Publicar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function gestionarCategoria(valor) {
+        const inputManual = document.getElementById('inputCategoriaManual');
+        if (valor === 'Otro') {
+            inputManual.style.display = 'block';
+            inputManual.required = true;
+        } else {
+            inputManual.style.display = 'none';
+            inputManual.required = false;
+        }
+    }
+
+    function sincronizarCategoria() {
+        const select = document.getElementById('selectCategoria');
+        const inputManual = document.getElementById('inputCategoriaManual');
+        const campoFinal = document.getElementById('finalCategoria');
+
+        // Si eligió 'Otro', el valor final es lo que escribió en el input
+        if (select.value === 'Otro') {
+            campoFinal.value = inputManual.value;
+        } else {
+            campoFinal.value = select.value;
+        }
+    }
+</script>

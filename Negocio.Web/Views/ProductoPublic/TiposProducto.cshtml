@@ -1,0 +1,115 @@
+﻿@* Reemplaza la primera línea por esta (asegúrate que el namespace sea el correcto) *@
+@model List<Negocio.Web.Models.ViewModels.DescripcionImagen>
+
+@{
+    ViewData["Title"] = ViewBag.Area;
+    Layout = "_LayoutProductos";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/productoPublic/catalogoFamilias.css" asp-append-version="true" />
+}
+
+@* 🚀 NAVBAR DE FILTROS: Diseño "Precision Flow" *@
+<div class="product-navbar-filter">
+    <div class="container-fluid px-lg-5">
+        <div class="filter-flex-container py-3">
+
+            @* Lado Izquierdo: Identificador de Sección + Navegación *@
+            <div class="filter-section-info">
+              
+
+                <div class="status-dot"></div>
+                <span class="badge-seccion">Catálogo / @ViewBag.Area</span>
+            </div>
+
+            @* Lado Derecho: El Filtrador Pro *@
+            <div class="filter-tool-box">
+                <div class="filter-label d-none d-md-block">
+                    <i class="bi bi-info-circle me-1"></i> Filtrado rápido
+                </div>
+                <div class="custom-select-wrapper">
+                    <i class="bi bi-funnel filter-icon-main"></i>
+                    <select id="filtroRapido" class="form-select select-tech">
+                        <option value="TODOS"> Ver toda la línea</option>
+                        @if (ViewBag.Area == "ALUMINIO")
+                        {
+                            <option value="CORTINAS">Tubos para Cortina</option>
+                            <option value="PESADO"> Línea Pesada</option>
+
+                            @* --- AGREGA ESTA LÍNEA AQUÍ --- *@
+                            <option value="REGLAS">Reglas de Aluminio</option>
+
+                            <option value="CANTONERAS">Cantoneras de aluminio</option>
+                        }
+                        else if (ViewBag.Area == "ACCESORIOS")
+                        {
+                            <option value="ACC_CORTINA">Accesorios Cortina</option>
+
+                            <option value="SEGURIDAD">Seguridad</option>
+                        }
+
+                        else if (ViewBag.Area == "ARC")
+                        {
+                            <option value="ARC_RODOPLAST">RODOPLAST DE ALUMINIO</option>
+                            <option value="ARC_TACERO">TUBO ACERADO</option>
+                            <option value="ARC_RIELCOR">RIEL DE CORTINA</option>
+                            <option value="ARC_CROMADO">TUBO CROMADO</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-lg-5 mb-5 mt-5">
+    <div class="row g-4" id="contenedorGrilla">
+        @foreach (var tipo in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4 item-animado">
+                @* 🚀 Usamos tipo.Nombre y tipo.Area para los links *@
+                <a asp-action="ProductoDetalle"
+                   asp-route-area="@tipo.Area"
+                   asp-route-nombre="@tipo.Descripcion"
+                   class="card h-100 modern-type-card">
+
+                    <div class="type-visual">
+                        <div class="blueprint-bg"></div>
+                        <div class="visual-content">
+                            @* Intentamos cargar la imagen *@
+                            <img src="@Url.Content("~/img/public/" + tipo.ImagenUrl)"
+                                 class="product-real-img"
+                              
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                                 alt="@tipo.Descripcion" />
+
+                            @* 🛡️ Este bloque es el que dice E&E ALUMINIOS *@
+                            <div class="fallback-icon" style="display:none; width: 100%;">
+                                <i class="bi bi-layers visual-icon" style="font-size: 3rem; color: #cbd5e1;"></i>
+                                <span class="visual-brand" style="display: block; font-weight: 900; letter-spacing: 2px; color: #94a3b8;">
+                                    E&E ALUMINIOS
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 text-center">
+                        @* 📝 Mostramos el nombre de la familia *@
+                        <h5 class="type-title">@tipo.Descripcion</h5>
+                        <p class="type-desc">Consulta disponibilidad y medidas técnicas</p>
+                    </div>
+
+                    <div class="card-footer-action">
+                        <span class="btn-explore">Explorar detalles <i class="bi bi-chevron-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/productoPublic/catalogoFamilias.js" asp-append-version="true"></script>
+}

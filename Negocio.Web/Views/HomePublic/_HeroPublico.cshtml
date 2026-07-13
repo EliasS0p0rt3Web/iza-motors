@@ -1,0 +1,87 @@
+﻿@* Views/Shared/_HeroPublico.cshtml
+   Rediseño visual inspirado en la portada de Iza Motors.
+   Mantiene rutas existentes y no requiere cambios en controladores.
+*@
+
+<section class="hero iza-showcase-hero position-relative" id="inicio">
+
+    @* Flechas decorativas. Se pueden conectar a un carrusel más adelante. *@
+    <button type="button"
+            class="iza-hero-arrow iza-hero-arrow-left"
+            tabindex="-1"
+            aria-hidden="true">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <button type="button"
+            class="iza-hero-arrow iza-hero-arrow-right"
+            tabindex="-1"
+            aria-hidden="true">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <div class="container iza-hero-container">
+        <div class="iza-hero-grid">
+
+            @* TARJETA IZQUIERDA: selector visual de vehículo *@
+            <div class="iza-vehicle-card">
+                <h2>Selecciona tu auto</h2>
+
+                <div class="iza-vehicle-fields">
+                    <select class="form-select" aria-label="Marca" disabled>
+                        <option selected>Marca</option>
+                    </select>
+
+                    <select class="form-select" aria-label="Modelo" disabled>
+                        <option selected>Modelo</option>
+                    </select>
+
+                    <select class="form-select" aria-label="Año" disabled>
+                        <option selected>Año</option>
+                    </select>
+
+                    <select class="form-select" aria-label="Versión" disabled>
+                        <option selected>Versión</option>
+                    </select>
+                </div>
+
+                @* Conserva una ruta que ya existe en el proyecto. *@
+                <a asp-controller="ProductoPublic"
+                   asp-action="Index"
+                   class="btn iza-vehicle-search-btn">
+                    Buscar
+                </a>
+            </div>
+
+            @* CONTENIDO CENTRAL *@
+            <div class="iza-hero-message">
+                <h1>
+                    FINANCIA
+                    <span>CON CÁLIDA</span>
+                </h1>
+
+                <p>
+                    ¡Repara tu auto hoy y págalo en cuotas con tu Tanqueo GNV!
+                </p>
+
+                @* Conserva el acceso al cotizador actual. *@
+                <a href="#cotizar" class="btn iza-hero-form-btn">
+                    Ir al formulario
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+                @* Se mantiene el acceso a la galería sin alterar su controlador. *@
+                <a asp-controller="HomePublic"
+                   asp-action="Galeria"
+                   asp-route-categoria="Exhibidora"
+                   class="iza-hero-gallery-link">
+                    Ver proyectos realizados
+                </a>
+            </div>
+
+            @* Espacio reservado para una imagen promocional futura. *@
+            <div class="iza-hero-art" aria-hidden="true"></div>
+
+        </div>
+    </div>
+</section>

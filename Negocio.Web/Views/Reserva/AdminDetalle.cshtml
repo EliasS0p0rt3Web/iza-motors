@@ -1,0 +1,455 @@
+﻿@model Negocio.Web.Models.Entities.Reserva
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Detalle de Reserva";
+
+    var saldoCalculado = Model.Total - Model.Adelanto;
+
+    string badgeClass = "bg-secondary";
+
+    if (Model.Estado == "PENDIENTE")
+        badgeClass = "bg-warning text-dark";
+    else if (Model.Estado == "CONFIRMADO")
+        badgeClass = "bg-primary";
+    else if (Model.Estado == "EN_PRODUCCION")
+        badgeClass = "bg-info text-dark";
+    else if (Model.Estado == "LISTO")
+        badgeClass = "bg-success";
+    else if (Model.Estado == "ENTREGADO")
+        badgeClass = "bg-dark";
+    else if (Model.Estado == "CANCELADO")
+        badgeClass = "bg-danger";
+
+    var estados = new List<string>
+    {
+        "PENDIENTE",
+        "CONFIRMADO",
+        "EN_PRODUCCION",
+        "LISTO",
+        "ENTREGADO"
+    };
+
+    var indiceActual = estados.IndexOf(Model.Estado);
+}
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">📌 Detalle de Reserva</h2>
+
+    <div class="card shadow-sm rounded-4">
+
+        <div class="card-body p-4">
+
+            <div class="row mb-4">
+
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Código</div>
+                    <div class="fw-bold">@Model.CodigoReserva</div>
+                </div>
+
+                <div class="col-md-6 mb-3 text-md-end">
+                    <div class="text-muted small">Estado actual</div>
+                    <span class="badge @badgeClass px-3 py-2">
+                        @Model.Estado
+                    </span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Cliente</div>
+                    <div>@Model.NombreCliente</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Teléfono</div>
+                    <div>@Model.Telefono</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Tipo de Entrega</div>
+                    <div>@Model.TipoEntrega</div>
+                </div>
+
+                @if (Model.TipoEntrega == "DELIVERY")
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="text-muted small">Dirección</div>
+                        <div>@Model.DireccionEntrega</div>
+                    </div>
+                }
+
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Fecha solicitada</div>
+                    <div>@(Model.FechaSolicitada?.ToString("dd/MM/yyyy") ?? "-")</div>
+                </div>
+
+            </div>
+
+            <hr />
+
+            @using System.Text.Json
+            @{
+                JsonElement? detalle = null;
+                try
+                {
+                    if (!string.IsNullOrEmpty(Model.DetalleJson))
+                    {
+                        detalle = JsonSerializer.Deserialize<JsonElement>(Model.DetalleJson);
+                    }
+                }
+                catch { }
+            }
+
+            @if (detalle.HasValue && detalle.Value.ValueKind != JsonValueKind.Undefined)
+            {
+                var d = detalle.Value;
+                <hr />
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="mb-3 text-primary"><i class="bi bi-box-seam me-2"></i>Detalle del Pedido</h5>
+
+                        @* 🔹 CASO 1: PRODUCTOS DEL CATÁLOGO *@
+                        @if (d.TryGetProperty("tipo", out JsonElement tipo) && tipo.GetString() == "CATALOGO_PRODUCTOS")
+                        {
+                            <div class="table-responsive border rounded-3">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Producto / Dimensión</th>
+                                            <th class="text-center">Cant.</th>
+                                            <th class="text-end">Precio</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (d.TryGetProperty("items", out JsonElement items))
+                                        {
+                                            foreach (var item in items.EnumerateArray())
+                                            {
+                                                var cantidad = item.TryGetProperty("Cantidad", out JsonElement c) ? c.GetRawText() : (item.TryGetProperty("cantidad", out JsonElement cm) ? cm.GetRawText() : "0");
+                                                var tVenta = item.TryGetProperty("TipoVenta", out JsonElement tv) ? tv.GetString() : (item.TryGetProperty("tipoVenta", out JsonElement tvm) ? tvm.GetString() : "UNIDAD");
+
+                                                string etiquetaUnidad = tVenta switch
+                                                {
+                                                    "METRO" => "m",
+                                                    "VARILLA" => "Var.",
+                                                    _ => "unid."
+                                                };
+
+                                                <tr>
+                                                    <td>
+                                                        <span class="fw-bold">@(item.TryGetProperty("Descripcion", out JsonElement desc) ? desc.GetString() : (item.TryGetProperty("descripcion", out JsonElement descMin) ? descMin.GetString() : "Sin descripción"))</span>
+                                                        <br />
+                                                        <small class="text-muted">@(item.TryGetProperty("Dimensiones", out JsonElement dim) ? dim.GetString() : (item.TryGetProperty("dimensiones", out JsonElement dimMin) ? dimMin.GetString() : "-"))</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-light text-dark border">
+                                                            @cantidad @etiquetaUnidad
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end">S/ @(item.TryGetProperty("PrecioUnitario", out JsonElement prec) ? prec.GetDecimal().ToString("0.00") : (item.TryGetProperty("precioUnitario", out JsonElement precMin) ? precMin.GetDecimal().ToString("0.00") : "0.00"))</td>
+                                                    <td class="text-end fw-bold">S/ @(item.TryGetProperty("Subtotal", out JsonElement sub) ? sub.GetDecimal().ToString("0.00") : (item.TryGetProperty("subtotal", out JsonElement subMin) ? subMin.GetDecimal().ToString("0.00") : "0.00"))</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                        @* 🔹 CASO 2: RIEL DE CORTINA *@
+                        else if (d.TryGetProperty("Producto", out JsonElement prodName) && prodName.GetString().ToUpper().Contains("RIEL"))
+                        {
+                            <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
+                                <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-primary fw-bold text-uppercase" style="font-size: 0.7rem;">Producto a Fabricar</small>
+                                        <h4 class="mb-0 fw-bold">@prodName.GetString()</h4>
+                                    </div>
+                                    <span class="badge bg-success fs-5 px-4 rounded-pill">
+                                        @(d.TryGetProperty("Medida", out JsonElement med) ? med.GetString() : "-")
+                                    </span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-light rounded-3 border-start border-primary border-4">
+                                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Instalación</small>
+                                                <span class="fw-bold">@(d.TryGetProperty("Instalacion", out JsonElement ins) ? ins.GetString() : "TECHO")</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-light rounded-3 border-start border-info border-4">
+                                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Apertura</small>
+                                                <span class="fw-bold">@(d.TryGetProperty("Apertura", out JsonElement ape) ? (ape.GetString() == "AMBOS" ? "CENTRO (DOBLE)" : "UN LADO") : "SIMPLE")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @* 🔹 CASO 3: COTIZACIÓN (DUCHA, PASAMANOS, ETC) *@
+                        else
+                        {
+                            <div class="bg-white border rounded-4 shadow-sm overflow-hidden mb-4">
+                                <div class="p-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3 mb-3 border">
+                                                <div class="overflow-hidden">
+                                                    <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Producto Principal</small>
+                                                    <h5 class="mb-0 fw-bold text-dark text-truncate">
+                                                        @(d.TryGetProperty("tubo", out JsonElement tubo) ? tubo.GetString() : "PRODUCTO")
+                                                    </h5>
+                                                </div>
+                                                <div class="text-end ms-3" style="min-width: 90px;">
+                                                    <small class="text-info d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Largo</small>
+                                                    <span class="fw-bold fs-5 text-dark">
+                                                        @(d.TryGetProperty("Metros", out JsonElement mtr1) ? mtr1.GetRawText().Replace("\"", "") : (d.TryGetProperty("metros", out JsonElement mtr2) ? mtr2.GetRawText().Replace("\"", "") : "1.00")) metros
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            
+
+                                            <small class="text-muted fw-bold d-block mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">COMPONENTES DEL DISEÑO</small>
+                                            <div class="list-group list-group-flush border rounded-3 overflow-auto" style="max-height: 200px;">
+                                                @if (d.TryGetProperty("accesorios", out JsonElement accs) && accs.ValueKind == JsonValueKind.Array)
+                                                {
+                                                    foreach (var acc in accs.EnumerateArray())
+                                                    {
+                                                        <div class="list-group-item d-flex justify-content-between align-items-center p-2 bg-transparent">
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="bi bi-dot text-success fs-4"></i>
+                                                                <div class="ms-1">
+                                                                    <h6 class="mb-0 fw-normal" style="font-size: 0.85rem;">@(acc.TryGetProperty("descripcion", out JsonElement aDesc) ? aDesc.GetString() : "Accesorio")</h6>
+                                                                    <small class="text-muted" style="font-size: 0.7rem;">@(acc.TryGetProperty("dimension", out JsonElement aDim) ? aDim.GetString() : "-")</small>
+                                                                </div>
+                                                            </div>
+                                                            <span class="badge text-dark fw-bold" style="font-size: 0.8rem; background: #eee;">
+                                                                @(acc.TryGetProperty("cantidad", out JsonElement aCant) ? aCant.GetRawText().Replace("\"", "") : "1") und.
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="h-100 d-flex flex-column justify-content-center align-items-center rounded-4 border-start border-danger border-4"
+                                                 style="background-color: #fff5f5; min-height: 200px; border: 1px solid #fee2e2;">
+
+                                                <small class="text-danger d-block text-uppercase fw-bolder mb-1" style="font-size: 0.7rem; letter-spacing: 1px;">REPETICIONES</small>
+
+                                                <div class="text-danger fw-bolder" style="font-size: 4.5rem; line-height: 1; letter-spacing: -2px;">
+                                                    @{
+                                                        string combos = "1";
+                                                        if (d.TryGetProperty("CantidadPiezas", out JsonElement cp1)) combos = cp1.GetRawText().Replace("\"", "");
+                                                        else if (d.TryGetProperty("cantidadPiezas", out JsonElement cp2)) combos = cp2.GetRawText().Replace("\"", "");
+                                                        else if (d.TryGetProperty("cantidadPedida", out JsonElement cp3)) combos = cp3.GetRawText().Replace("\"", "");
+                                                    }
+                                                    x@(combos)
+                                                </div>
+
+                                                <div class="bg-danger text-white px-3 py-1 rounded-pill mt-2 fw-bold" style="font-size: 0.7rem; text-uppercase;">
+                                                    Combo(s) Iguales
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 border rounded-3">
+                        <div class="text-muted small">Total</div>
+                        <div class="fw-bold fs-5">
+                            S/ @Model.Total.ToString("0.00")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 border rounded-3">
+                        <div class="text-muted small">Adelanto</div>
+                        <div class="fw-bold text-success fs-5">
+                            S/ @Model.Adelanto.ToString("0.00")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 border rounded-3">
+                        <div class="text-muted small">Saldo pendiente</div>
+                        <div class="fw-bold fs-5 @(saldoCalculado == 0 ? "text-success" : "text-danger")">
+                            S/ @saldoCalculado.ToString("0.00")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* ==========================================
+            💰 SECCIÓN: REGISTRAR ADELANTO / PAGO
+            ========================================== *@
+            @if (saldoCalculado > 0 && Model.Estado != "CANCELADO" && Model.Estado != "ENTREGADO")
+            {
+                <hr />
+                <h5 class="mb-3">💰 Registrar Adelanto / Saldo</h5>
+
+                <form asp-action="RegistrarAdelanto" method="post">
+                    <input type="hidden" name="codigo" value="@Model.CodigoReserva" />
+                    <div class="row align-items-end">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Monto a registrar (Efectivo / Yape manual)</label>
+                            <input type="number"
+                                   name="monto"
+                                   step="0.01"
+                                   min="0.01"
+                                   max="@saldoCalculado"
+                                   class="form-control input-pro"
+                                   style="background: #ffffff; border: 1px solid #cbd5e1;"
+                                   required />
+                            <small class="text-muted d-block mt-1">
+                                Máximo permitido: <strong>S/ @saldoCalculado.ToString("0.00")</strong>
+                            </small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-success w-100 fw-bold py-2 rounded-3 border-0 shadow-sm">
+                                <i class="bi bi-cash-coin me-1"></i> Registrar Pago
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            }
+
+            <hr />
+
+            @* ==========================================
+            🔄 SECCIÓN: CAMBIAR ESTADO (CON BOTÓN INTELIGENTE)
+            ========================================== *@
+            <h5 class="mb-3">🔄 Cambiar Estado del Pedido</h5>
+
+            @if (Model.Estado == "CANCELADO")
+            {
+                <div class="alert alert-danger py-2 px-3 rounded-3" style="font-size: 0.9rem;">
+                    <i class="bi bi-x-circle-fill me-2"></i> Esta reserva se encuentra <strong>CANCELADA</strong>. No se pueden realizar más acciones.
+                </div>
+            }
+            else if (Model.Estado == "ENTREGADO")
+            {
+                <div class="alert alert-dark py-2 px-3 rounded-3" style="font-size: 0.9rem; background-color: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i> Flujo Finalizado: El pedido ya fue <strong>ENTREGADO</strong>.
+                </div>
+            }
+            else
+            {
+                <form asp-action="CambiarEstado" method="post">
+                    <input type="hidden" name="codigo" value="@Model.CodigoReserva" />
+
+                    <div class="mb-3">
+                        <select id="selectEstado" name="nuevoEstado" class="form-select input-pro"
+                                style="background: #ffffff; border: 2px solid #3b82f6; font-weight: 700; color: #1e3a8a;">
+                            @for (int i = 0; i < estados.Count; i++)
+                            {
+                                var estado = estados[i];
+
+                                if (i < indiceActual)
+                                {
+                                    <option value="@estado" disabled style="color: #cbd5e1; background: #f1f5f9;">⛔ @estado (Ya superado)</option>
+                                }
+                                else if (estado == Model.Estado)
+                                {
+                                    <option value="@estado" selected style="background: #dbeafe; color: #1e40af; font-weight: bold;">
+                                        📍 ACTUAL: @estado
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@estado">➡️ Avanzar a: @estado</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <button id="btnActualizarEstado" class="btn btn-primary w-100 fw-bold py-2 rounded-3 shadow-sm" disabled style="opacity: 0.5; cursor: not-allowed;">
+                        Actualizar Estado
+                    </button>
+                </form>
+            }
+
+            @* ==========================================
+            🚨 BOTÓN CANCELAR: SOLO VISIBLE EN "PENDIENTE"
+            ========================================== *@
+            @if (Model.Estado == "PENDIENTE")
+            {
+                <button class="btn btn-danger mt-3 w-100 fw-bold py-2 rounded-3 shadow-sm border-0"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalCancelar">
+                    <i class="bi bi-trash3-fill me-1"></i> Cancelar Reserva
+                </button>
+            }
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Cancelar Reserva</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                ¿Seguro que deseas cancelar esta reserva?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <form asp-action="CambiarEstado" method="post">
+                    <input type="hidden" name="codigo" value="@Model.CodigoReserva" />
+                    <input type="hidden" name="nuevoEstado" value="CANCELADO" />
+                    <button class="btn btn-danger">Sí, cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* ==========================================
+   🧠 SCRIPT DE VALIDACIÓN EN TIEMPO REAL (Ponlo al final de tu vista)
+   ========================================== *@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectEstado = document.getElementById("selectEstado");
+        const btnActualizar = document.getElementById("btnActualizarEstado");
+
+        if (selectEstado && btnActualizar) {
+            // Guardamos el estado con el que cargó la página originalmente
+            const estadoOriginal = selectEstado.value;
+
+            selectEstado.addEventListener("change", function () {
+                // Si el usuario seleccionó un estado diferente al original, activamos el botón
+                if (selectEstado.value !== estadoOriginal) {
+                    btnActualizar.disabled = false;
+                    btnActualizar.style.opacity = "1";
+                    btnActualizar.style.cursor = "pointer";
+                    // Cambiamos el color del borde del select a verde para dar feedback positivo
+                    selectEstado.style.border = "2px solid #10b981";
+                } else {
+                    // Si vuelve a seleccionar el estado actual, lo volvemos a congelar
+                    btnActualizar.disabled = true;
+                    btnActualizar.style.opacity = "0.5";
+                    btnActualizar.style.cursor = "not-allowed";
+                    selectEstado.style.border = "2px solid #3b82f6"; // Regresa al azul informativo
+                }
+            });
+        }
+    });
+</script>

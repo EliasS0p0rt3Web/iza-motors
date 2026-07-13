@@ -1,0 +1,942 @@
+﻿@using Negocio.Web.Helpers
+@using Negocio.Web.Models.ViewModels
+
+@{
+    var carrito = Context.Session.GetObjectFromJson<List<CarritoItemVm>>("CARRITO") ?? new List<CarritoItemVm>();
+
+    // 🚀 CAMBIA ESTO: de .Sum(x => x.Cantidad) a .Count
+    var cantidadCarrito = carrito.Count;
+
+    var totalCarrito = carrito.Sum(x => x.Subtotal);
+
+    // 🔥 AGREGA ESTA LÍNEA AQUÍ PARA CORREGIR EL ERROR:
+    var esClienteLogueado = !string.IsNullOrEmpty(Context.Session.GetString("USER"));
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Negocio</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #111827;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Agrega esto a tu bloque <style> dentro del Layout */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            background: #f3f4f6; /* Fondo gris suave */
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .bg-success {
+            background-color: #22c55e;
+        }
+
+        .bg-danger {
+            background-color: #ef4444;
+        }
+
+
+        /* 🚀 MENÚ FIJO ABSOLUTO */
+        .header-fijo {
+            position: fixed; /* Lo clava en la pantalla */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2000; /* Lo pone por encima de TODO */
+        }
+
+        .productos-navbar {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sombra para que se note sobre el contenido */
+            padding: 0.5rem 0;
+        }
+
+
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: .55rem;
+            text-decoration: none;
+            color: #111827;
+            font-weight: 700;
+            padding: .65rem 1rem;
+            border-radius: 999px;
+            background: #f3f4f6;
+            transition: all .25s ease;
+        }
+
+            .btn-back:hover {
+                background: #e5e7eb;
+                color: #198754;
+                transform: translateY(-1px);
+            }
+
+        .productos-link {
+            color: #374151 !important;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color .2s ease;
+        }
+
+            .productos-link:hover {
+                color: #198754 !important;
+            }
+
+        
+
+        .productos-footer {
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            color: #6b7280;
+            font-size: .95rem;
+        }
+
+        .cart-nav-wrap {
+            position: relative;
+        }
+
+        .cart-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #ffffff;
+            color: #111827 !important;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+            .cart-nav-btn:hover {
+                background: #f9fafb;
+                border-color: #198754;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+        .cart-icon {
+            color: #198754;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-text {
+            font-size: .95rem;
+        }
+
+        .cart-badge {
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            border-radius: 50%;
+            background: #198754;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2px;
+        }
+
+        .cart-has-items {
+            animation: pulse-green 2s infinite;
+        }
+
+        @@keyframes pulse-green {
+            0% {
+                box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+            }
+        }
+
+        /* 5. MINI CART PANEL (PC) */
+        .mini-cart-panel {
+            position: fixed !important;
+            top: 75px !important;
+            right: 20px !important;
+            left: auto !important; /* Forzamos a que no se centre */
+            width: 300px !important; /* Ancho mediano en PC */
+            background: white !important;
+            border-radius: 18px !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15) !important;
+            padding: 1.2rem !important;
+            z-index: 3000 !important;
+            display: none;
+            border: 1px solid #e5e7eb !important;
+        }
+
+            .mini-cart-panel.active {
+                display: block !important;
+                animation: fadeInDown 0.3s ease-out;
+            }
+
+        .mini-cart-empty {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .mini-cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: .2rem;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .mini-cart-item {
+            display: flex;
+            justify-content: space-between;
+            gap: .7rem;
+            padding: .7rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+            .mini-cart-item:last-child {
+                border-bottom: none;
+            }
+
+        .mini-cart-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mini-cart-title {
+            font-weight: 700;
+            font-size: .92rem;
+            color: #111827;
+            line-height: 1.25;
+        }
+
+        .mini-cart-sub {
+            font-size: .82rem;
+            color: #6b7280;
+            margin-top: .15rem;
+        }
+
+        .mini-cart-price {
+            font-weight: 800;
+            color: #198754;
+            font-size: .9rem;
+            white-space: nowrap;
+        }
+
+        .mini-cart-footer {
+            margin-top: .9rem;
+            padding-top: .9rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .mini-cart-total {
+            font-weight: 800;
+            font-size: 1rem;
+            margin-bottom: .8rem;
+            color: #111827;
+        }
+
+        .mini-cart-actions {
+            display: flex;
+            gap: .6rem;
+        }
+
+        .btn-mini {
+            flex: 1;
+            text-align: center;
+            padding: .65rem .8rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            background: #f3f4f6;
+            color: #111827;
+            transition: all .2s ease;
+        }
+
+            .btn-mini:hover {
+                background: #e5e7eb;
+                color: #111827;
+            }
+
+        .btn-mini-primary {
+            background: #10b981;
+            color: white;
+        }
+
+            .btn-mini-primary:hover {
+                background: #059669;
+                color: white;
+            }
+
+        .floating-cart {
+            position: fixed;
+            right: 22px;
+            bottom: 24px;
+            z-index: 1050;
+            display: inline-flex;
+            align-items: center;
+            gap: .7rem;
+            background: #111827;
+            color: white !important;
+            text-decoration: none;
+            padding: .95rem 1.15rem;
+            border-radius: 999px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+
+            .floating-cart:hover {
+                transform: translateY(-4px) scale(1.02);
+                box-shadow: 0 18px 38px rgba(0,0,0,0.30);
+                color: white !important;
+            }
+
+        .floating-cart-icon {
+            font-size: 1.15rem;
+            line-height: 1;
+        }
+
+        .floating-cart-text {
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+        .floating-cart-badge {
+            min-width: 25px;
+            height: 25px;
+            border-radius: 999px;
+            background: #22c55e;
+            color: white;
+            font-size: .82rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 .45rem;
+        }
+
+        /* 🟢 ANIMACIONES DE "EMPAQUETADO" */
+        @@keyframes cart-bounce {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3) rotate(10deg);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .cart-animate {
+            animation: cart-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .badge-updated {
+            background-color: #ffc107 !important;
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- ESTILO PARA MÓVIL (Notificación angosta tipo Messenger) --- */
+        @@media (max-width: 991.98px) {
+            .mini-cart-panel
+
+        {
+            top: auto !important;
+            bottom: 95px !important; /* Aparece arriba del botón del carrito */
+            right: 15px !important;
+            left: auto !important; /* Forzamos a que no se centre */
+            width: 260px !important; /* 🚀 Aquí está el truco: ancho reducido */
+            max-width: 80vw !important;
+            border-radius: 20px !important;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.15) !important;
+            padding: 1rem !important;
+        }
+
+        .mini-cart-actions {
+            flex-direction: column !important; /* Botones uno sobre otro en móvil */
+            gap: 8px !important;
+        }
+
+        .mini-cart-panel.active {
+            display: block !important;
+            /* Animación que nace desde la esquina inferior derecha */
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+
+        }
+
+
+        /* --- ANIMACIONES --- */
+        @@keyframes fadeInDown {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* --- ANIMACIÓN POP --- */
+        @@keyframes popIn {
+            from
+
+        {
+            opacity: 0;
+            transform: scale(0.5) translateY(20px);
+            transform-origin: bottom right;
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transform-origin: bottom right;
+        }
+
+        }
+        @@media (max-width: 575.98px) {
+            .btn-back span {
+                display: none;
+            }
+
+            .floating-cart {
+                right: 14px;
+                bottom: 16px;
+                padding: .8rem 1rem;
+            }
+
+            .floating-cart-text {
+                display: none;
+            }
+
+            .mini-cart-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* 1. Hacemos que el body ocupe todo el alto de la pantalla */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column; /* Alinea los hijos (header, main, footer) en vertical */
+            background-color: #f8fafc;
+            color: #111827;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 2. El header se queda donde está */
+        header {
+            flex-shrink: 0;
+        }
+
+        
+        /* 4. El footer se mantiene al final */
+        .productos-footer {
+            flex-shrink: 0;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 1.5rem 0;
+            color: #6b7280;
+            font-size: .95rem;
+        }
+
+       
+
+        
+
+        /* Si quieres que el navbar también sea más delgado y pegado */
+        .productos-navbar {
+            padding: 0.2rem 0; /* Navbar más fino */
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Ajuste para los botones de las esquinas */
+        .btn-back {
+            margin-left: 1rem; /* Un pequeño aire para que no toque físicamente el cristal del monitor */
+        }
+
+        .cart-nav-wrap {
+            margin-right: 1rem; /* Un pequeño aire a la derecha */
+        }
+
+
+        .badge-nav {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #2563eb;
+            background: #eff6ff;
+            padding: 5px 12px;
+            border-radius: 50px;
+            border: 1px solid #dbeafe;
+            display: inline-block;
+        }
+
+
+        /* 1. Centrado absoluto para el badge del medio */
+        .badge-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        /* 2. Ocultar carrito viejo en móviles */
+        @@media (max-width: 991.98px) {
+            .cart-nav-wrap
+
+        {
+            display: none !important;
+        }
+
+        }
+
+        /* 3. Diseño del Carrito Flotante (Verde profesional) */
+        /* 🚀 DISEÑO PREMIUM: Blanco con borde sutil */
+        .cart-floating-mobile {
+            position: fixed;
+            right: 20px;
+            bottom: 25px;
+            width: 62px;
+            height: 62px;
+            background-color: #ffffff; /* Fondo Blanco */
+            color: #111827 !important; /* Icono Negro profundo */
+            border-radius: 50%;
+            display: none; /* Se activa en móvil con el media query que ya tienes */
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            /* Sombra elegante y borde sutil */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            border: 1px solid #e5e7eb;
+            z-index: 2000;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @@media (max-width: 991.98px) {
+            .cart-floating-mobile
+
+        {
+            display: flex;
+        }
+        /* Solo sale en móvil */
+        }
+
+        /* 6. CARRITO FLOTANTE MÓVIL */
+        .cart-floating-mobile {
+            position: fixed;
+            right: 20px;
+            bottom: 25px;
+            width: 62px;
+            height: 62px;
+            background-color: #ffffff;
+            color: #111827 !important;
+            border-radius: 50%;
+            display: none; /* Se activa en media query */
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            border: 1px solid #e5e7eb;
+            z-index: 2500;
+        }
+
+        .cart-badge {
+            min-width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #198754;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* 7. AJUSTES PARA TABLET Y MÓVIL (991px) */
+        @@media (max-width: 991.98px) {
+            .cart-floating-mobile
+
+        {
+            display: flex;
+        }
+
+        .mini-cart-panel {
+            top: auto !important;
+            bottom: 95px !important;
+            right: 15px !important;
+            left: auto !important;
+            width: 260px !important; /* 🚀 MÁS ANGOSTO TIPO MENSAJE */
+            max-width: 85vw !important;
+            border-radius: 20px !important;
+        }
+
+            .mini-cart-panel.active {
+                animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            }
+
+        .mini-cart-actions {
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+
+        }
+
+        /* 🟢 REGLA UNIFICADA Y LIMPIA PARA PC */
+        .productos-main {
+            min-height: calc(100vh - 140px);
+            flex: 1 0 auto;
+            margin-top: 60px; /* Reducido de 75px a 60px para que el contenido suba en PC */
+            padding-top: 0px !important; /* Eliminamos por completo el espacio muerto superior */
+            padding-bottom: 1.5rem; /* Reducido a la mitad para pegar el fondo */
+        }
+
+        @@media (max-width: 575.98px) {
+            .btn-back span {
+                display: none;
+            }
+
+            .floating-cart {
+                right: 14px;
+                bottom: 16px;
+                padding: .8rem 1rem;
+            }
+
+            .floating-cart-text {
+                display: none;
+            }
+
+            .mini-cart-actions {
+                flex-direction: column;
+            }
+            /* 🟢 CORRECCIÓN MÓVIL: Forzamos a que el componente suba al ras del navbar fino */
+            .productos-main {
+                margin-top: 50px !important; /* Ajuste perfecto para móviles pegados */
+                padding-top: 0px !important;
+                padding-bottom: 0px !important; /* Deja que el padding-bottom lo controle el master-container de tu vista */
+            }
+        }
+
+        /* 9. ANIMACIONES */
+        @@keyframes fadeInDown {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        @@keyframes popIn {
+            from
+
+        {
+            opacity: 0;
+            transform: scale(0.5) translateY(20px);
+            transform-origin: bottom right;
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transform-origin: bottom right;
+        }
+
+        }
+
+        /* Ajuste premium para que el dropdown combine con tus píldoras */
+        .dropdown-toggle::after {
+            vertical-align: middle;
+            margin-left: 0.5em;
+            color: #6b7280; /* Gris suave para la flecha */
+        }
+
+        .dropdown-item {
+            transition: all 0.2s ease;
+            font-size: 0.92rem;
+        }
+
+            .dropdown-item:hover {
+                background-color: #f3f4f6;
+                color: #198754 !important; /* Verde al pasar el mouse */
+            }
+    </style>
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <header class="header-fijo">
+        <nav class="navbar navbar-expand-lg productos-navbar">
+            <div class="container-fluid px-4 position-relative">
+
+             
+
+                <div class="dropdown">
+                    <button class="btn-back dropdown-toggle border-0" type="button" id="dropdownNavegacion" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-list-nested me-1"></i>
+                        <span>Navegación</span>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-start shadow-sm mt-2 border-0" aria-labelledby="dropdownNavegacion" style="border-radius: 12px;">
+                        <li>
+                            @if (esClienteLogueado)
+                            {
+                                <!-- 🔥 REPARADO: Apuntamos a la acción real de tu controlador -->
+                                <a class="dropdown-item py-2 px-3 fw-semibold" asp-controller="Cliente" asp-action="WebPrincipal">
+                                    <i class="bi bi-speedometer2 text-secondary me-2"></i>Ir a mi Panel Comercial
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item py-2 px-3 fw-semibold" href="/">
+                                    <i class="bi bi-house-door text-secondary me-2"></i>Ir al Inicio del Sitio
+                                </a>
+                            }
+                        </li>
+
+                        @if (ViewContext.RouteData.Values["action"]?.ToString() != "Index")
+                        {
+                            <li>
+                                <a class="dropdown-item py-2 px-3 fw-semibold" asp-controller="ProductoPublic" asp-action="Index">
+                                    <i class="bi bi-grid text-secondary me-2"></i>Ver todas las Categorías
+                                </a>
+                            </li>
+                        }
+
+                        @if (ViewBag.Area != null && ViewContext.RouteData.Values["action"]?.ToString() == "ProductoDetalle")
+                        {
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <a class="dropdown-item py-2 px-3 fw-bold text-success" asp-controller="ProductoPublic" asp-action="Categoria" asp-route-area="@ViewBag.Area">
+                                    <i class="bi bi-arrow-left-short text-success me-1 fs-5"></i>Volver a @ViewBag.Area
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarProductos">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarProductos">
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+
+                        <li class="nav-item">
+                            <a class="nav-link productos-link" asp-controller="ProductoPublic" asp-action="Index">Productos</a>
+                        </li>
+
+                        <li class="nav-item cart-nav-wrap d-none d-lg-block">
+                            <button id="toggleMiniCart" class="cart-nav-btn" type="button">
+                                <span class="cart-icon"><i class="bi bi-cart3"></i></span>
+                                <span class="cart-text">Mi Carrito</span>
+                                @* Agregamos clase 'cart-count' para el JS *@
+                                <span class="cart-badge cart-count @(cantidadCarrito > 0 ? "cart-has-items" : "")">@cantidadCarrito</span>
+                            </button>
+
+                           
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="productos-main">
+        <div class="container-fluid px-3">
+            @RenderBody()
+        </div>
+    </main>
+
+    
+
+    <button type="button" id="mobileCartTarget" class="cart-floating-mobile" style="border:none;">
+        <i class="bi bi-cart3"></i>
+        <span class="cart-badge cart-count">@cantidadCarrito</span>
+    </button>
+
+    <div id="miniCartPanel" class="mini-cart-panel">
+        @if (!carrito.Any())
+        {
+            @* 🚀 AGREGAMOS EL ID 'miniCartEmpty' *@
+            <div id="miniCartEmpty" class="mini-cart-empty">🛒 Tu carrito está vacío</div>
+        }
+        else
+        {
+            <div class="mini-cart-items">
+                @foreach (var item in carrito.Take(4))
+                {
+                    <div class="mini-cart-item">
+                        <div class="mini-cart-info">
+                            <div class="mini-cart-title">@item.Descripcion</div>
+                            <div class="mini-cart-sub">@(string.IsNullOrWhiteSpace(item.Dimensiones) ? "Sin dimensión" : item.Dimensiones) x @item.Cantidad</div>
+                        </div>
+                        <div class="mini-cart-price">S/ @item.Subtotal.ToString("0.00")</div>
+                    </div>
+                }
+            </div>
+            <div class="mini-cart-footer">
+                <div class="mini-cart-total">Total: S/ @totalCarrito.ToString("0.00")</div>
+                <div class="mini-cart-actions">
+                    <a asp-controller="ProductoPublic" asp-action="Carrito" class="btn-mini">Ver carrito</a>
+                    @* 🚀 CAMBIO: Apuntamos al Carrito principal para que el cliente revise su pedido *@
+                    <a asp-controller="ProductoPublic" asp-action="Carrito" class="btn-mini btn-mini-primary">
+                        Reservar ahora
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <footer class="productos-footer">
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year - E&E Aluminios | Catálogo de productos
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const CarritoUI = {
+            // Función AJAX para agregar sin recargar
+            agregar: function(idProd, cant, btnOriginal) {
+                const btnHtml = btnOriginal.innerHTML;
+                btnOriginal.disabled = true;
+                btnOriginal.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+                const data = new FormData();
+                data.append('idProducto', idProd);
+                data.append('cantidad', cant);
+
+                fetch('/ProductoPublic/AgregarAlCarrito', {
+                    method: 'POST',
+                    body: data
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if(res.success) {
+                        this.actualizarContadores(res.totalItems);
+                        // Puedes quitar este alert si usas SweetAlert2
+                        alert("📦 Producto empaquetado correctamente.");
+                    }
+                })
+                .catch(err => console.error("Error carrito:", err))
+                .finally(() => {
+                    btnOriginal.disabled = false;
+                    btnOriginal.innerHTML = btnHtml;
+                });
+            },
+
+                    actualizarContadores: function(total) {
+            const badges = document.querySelectorAll('.cart-count');
+            const panel = document.getElementById('miniCartPanel');
+
+            // 1. Actualizar números
+            badges.forEach(badge => {
+                badge.innerText = total;
+                if(total > 0) badge.classList.add('cart-has-items');
+            });
+
+            // 2. 🚀 RECARGAR EL CONTENIDO DEL MINI-CART
+            if (panel) {
+                fetch('/ProductoPublic/ObtenerMiniCarrito')
+                    .then(res => res.text())
+                    .then(html => {
+                        panel.innerHTML = html; // Pegamos la lista actualizada
+                        panel.classList.add("active"); // Opcional: abrirlo para mostrar el cambio
+                    });
+            }
+        }
+        };
+
+                document.addEventListener("DOMContentLoaded", function () {
+            const btnPc = document.getElementById("toggleMiniCart");
+            const btnMobile = document.getElementById("mobileCartTarget");
+            const panel = document.getElementById("miniCartPanel");
+
+            if (panel) {
+                const toggleCarrito = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    panel.classList.toggle("active");
+                    console.log("Panel toggled, estado actual:", panel.classList.contains("active"));
+                };
+
+                if (btnPc) btnPc.addEventListener("click", toggleCarrito);
+                if (btnMobile) btnMobile.addEventListener("click", toggleCarrito);
+
+                // Cerrar al tocar fuera
+                document.addEventListener("click", (e) => {
+                    if (!panel.contains(e.target)) {
+                        panel.classList.remove("active");
+                    }
+                });
+
+                // Evitar que el panel se cierre al tocar dentro de él
+                panel.addEventListener("click", (e) => e.stopPropagation());
+            }
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

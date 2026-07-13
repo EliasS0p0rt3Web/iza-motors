@@ -1,0 +1,122 @@
+﻿@model List<Negocio.Web.Models.Entities.TrabajoMarketing>
+
+@{
+    Layout = "_LayoutGaleria";
+    ViewData["Title"] = ViewData["CategoriaNombre"];
+}
+
+<div class="container">
+    <div class="row g-4 pb-5 justify-content-center">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="trabajo-item-card shadow-lg">
+                    <div class="trabajo-img-wrapper" onclick="abrirImagenGrande('@item.ImagenUrl')" style="cursor: pointer;">
+                        <img src="@item.ImagenUrl" alt="@item.Titulo" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                        <div class="trabajo-overlay"><span>@item.Categoria</span></div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h4 class="fw-bold mb-3">@item.Titulo</h4>
+                        <a href="https://wa.me/51921726629?text=@System.Net.WebUtility.UrlEncode("Hola, me interesa: " + item.Titulo)"
+                           target="_blank"
+                           class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm">
+                            <i class="bi bi-whatsapp"></i> HABLAR POR WHATSAPP
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="modalImagenGrande" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+            <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <img id="imgGrande" src="" class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Zoom">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function abrirImagenGrande(url) {
+            document.getElementById('imgGrande').src = url;
+            new bootstrap.Modal(document.getElementById('modalImagenGrande')).show();
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        /* 🚀 CONTROL TOTAL DE ESPACIOS */
+        :root {
+            --tarjeta-borde-radio: 24px;
+            --imagen-altura: 450px; /* <--- AJUSTA AQUÍ LA ALTURA DE LA FOTO */
+            --tarjeta-ancho-max: 100%; /* <--- AJUSTA AQUÍ EL ANCHO SI QUIERES */
+        }
+
+        .trabajo-item-card {
+            background: #ffffff;
+            border-radius: var(--tarjeta-borde-radio);
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            transition: transform 0.4s ease;
+        }
+
+        .trabajo-img-wrapper {
+            position: relative;
+            height: var(--imagen-altura); /* Usando la variable de arriba */
+            overflow: hidden;
+            border-bottom: 5px solid #198754;
+        }
+
+        /* 🚀 ESTILOS DEL MODAL */
+        .modal-content {
+            padding: 20px; /* Espacio extra en bordes para salir al hacer clic */
+        }
+
+        .btn-close-custom {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+            .btn-close-custom:hover {
+                background: #198754;
+                color: white;
+            }
+
+        /* Resto de estilos... */
+        .trabajo-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(25, 135, 84, 0.95);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .btn-success {
+            background-color: #25d366 !important;
+            border: none !important;
+        }
+    </style>
+}

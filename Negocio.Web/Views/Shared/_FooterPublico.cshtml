@@ -1,0 +1,785 @@
+﻿@* Views/Shared/_FooterPublico.cshtml
+   Footer completo estilo Iza Motors.
+   Mantiene únicamente el ancla #contacto usada por la navegación.
+*@
+
+<footer class="iza-footer" id="contacto">
+
+    @* FRANJA SUPERIOR DE BENEFICIOS *@
+    <section class="iza-footer-benefits" aria-label="Beneficios Iza Motors">
+        <div class="container">
+            <div class="row g-0">
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="iza-benefit-item">
+                        <div class="iza-benefit-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <div>
+                            <h3>Soporte Express</h3>
+                            <p>Disponibles las 24 horas de la semana</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="iza-benefit-item">
+                        <div class="iza-benefit-icon">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div>
+                            <h3>Valor Increíble</h3>
+                            <p>Las marcas que prefieras a precios competitivos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="iza-benefit-item">
+                        <div class="iza-benefit-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <div>
+                            <h3>Envío Rápido</h3>
+                            <p>Despachos coordinados de forma rápida y segura</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="iza-benefit-item">
+                        <div class="iza-benefit-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div>
+                            <h3>Selección Inmejorable</h3>
+                            <p>Repuestos y servicios para tu vehículo en un solo lugar</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    @* CUERPO PRINCIPAL *@
+    <section class="iza-footer-main">
+        <div class="container">
+            <div class="row gy-5 gx-lg-5">
+
+                @* MARCA, DIRECCIÓN Y REDES *@
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="iza-footer-brand">
+                        <img src="/img/iza.ico"
+                             alt="Iza Motors"
+                             class="iza-footer-logo" />
+
+                        <div class="iza-footer-address">
+                            <i class="bi bi-geo-alt"></i>
+                            <p>
+                                Av. Las Américas 1040-1049<br />
+                                La Victoria, Lima
+                            </p>
+                        </div>
+
+                        <div class="iza-social-list" aria-label="Redes sociales">
+                            <a href="https://www.facebook.com/"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               aria-label="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+
+                            <a href="https://www.instagram.com/"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               aria-label="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+
+                            <a href="https://www.tiktok.com/"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               aria-label="TikTok">
+                                <i class="bi bi-tiktok"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                @* CONTACTO *@
+                <div class="col-12 col-md-6 col-xl-3">
+                    <h2 class="iza-footer-title">Contáctanos</h2>
+
+                    <div class="iza-contact-list">
+
+                        <a href="tel:+5112777777" class="iza-contact-item">
+                            <div class="iza-contact-icon">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div>
+                                <span>¿Necesitas ayuda?</span>
+                                <strong>01-277-7777</strong>
+                            </div>
+                        </a>
+
+                        <a href="https://wa.me/51960492621?text=Hola%20Iza%20Motors,%20necesito%20asesoría"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="iza-contact-item">
+                            <div class="iza-contact-icon">
+                                <i class="bi bi-headset"></i>
+                            </div>
+                            <div>
+                                <span class="iza-contact-label">WhatsApp</span>
+                                <small>Chatea con un experto</small>
+                                <strong>960 492 621</strong>
+                            </div>
+                        </a>
+
+                        <a href="mailto:iza@izamotors.com" class="iza-contact-item">
+                            <div class="iza-contact-icon">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                            <div>
+                                <span class="iza-contact-label">Correo</span>
+                                <small>iza@izamotors.com</small>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+
+                @* NOSOTROS *@
+                <div class="col-6 col-md-4 col-xl-2">
+                    <h2 class="iza-footer-title">Nosotros</h2>
+
+                    <nav class="iza-footer-nav" aria-label="Nosotros">
+                        <a href="#">Franquicias</a>
+                        <a href="#contacto">Contacto</a>
+                    </nav>
+                </div>
+
+                @* SERVICIOS *@
+                <div class="col-6 col-md-4 col-xl-2">
+                    <h2 class="iza-footer-title">Servicios</h2>
+
+                    <nav class="iza-footer-nav" aria-label="Servicios">
+                        <a asp-controller="ProductoPublic" asp-action="Index">
+                            Venta de repuestos
+                        </a>
+                        <a href="#cotizar">Servicios automotrices</a>
+                        <a href="@Url.Action("Consultar", "Reserva")">
+                            Consulta de cita
+                        </a>
+                    </nav>
+                </div>
+
+                @* SUCURSALES *@
+                <div class="col-12 col-md-4 col-xl-2">
+                    <h2 class="iza-footer-title">Sucursales</h2>
+
+                    <nav class="iza-footer-nav" aria-label="Sucursales">
+                        <a href="#contacto">Tienda</a>
+                        <a href="#contacto">Taller Santa Anita</a>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    @* PIE INFERIOR *@
+    <section class="iza-footer-bottom">
+        <div class="container">
+
+            <div class="iza-footer-bottom-top">
+
+                <div class="iza-payment-methods" aria-label="Métodos de pago aceptados">
+                    <span class="iza-payment visa">VISA</span>
+                    <span class="iza-payment mastercard">Mastercard</span>
+                    <span class="iza-payment paypal">PayPal</span>
+                    <span class="iza-payment yape">Yape</span>
+                    <span class="iza-payment plin">Plin</span>
+                </div>
+
+                <a href="#"
+                   class="iza-complaints-book"
+                   aria-label="Libro de Reclamaciones">
+                    <div class="iza-book-icon">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                    </div>
+                    <div>
+                        <span>LIBRO DE</span>
+                        <strong>RECLAMACIONES</strong>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="iza-footer-bottom-line">
+
+                <div class="iza-copyright">
+                    <p>Copyright © @DateTime.Now.Year Iza Motors Perú S.A.C.</p>
+                    <span>Todos los derechos reservados</span>
+                </div>
+
+                <nav class="iza-legal-nav" aria-label="Enlaces legales">
+                    <a href="#">Términos de uso</a>
+                    <a href="#">Política de privacidad</a>
+                    <a href="#">Publicidad basada en intereses</a>
+                    <a href="#">Accesibilidad</a>
+                </nav>
+
+            </div>
+
+        </div>
+    </section>
+
+</footer>
+
+<style>
+    /* ============================================================
+           FOOTER IZA MOTORS
+           ============================================================ */
+
+    .iza-footer {
+        --iza-red: #ed1c24;
+        --iza-red-dark: #ca1119;
+        --iza-black: #101010;
+        --iza-gray-900: #222222;
+        --iza-gray-700: #4f4f4f;
+        --iza-gray-500: #818181;
+        --iza-gray-300: #d1d1d1;
+        --iza-gray-200: #e4e4e4;
+        --iza-gray-100: #f0f0f0;
+        --iza-surface: #f4f4f4;
+        margin: 0;
+        color: var(--iza-black);
+        background: var(--iza-surface);
+        font-family: "Inter", Arial, sans-serif;
+    }
+
+    /* ------------------------------
+           BENEFICIOS
+           ------------------------------ */
+
+    .iza-footer-benefits {
+        padding: 28px 0;
+        color: #ffffff;
+        background: var(--iza-red);
+    }
+
+    .iza-benefit-item {
+        min-height: 82px;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .iza-benefit-icon {
+        width: 58px;
+        min-width: 58px;
+        height: 58px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 2.4rem;
+    }
+
+    .iza-benefit-item h3 {
+        margin: 0 0 5px;
+        color: #ffffff;
+        font-size: 1rem;
+        line-height: 1.2;
+        font-weight: 800;
+    }
+
+    .iza-benefit-item p {
+        margin: 0;
+        max-width: 230px;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 0.84rem;
+        line-height: 1.45;
+        font-weight: 500;
+    }
+
+    /* ------------------------------
+           CUERPO PRINCIPAL
+           ------------------------------ */
+
+    .iza-footer-main {
+        padding: 64px 0 58px;
+        background: var(--iza-surface);
+    }
+
+    .iza-footer-logo {
+        display: block;
+        width: min(230px, 100%);
+        height: auto;
+        margin-bottom: 28px;
+        object-fit: contain;
+    }
+
+    .iza-footer-address {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        margin-bottom: 28px;
+    }
+
+        .iza-footer-address i {
+            margin-top: 2px;
+            color: var(--iza-red);
+            font-size: 1.45rem;
+        }
+
+        .iza-footer-address p {
+            margin: 0;
+            color: #343434;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            font-weight: 500;
+        }
+
+    .iza-social-list {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .iza-social-list a {
+            width: 49px;
+            height: 49px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--iza-red);
+            background: #090909;
+            border: 2px solid var(--iza-red);
+            border-radius: 50%;
+            font-size: 1.55rem;
+            text-decoration: none;
+            transition: color .2s ease, background-color .2s ease, transform .2s ease;
+        }
+
+            .iza-social-list a:hover {
+                color: #ffffff;
+                background: var(--iza-red);
+                transform: translateY(-3px);
+            }
+
+    .iza-footer-title {
+        margin: 0 0 28px;
+        color: #151515;
+        font-size: 1rem;
+        line-height: 1.25;
+        font-weight: 800;
+    }
+
+    /* ------------------------------
+           CONTACTOS
+           ------------------------------ */
+
+    .iza-contact-list {
+        display: flex;
+        flex-direction: column;
+        gap: 21px;
+    }
+
+    .iza-contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        color: #242424;
+        text-decoration: none;
+    }
+
+    .iza-contact-icon {
+        width: 27px;
+        min-width: 27px;
+        padding-top: 1px;
+        color: var(--iza-red);
+        font-size: 1.35rem;
+        text-align: center;
+    }
+
+    .iza-contact-item div:last-child {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .iza-contact-item span,
+    .iza-contact-item small {
+        color: #333333;
+        font-size: 0.84rem;
+        line-height: 1.35;
+        font-weight: 500;
+    }
+
+    .iza-contact-item .iza-contact-label {
+        color: #181818;
+        font-size: 0.91rem;
+        font-weight: 800;
+    }
+
+    .iza-contact-item strong {
+        margin-top: 2px;
+        color: var(--iza-red);
+        font-size: 1.15rem;
+        line-height: 1.15;
+        font-weight: 800;
+    }
+
+    .iza-contact-item:hover strong,
+    .iza-contact-item:hover .iza-contact-label {
+        color: var(--iza-red-dark);
+    }
+
+    /* ------------------------------
+           NAVEGACIÓN
+           ------------------------------ */
+
+    .iza-footer-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 28px;
+    }
+
+        .iza-footer-nav a {
+            position: relative;
+            color: #151515;
+            font-size: 0.95rem;
+            line-height: 1.3;
+            font-weight: 800;
+            text-decoration: none;
+            transition: color .2s ease, transform .2s ease;
+        }
+
+            .iza-footer-nav a::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: -5px;
+                width: 0;
+                height: 2px;
+                background: var(--iza-red);
+                transition: width .2s ease;
+            }
+
+            .iza-footer-nav a:hover {
+                color: var(--iza-red);
+                transform: translateX(3px);
+            }
+
+                .iza-footer-nav a:hover::after {
+                    width: 100%;
+                }
+
+    /* ------------------------------
+           PARTE INFERIOR
+           ------------------------------ */
+
+    .iza-footer-bottom {
+        padding: 22px 0 28px;
+        background: var(--iza-surface);
+        border-top: 1px solid #8f8f8f;
+    }
+
+    .iza-footer-bottom-top {
+        min-height: 98px;
+        padding-bottom: 21px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+    }
+
+    .iza-payment-methods {
+        grid-column: 2;
+        justify-self: start;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .iza-payment {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 25px;
+        padding: 4px 7px;
+        background: #ffffff;
+        border: 1px solid #dcdcdc;
+        border-radius: 4px;
+        font-size: 0.64rem;
+        line-height: 1;
+        font-weight: 900;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    }
+
+        .iza-payment.visa {
+            color: #1353a2;
+            font-size: 0.78rem;
+        }
+
+        .iza-payment.mastercard {
+            color: #e43d30;
+        }
+
+        .iza-payment.paypal {
+            color: #174f9f;
+        }
+
+        .iza-payment.yape {
+            color: #6f2c91;
+        }
+
+        .iza-payment.plin {
+            color: #10a4c7;
+        }
+
+    .iza-complaints-book {
+        grid-column: 3;
+        justify-self: start;
+        margin-left: 58px;
+        min-width: 390px;
+        min-height: 76px;
+        padding: 13px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 27px;
+        color: #121212;
+        background: #ffffff;
+        border: 1px solid #e2e2e2;
+        border-radius: 4px;
+        text-decoration: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .03);
+        transition: border-color .2s ease, transform .2s ease;
+    }
+
+        .iza-complaints-book:hover {
+            color: #121212;
+            border-color: var(--iza-red);
+            transform: translateY(-2px);
+        }
+
+    .iza-book-icon {
+        color: #222222;
+        font-size: 3.2rem;
+        line-height: 1;
+        transform: rotate(-7deg);
+    }
+
+    .iza-complaints-book div:last-child {
+        display: flex;
+        flex-direction: column;
+        text-align: right;
+    }
+
+    .iza-complaints-book span,
+    .iza-complaints-book strong {
+        font-size: 1rem;
+        line-height: 1.1;
+        font-weight: 900;
+    }
+
+    .iza-footer-bottom-line {
+        padding-top: 12px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 35px;
+    }
+
+    .iza-copyright p,
+    .iza-copyright span {
+        margin: 0;
+        color: #515151;
+        font-size: 0.78rem;
+        line-height: 1.55;
+        font-weight: 500;
+    }
+
+    .iza-legal-nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 34px;
+    }
+
+        .iza-legal-nav a {
+            color: #555555;
+            font-size: 0.76rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+            .iza-legal-nav a:hover {
+                color: var(--iza-red);
+                text-decoration: underline;
+            }
+
+    /* ------------------------------
+           RESPONSIVE
+           ------------------------------ */
+
+    @@media (min-width: 1200px) {
+        .iza-benefit-item {
+            border-right: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .iza-footer-benefits .col-xl-3:last-child .iza-benefit-item {
+            border-right: none;
+        }
+    }
+
+    @@media (max-width: 1199px) {
+        .iza-benefit-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .iza-footer-benefits .row > div:nth-last-child(-n+2) .iza-benefit-item {
+            border-bottom: none;
+        }
+
+        .iza-footer-bottom-top {
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .iza-payment-methods {
+            grid-column: 1;
+            justify-self: start;
+        }
+
+        .iza-complaints-book {
+            grid-column: 2;
+            justify-self: end;
+            margin-left: 0;
+            min-width: 340px;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .iza-footer-benefits {
+            padding: 11px 0;
+        }
+
+        .iza-benefit-item {
+            min-height: 74px;
+            padding: 13px 7px;
+            gap: 12px;
+        }
+
+        .iza-benefit-icon {
+            width: 45px;
+            min-width: 45px;
+            height: 45px;
+            font-size: 1.85rem;
+        }
+
+        .iza-benefit-item h3 {
+            font-size: 0.9rem;
+        }
+
+        .iza-benefit-item p {
+            font-size: 0.76rem;
+        }
+
+        .iza-footer-benefits .row > div .iza-benefit-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .iza-footer-benefits .row > div:last-child .iza-benefit-item {
+            border-bottom: none;
+        }
+
+        .iza-footer-main {
+            padding: 46px 0 42px;
+        }
+
+        .iza-footer-brand {
+            text-align: center;
+        }
+
+        .iza-footer-logo {
+            width: 205px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .iza-footer-address {
+            justify-content: center;
+            text-align: left;
+        }
+
+        .iza-social-list {
+            justify-content: center;
+        }
+
+        .iza-footer-title {
+            margin-bottom: 20px;
+        }
+
+        .iza-footer-nav {
+            gap: 18px;
+        }
+
+        .iza-footer-bottom-top {
+            grid-template-columns: 1fr;
+            gap: 23px;
+            padding-bottom: 30px;
+        }
+
+        .iza-payment-methods {
+            grid-column: 1;
+            justify-self: center;
+            justify-content: center;
+        }
+
+        .iza-complaints-book {
+            grid-column: 1;
+            justify-self: stretch;
+            min-width: 0;
+            width: 100%;
+            margin-left: 0;
+            padding-inline: 20px;
+        }
+
+        .iza-footer-bottom-line {
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .iza-legal-nav {
+            justify-content: center;
+            gap: 16px 22px;
+        }
+    }
+
+    @@media (max-width: 420px) {
+        .iza-contact-item strong {
+            font-size: 1.05rem;
+        }
+
+        .iza-complaints-book {
+            gap: 17px;
+        }
+
+        .iza-book-icon {
+            font-size: 2.6rem;
+        }
+
+        .iza-complaints-book span,
+        .iza-complaints-book strong {
+            font-size: 0.85rem;
+        }
+    }
+</style>

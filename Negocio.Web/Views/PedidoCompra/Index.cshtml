@@ -1,0 +1,268 @@
+﻿@model List<Negocio.Web.Models.Entities.PedidoCompra>
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Pedidos de Compra";
+    var rol = Context.Session.GetString("ROL");
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PRO --- */
+    .pedido-container {
+        font-family: 'Inter', sans-serif;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
+        padding: 1.5rem;
+    }
+
+    /* --- BOTONES PREMIUM --- */
+    .btn-new-pro {
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        color: white !important;
+        border: none;
+        padding: 10px 24px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-new-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.35);
+        }
+
+    /* --- TABLA PRO --- */
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+        }
+
+        .table-pro tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #334155;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+
+        .table-pro tbody tr:not(.collapse):hover td {
+            background: #f8fafc;
+        }
+
+    /* --- BADGES DE ESTADO ESTILIZADOS --- */
+    .badge-pending-pro {
+        background: #fef3c7;
+        color: #d97706;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    .badge-success-pro {
+        background: #dcfce3;
+        color: #16a34a;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    /* --- ACCIONES WORKFLOW --- */
+    .btn-action-pro {
+        padding: 6px 14px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-view-pro {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+        .btn-view-pro:hover {
+            background: #bae6fd;
+            transform: scale(1.02);
+        }
+
+    .btn-fulfill-pro {
+        background: #dcfce3;
+        color: #16a34a;
+    }
+
+        .btn-fulfill-pro:hover {
+            background: #bbf7d0;
+            transform: scale(1.02);
+        }
+
+    .btn-delete-pro {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+        .btn-delete-pro:hover {
+            background: #fecaca;
+            transform: scale(1.02);
+        }
+</style>
+
+<div class="pedido-container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-800 text-dark mb-0"> Pedidos de Compra</h3>
+        </div>
+
+        @if (rol == "ADMINISTRADOR")
+        {
+            <a asp-action="Crear" class="btn-new-pro">
+                <i class="bi bi-plus-lg"></i> Crear Pedido
+            </a>
+        }
+    </div>
+
+    <div class="form-premium-card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table-pro text-nowrap">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 80px;">#</th>
+                        <th>Fecha Solicitud</th>
+                        <th>Usuario Emisor</th>
+                        <th class="text-center">Estado Workflow</th>
+                        <th class="text-center" style="width: 250px;">Acciones Operativas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pedido in Model)
+                    {
+                        var claseBadge = pedido.Estado == "PENDIENTE" ? "badge-pending-pro" : "badge-success-pro";
+
+                        <tr>
+                            <td class="text-center text-secondary font-monospace">@pedido.IdPedidoCompra</td>
+                            <td>@pedido.FechaRegistro.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="fw-bold text-dark">@pedido.Usuario</td>
+                            <td class="text-center">
+                                <span class="@claseBadge">@pedido.Estado</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2 align-items-center">
+
+                                    <button class="btn-action-pro btn-view-pro" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#detalle-@pedido.IdPedidoCompra">
+                                        <i class="bi bi-eye-fill"></i> Ver
+                                    </button>
+
+                                    @if (rol == "JEFE" && pedido.Estado == "PENDIENTE")
+                                    {
+                                        <form asp-controller="PedidoCompra" asp-action="Cumplir" method="post" class="m-0 d-inline"
+                                              onsubmit="return confirm('¿Marcar pedido como cumplido?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@pedido.IdPedidoCompra" />
+                                            <button type="submit" class="btn-action-pro btn-fulfill-pro">
+                                                <i class="bi bi-check-circle-fill"></i> Cumplir
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (rol == "ADMINISTRADOR" && pedido.Estado == "CUMPLIDO")
+                                    {
+                                        <form asp-action="Eliminar" method="post" class="m-0 d-inline"
+                                              onsubmit="return confirm('¿Eliminar pedido cumplido?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@pedido.IdPedidoCompra" />
+                                            <button type="submit" class="btn-action-pro btn-delete-pro">
+                                                <i class="bi bi-trash3-fill"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="collapse" id="detalle-@pedido.IdPedidoCompra" style="background-color: #f8fafc;">
+                            <td colspan="5" class="p-4 border-bottom">
+                                <div class="bg-white border rounded-4 overflow-hidden shadow-sm p-0 m-0">
+                                    <div class="px-3 py-2 bg-light border-bottom text-secondary small fw-bold uppercase letter-spacing">
+                                        <i class="bi bi-list-check text-primary me-1"></i> Componentes del Pedido #@pedido.IdPedidoCompra
+                                    </div>
+                                    <table class="table table-sm mb-0 align-middle text-nowrap table-hover" style="font-size: 0.9rem;">
+                                        <thead class="table-light text-secondary font-weight-bold">
+                                            <tr>
+                                                <th class="ps-3 py-2" style="font-weight: 700;">Área</th>
+                                                <th class="py-2" style="font-weight: 700;">Producto Solicitado</th>
+                                                <th class="py-2" style="font-weight: 700;">Dimensiones</th>
+                                                <th class="pe-3 py-2 text-end" style="font-weight: 700;">Stock Actual en Planta</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var d in pedido.Detalles)
+                                            {
+                                                <tr>
+                                                    <td class="ps-3 py-2 fw-bold text-secondary">@d.Area</td>
+                                                    <td class="py-2 text-dark">@d.Producto</td>
+                                                    <td class="py-2 font-monospace text-muted small">@d.Dimensiones</td>
+                                                    <td class="pe-3 py-2 text-end fw-bold font-monospace text-danger">@d.StockActual</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info rounded-4 border-0 p-4 shadow-sm mt-4 d-flex align-items-center gap-3" style="background: #e0f2fe; color: #0369a1;">
+            <i class="bi bi-info-circle-fill fs-4"></i>
+            <span class="fw-semibold">No hay pedidos de compra registrados actualmente en la base de datos.</span>
+        </div>
+    }
+</div>

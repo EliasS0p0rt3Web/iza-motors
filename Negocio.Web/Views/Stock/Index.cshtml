@@ -1,0 +1,415 @@
+﻿@model List<Negocio.Web.Models.ViewModels.StockViewModel>
+@{
+    var rol = Context.Session.GetString("ROL");
+}
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Consultar Stock";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE PREMIUM --- */
+    .stock-container {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        max-width: 98%;
+        margin: 0 auto;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- TARJETAS PREMIUM --- */
+    .form-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
+        padding: 1.5rem;
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- INPUTS MODERNOS --- */
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+        .input-pro:focus {
+            border-color: #0f172a;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.08);
+            outline: none;
+        }
+
+    /* --- BOTONES PREMIUM --- */
+    .btn-search-pro {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 11px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    }
+
+        .btn-search-pro:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+    .btn-critical-pro {
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        color: white !important;
+        border: none;
+        padding: 11px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+        .btn-critical-pro:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(220, 38, 38, 0.3);
+        }
+
+    /* --- TABLA PRO --- */
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+        }
+
+        .table-pro tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #334155;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+
+        /* Estilo de fila normal al pasar el mouse */
+        .table-pro tbody tr:not(.stock-critico-row):hover td {
+            background: #f8fafc;
+        }
+
+    /* 🔥 FILA CRÍTICA PREMIUM (Look pastel suave, no agresivo) */
+    .stock-critico-row td {
+        background-color: #fee2e2 !important;
+        color: #991b1b !important;
+    }
+
+    .stock-critico-row:hover td {
+        background-color: #fca5a5 !important;
+    }
+
+    .qty-badge-pro {
+        background: #ffffff;
+        color: #0f172a;
+        border: 1px solid #e2e8f0;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-family: monospace;
+        font-size: 0.95rem;
+    }
+
+    .stock-critico-row .qty-badge-pro {
+        background: #ef4444;
+        color: #ffffff;
+        border-color: #dc2626;
+    }
+
+    /* --- ACCIONES --- */
+    .btn-action-edit {
+        background: #fef3c7;
+        color: #d97706 !important;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+        .btn-action-edit:hover {
+            background: #fde68a;
+            transform: scale(1.02);
+        }
+
+    .stock-critico-row .btn-action-edit {
+        background: #ffffff;
+        border: 1px solid #fcd34d;
+    }
+
+    /* MODAL PREMIUM */
+    .modal-pro .modal-content {
+        border-radius: 24px;
+        border: none;
+    }
+
+    .modal-pro .modal-header {
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .modal-pro .modal-footer {
+        border-top: none;
+        padding-bottom: 1.5rem;
+    }
+</style>
+
+<div class="stock-container py-4">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4 p-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4 p-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="mb-4">
+        <h3 class="fw-800 text-dark mb-0"> Consultar Stock de Planta</h3>
+    </div>
+
+    <form method="get" class="form-premium-card mb-4">
+        <div class="row g-3 align-items-end">
+
+            <div class="col-md-3">
+                <label class="form-label-pro">Área Específica</label>
+                <select name="area" class="form-select input-pro w-100">
+                    <option value="">-- Todas las Áreas --</option>
+                    @foreach (var a in ViewBag.Areas)
+                    {
+                        if (ViewBag.AreaSeleccionada == a)
+                        {
+                            <option value="@a" selected>@a</option>
+                        }
+                        else
+                        {
+                            <option value="@a">@a</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-5">
+                <label class="form-label-pro">Buscador en Tiempo Real</label>
+                <input type="text" id="buscarInput" class="form-control input-pro w-100" placeholder="Ej: Riel, Tornillo, Tubo, Perfil..." />
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-search-pro w-100">
+                    <i class="bi bi-eye me-1"></i> Ver Todo
+                </button>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" name="critico" value="true" class="btn btn-critical-pro w-100">
+                    <i class="bi bi-exclamation-octagon me-1"></i> Stock Crítico
+                </button>
+            </div>
+
+        </div>
+    </form>
+
+    <div class="form-premium-card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table-pro text-nowrap">
+                <thead>
+                    <tr>
+                        <th>Área</th>
+                        <th class="text-start">Producto</th>
+                        <th>Dimensiones</th>
+                        <th>Unidad</th>
+                        <th class="text-center">Stock Actual</th>
+                        @if (rol == "ADMINISTRADOR")
+                        {
+                            <th class="text-center" style="width: 120px;">Acciones</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody id="tablaStock">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-light"></i>
+                                No se encontraron resultados en el inventario
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            var clase = item.StockActual <= 5 ? "stock-critico-row" : "";
+
+                            <tr class="@clase">
+                                <td class="fw-bold">@item.Area</td>
+                                <td class="text-start">@item.Producto</td>
+                                <td class="font-monospace small">@(item.Dimensiones ?? "-")</td>
+                                <td class="text-secondary small fw-bold">@item.Unidad</td>
+                                <td class="text-center"><span class="qty-badge-pro">@item.StockActual</span></td>
+
+                                @if (rol == "ADMINISTRADOR")
+                                {
+                                    <td class="text-center">
+                                        <button type="button" class="btn-action-pro btn-top btn-action-edit"
+                                                data-id="@item.IdProducto" data-stock="@item.StockActual" onclick="abrirModal(this)">
+                                            <i class="bi bi-pencil-fill"></i> Editar
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-pro" id="modalStock" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg">
+
+            <form asp-action="ActualizarStock" method="post" class="m-0">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-pencil-square text-warning me-1"></i> Ajustar Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body py-4">
+                    <input type="hidden" name="IdProducto" id="idProducto" />
+
+                    <div class="mb-2">
+                        <label class="form-label-pro">Nuevo Stock Físico (Varillas)</label>
+                        <input type="number" step="0.01" min="0" class="form-control input-pro w-100 fs-5 font-monospace fw-bold"
+                               name="NuevoStock" id="nuevoStock" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-center gap-2">
+                    <button type="button" class="btn btn-light fw-bold flex-fill border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success fw-bold flex-fill shadow-sm">💾 Guardar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirModal(btn) {
+        document.getElementById("idProducto").value = btn.dataset.id;
+        document.getElementById("nuevoStock").value = btn.dataset.stock;
+
+        const modal = new bootstrap.Modal(document.getElementById("modalStock"));
+        modal.show();
+    }
+</script>
+
+<script>
+    const input = document.getElementById("buscarInput");
+    const tabla = document.getElementById("tablaStock");
+    const areaSelect = document.querySelector("select[name='area']");
+
+    let timeout = null;
+
+    input.addEventListener("keyup", function () {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            const texto = input.value;
+            const area = areaSelect ? areaSelect.value : "";
+
+            fetch(`/Stock/Buscar?area=${area}&buscar=${texto}`)
+                .then(response => response.json())
+                .then(data => {
+                    tabla.innerHTML = "";
+
+                    if (data.length === 0) {
+                        tabla.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-search fs-2 d-block mb-2 text-light"></i> No se encontraron resultados
+                                </td>
+                            </tr>`;
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const critico = item.stockActual <= 5 ? "stock-critico-row" : "";
+                        const dimensionesTexto = item.dimensiones ?? "-";
+
+                        tabla.innerHTML += `
+                            <tr class="${critico}">
+                                <td class="fw-bold">${item.area}</td>
+                                <td class="text-start">${item.producto}</td>
+                                <td class="font-monospace small">${dimensionesTexto}</td>
+                                <td class="text-secondary small fw-bold">${item.unidad}</td>
+                                <td class="text-center"><span class="qty-badge-pro">${item.stockActual}</span></td>
+                                ${'@rol' === 'ADMINISTRADOR' ? `
+                                    <td class="text-center">
+                                        <button type="button" class="btn-action-pro btn-action-edit"
+                                                data-id="${item.idProducto}"
+                                                data-stock="${item.stockActual}"
+                                                onclick="abrirModal(this)">
+                                            <i class="bi bi-pencil-fill"></i> Editar
+                                        </button>
+                                    </td>
+                                ` : ""}
+                            </tr>`;
+                    });
+                });
+        }, 300); // Debounce profesional intacto
+    });
+</script>

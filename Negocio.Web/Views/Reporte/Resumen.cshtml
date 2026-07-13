@@ -1,0 +1,395 @@
+﻿@model Negocio.Web.Models.ViewModels.ResumenGeneralViewModel
+
+@{
+    Layout = "_LayoutSistema";
+    ViewData["Title"] = "Resumen General";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CONFIGURACIÓN BASE --- */
+    .dashboard-container {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+    }
+
+    .fw-800 {
+        font-weight: 800 !important;
+    }
+
+    /* --- ⚡ BARRA DISPARADORA EN MÓVILES --- */
+    .btn-filter-trigger {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.75rem 1.2rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #334155;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.02);
+        transition: all 0.3s ease;
+        text-align: left;
+    }
+
+        .btn-filter-trigger:hover, .btn-filter-trigger:focus {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        /* Animación de rotación para la flecha al abrir/cerrar */
+        .btn-filter-trigger[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+    .chevron-icon {
+        transition: transform 0.3s ease;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    /* --- FILTROS DE FECHA --- */
+    .filter-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+    }
+
+    .form-label-pro {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-pro {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+        .input-pro:focus {
+            border-color: #0071e3;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            outline: none;
+        }
+
+    .btn-search-pro {
+        background: #0f172a;
+        color: white !important;
+        border: none;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+
+        .btn-search-pro:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+    /* --- CAJA PRINCIPAL EFECTIVO --- */
+    .main-cash-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .main-cash-card::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            background: rgba(34, 197, 94, 0.05);
+            border-radius: 50%;
+        }
+
+    /* --- TARJETAS METRICAS (KPI CARDS) --- */
+    .kpi-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        }
+
+    .kpi-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge-cash {
+        background: #dcfce3;
+        color: #16a34a;
+    }
+
+    .badge-yape {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .badge-expense {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* --- TABLAS METRICAS PRO --- */
+    .panel-card-pro {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        overflow: hidden;
+    }
+
+    .panel-header-pro {
+        background: #ffffff;
+        padding: 1.25rem 1.5rem;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0f172a;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .table-pro {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+        .table-pro thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-pro tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            font-size: 0.95rem;
+            color: #334155;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-pro tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* 🔥 INGENIERÍA RESPONSIVE: Fuerza a que en PC (MD para arriba) el menú nunca se colapse */
+    @@media (min-width: 768px) {
+        #filtrosFechaCollapse.collapse:not(.show)
+
+    {
+        display: block !important;
+    }
+
+    }
+
+    /* --- TARJETA DE GASTOS CLICKABLE --- */
+    .kpi-clickable-expense {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .kpi-clickable-expense:hover {
+            border-color: #dc2626 !important; /* Borde rojo sutil */
+            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.08) !important; /* Sombra rojiza suave */
+        }
+
+            /* Animación para la flechita interna */
+            .kpi-clickable-expense:hover .gasto-arrow {
+                color: #dc2626 !important;
+                transform: translateX(4px);
+            }
+
+    .gasto-arrow {
+        transition: all 0.2s ease;
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <div class="mb-4">
+        
+        <h3 class="mb-0 fw-800 text-dark"> Resumen General</h3>
+    </div>
+
+    <div class="mb-4">
+        <button type="button" class="btn btn-filter-trigger d-md-none w-100 d-flex align-items-center mb-2"
+                data-bs-toggle="collapse" data-bs-target="#filtrosFechaCollapse" aria-expanded="false">
+            <span><i class="bi bi-calendar3-range text-primary me-2"></i> Personalizar rango de fechas</span>
+            <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+        </button>
+
+        <div class="collapse" id="filtrosFechaCollapse">
+            <form method="get" class="filter-card row g-3">
+                <div class="col-12 col-md-4">
+                    <label class="form-label-pro">Desde</label>
+                    <input type="date"
+                           name="desde"
+                           value="@Model.Desde.ToString("yyyy-MM-dd")"
+                           class="form-control input-pro w-100" />
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label-pro">Hasta</label>
+                    <input type="date"
+                           name="hasta"
+                           value="@Model.Hasta.ToString("yyyy-MM-dd")"
+                           class="form-control input-pro w-100" />
+                </div>
+
+                <div class="col-12 col-md-4 align-self-end">
+                    <button class="btn btn-search-pro w-100">
+                        <i class="bi bi-search me-2"></i> Actualizar Resumen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card main-cash-card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <h5 class="text-secondary fw-bold mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">
+                        💵 CAJA REAL (SOLO EFECTIVO)
+                    </h5>
+
+                    <h1 class="fw-800 text-success display-5 my-2">
+                        @Model.CajaEfectivo.ToString("C2")
+                    </h1>
+
+                    <span class="badge rounded-pill bg-success px-3 py-1 font-monospace small text-white">
+                        Fórmula: Total Efectivo − Gastos
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-12 col-md-4">
+            <div class="card kpi-card h-100">
+                <div class="card-body d-flex flex-column justify-content-center p-4">
+                    <div class="kpi-title d-flex align-items-center gap-2">
+                        <i class="bi bi-cash text-success fs-5"></i> Total Efectivo ingresado
+                    </div>
+                    <h3 class="fw-800 text-success m-0 amount-bold fs-3">
+                        @Model.TotalEfectivo.ToString("C2")
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card kpi-card h-100">
+                <div class="card-body d-flex flex-column justify-content-center p-4">
+                    <div class="kpi-title d-flex align-items-center gap-2">
+                        <i class="bi bi-phone text-primary fs-5"></i> Total Yape Recibido
+                    </div>
+                    <h3 class="fw-800 text-primary m-0 amount-bold fs-3">
+                        @Model.TotalYape.ToString("C2")
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <a asp-controller="Gasto"
+               asp-action="Index"
+               asp-route-desde="@Model.Desde.ToString("yyyy-MM-dd")"
+               asp-route-hasta="@Model.Hasta.ToString("yyyy-MM-dd")"
+               class="text-decoration-none h-100 d-block">
+
+                <div class="card kpi-card kpi-clickable-expense h-100">
+                    <div class="card-body d-flex flex-column justify-content-center p-4">
+
+                        <div class="kpi-title d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-down-circle text-danger fs-5"></i> Total Gastos de Caja
+                        </div>
+
+                        <h3 class="fw-800 text-danger m-0 amount-bold fs-3 d-flex align-items-center justify-content-between">
+                            @Model.TotalGastos.ToString("C2")
+                            <i class="bi bi-arrow-right-short text-muted fs-4 gasto-arrow"></i>
+                        </h3>
+
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+    </div>
+
+    <div class="card panel-card-pro mb-4">
+        <div class="panel-header-pro">
+            <i class="bi bi-layers-half text-secondary"></i> Distribución de Ventas por Área
+        </div>
+
+        <div class="p-0 table-responsive">
+            <table class="table-pro text-center align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-start">Área Operativa</th>
+                        <th>Flujo Efectivo</th>
+                        <th>Flujo Yape</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-start fw-bold text-dark"> ALUMINIO</td>
+                        <td><span class="badge badge-cash">@Model.EfectivoAluminio.ToString("C2")</span></td>
+                        <td><span class="badge badge-yape">@Model.YapeAluminio.ToString("C2")</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-bold text-dark"> ACCESORIOS</td>
+                        <td><span class="badge badge-cash">@Model.EfectivoAccesorios.ToString("C2")</span></td>
+                        <td><span class="badge badge-yape">@Model.YapeAccesorios.ToString("C2")</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-bold text-dark"> ARC</td>
+                        <td><span class="badge badge-cash">@Model.EfectivoARC.ToString("C2")</span></td>
+                        <td><span class="badge badge-yape">@Model.YapeARC.ToString("C2")</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
