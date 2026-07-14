@@ -1,20 +1,46 @@
-﻿<div class="modal fade" id="modalInteres" tabindex="-1" aria-hidden="true">
+﻿<div class="modal fade"
+     id="modalInteres"
+     tabindex="-1"
+     aria-hidden="true">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4 p-4">
-            <div class="modal-body text-center">
-                <h3 id="modalTitulo" class="fw-bold mb-3"></h3>
 
-                <p class="text-muted mb-4">¿Te gustaría cotizar un trabajo similar para tu negocio o domicilio?</p>
+            <div class="modal-body text-center">
+
+                <div class="mb-3">
+                    <i class="bi bi-car-front-fill text-danger"
+                       style="font-size: 3rem;">
+                    </i>
+                </div>
+
+                <h3 id="modalTitulo"
+                    class="fw-bold mb-3">
+                </h3>
+
+                <p class="text-muted mb-4">
+                    ¿Deseas solicitar información sobre este servicio para tu vehículo?
+                </p>
 
                 <div class="d-grid gap-2">
-                    <a id="btnWhatsapp" href="#" target="_blank"
+
+                    <a id="btnWhatsapp"
+                       href="#"
+                       target="_blank"
+                       rel="noopener noreferrer"
                        class="btn btn-success py-3 rounded-pill fw-bold">
-                        <i class="bi bi-whatsapp"></i>  ¡Sí, me interesa!
+
+                        <i class="bi bi-whatsapp me-1"></i>
+                        Consultar por WhatsApp
                     </a>
-                    <button type="button" class="btn btn-light py-3 rounded-pill text-secondary"
+
+                    <button type="button"
+                            class="btn btn-light py-3 rounded-pill text-secondary"
                             data-bs-dismiss="modal">
-                        Solo estoy viendo
+
+                        Seguir viendo
                     </button>
+
                 </div>
             </div>
         </div>
@@ -22,15 +48,21 @@
 </div>
 
 <script>
-    function abrirModalInteres(titulo, imagenUrl) {
-        // Actualizamos los textos
-        document.getElementById('modalTitulo').innerText = titulo;
+    function abrirModalInteres(titulo) {
 
-        // Configuramos el enlace de WhatsApp (con codificación para que llegue bien)
-        const mensaje = encodeURIComponent("Hola, me interesa el trabajo: " + titulo);
-        document.getElementById('btnWhatsapp').href = "https://wa.me/51921726629?text=" + mensaje;
+        document.getElementById("modalTitulo").innerText = titulo;
 
-        // Abrimos el modal
-        new bootstrap.Modal(document.getElementById('modalInteres')).show();
+        const mensaje = encodeURIComponent(
+            "Hola, quisiera recibir información sobre el servicio: " + titulo
+        );
+
+        document.getElementById("btnWhatsapp").href =
+            "https://wa.me/51921726629?text=" + mensaje;
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("modalInteres")
+        );
+
+        modal.show();
     }
 </script>

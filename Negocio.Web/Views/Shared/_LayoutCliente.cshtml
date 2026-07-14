@@ -1,239 +1,322 @@
 ﻿@using Microsoft.AspNetCore.Http
 
+@{
+    var nombreUsuario =
+        Context.Session.GetString("USER_NAME")
+        ?? Context.Session.GetString("USER")
+        ?? "Cliente";
+
+    var inicialUsuario = string.IsNullOrWhiteSpace(nombreUsuario)
+        ? "C"
+        : nombreUsuario.Substring(0, 1).ToUpper();
+}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - E&E Aluminios</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Iza Motors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    @RenderSection("Styles", required: false)
 
     <style>
+        :root {
+            --iza-red: #c8102e;
+            --iza-red-dark: #980f24;
+            --iza-red-soft: #fff1f3;
+            --iza-white: #ffffff;
+            --iza-background: #f7f8fa;
+            --iza-border: #e5e7eb;
+            --iza-text: #172033;
+            --iza-muted: #64748b;
+        }
+
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            background-color: #0f172a;
-            color: #f1f5f9;
-            display: flex;
             min-height: 100vh;
+            margin: 0;
             overflow-x: hidden;
+            color: var(--iza-text);
+            background: var(--iza-background);
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
         }
 
-        /* --- SIDEBAR (ESTRUCTURA PREMIUM ADAPTATIVA) --- */
+        /* =========================
+                   MENÚ LATERAL
+                ========================== */
+
         .sidebar {
-            width: 260px;
-            background-color: #1e293b;
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            flex-direction: column;
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
             z-index: 1040;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            background: var(--iza-white);
+            border-right: 1px solid var(--iza-border);
+            box-shadow: 5px 0 25px rgba(23, 32, 51, 0.05);
+            transition: all 0.3s ease;
         }
 
-        /* Cabecera del menú */
         .sidebar-brand {
-            padding: 24px;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: #ffffff;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            text-transform: uppercase;
+            height: 76px;
+            padding: 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 73px;
+            border-bottom: 1px solid var(--iza-border);
         }
 
-        /* Botón de control de tamaño en PC */
+        .brand-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--iza-white);
+            background: var(--iza-red);
+            border-radius: 12px;
+            font-size: 1.35rem;
+        }
+
+        .brand-name {
+            color: var(--iza-text);
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            color: var(--iza-muted);
+            font-size: 0.7rem;
+        }
+
         .menu-toggle-pc {
-            background: rgba(255, 255, 255, 0.05);
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--iza-red);
+            background: var(--iza-red-soft);
+            border: none;
+            border-radius: 9px;
+            transition: 0.2s ease;
         }
 
             .menu-toggle-pc:hover {
-                background: #3b82f6;
-                color: white;
-                border-color: #3b82f6;
+                color: var(--iza-white);
+                background: var(--iza-red);
             }
 
-        /* Lista del menú */
         .sidebar-menu {
-            list-style: none;
-            padding: 20px 12px;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
+            gap: 7px;
+            padding: 20px 12px;
+            margin: 0;
+            list-style: none;
         }
 
         .menu-link {
+            min-height: 46px;
+            padding: 11px 14px;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 16px;
-            color: #94a3b8;
+            color: var(--iza-muted);
+            border-radius: 12px;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 650;
             transition: all 0.2s ease;
-            white-space: nowrap;
         }
 
             .menu-link i {
-                font-size: 18px;
-                min-width: 20px;
+                min-width: 22px;
                 text-align: center;
+                font-size: 1.15rem;
             }
 
             .menu-link:hover {
-                color: #ffffff;
-                background: rgba(255, 255, 255, 0.05);
+                color: var(--iza-red);
+                background: var(--iza-red-soft);
             }
 
             .menu-link.active {
-                background: #3b82f6;
-                color: #ffffff;
+                color: var(--iza-white);
+                background: var(--iza-red);
+                box-shadow: 0 7px 18px rgba(200, 16, 46, 0.22);
             }
 
-        /* 📦 NUEVA CAJA DE USUARIO UNIFICADA CON LOGOUT CONTEXTUAL (PC) */
-        .sidebar-footer {
-            padding: 16px 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(15, 23, 42, 0.2);
+        /* Mi perfil todavía no disponible */
+        .menu-link-disabled {
+            cursor: not-allowed;
+            opacity: 0.62;
         }
 
-        .user-logout-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            .menu-link-disabled:hover {
+                color: var(--iza-muted);
+                background: #f8fafc;
+            }
+
+        .badge-proximamente {
+            margin-left: auto;
+            padding: 3px 7px;
+            color: var(--iza-red);
+            background: var(--iza-red-soft);
+            border-radius: 20px;
+            font-size: 0.58rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* =========================
+                   DATOS DEL CLIENTE
+                ========================== */
+
+        .sidebar-footer {
+            padding: 14px 12px;
+            border-top: 1px solid var(--iza-border);
+        }
+
+        .user-card {
             padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            background: #fafafa;
+            border: 1px solid var(--iza-border);
+            border-radius: 14px;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--iza-white);
+            background: var(--iza-red);
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 800;
         }
 
         .user-details {
+            min-width: 0;
+            flex-grow: 1;
+        }
+
+        .user-name {
             overflow: hidden;
+            color: var(--iza-text);
+            font-size: 0.84rem;
+            font-weight: 750;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .user-name {
-            font-size: 13.5px;
-            font-weight: 600;
-            color: #ffffff;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
         .user-role {
-            font-size: 11px;
-            color: #38bdf8;
-            font-weight: 500;
-            margin-top: 2px;
+            color: var(--iza-muted);
+            font-size: 0.68rem;
         }
 
-        /* ===== ESTILOS DEL AVATAR MINI PREMIUM ===== */
-        .user-avatar-mini {
-            width: 34px;
-            height: 34px;
-            background: #3b82f6;
-            color: #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            flex-shrink: 0; /* Evita que se deforme si el texto es largo */
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-        }
-
-        /* Lógica para cuando el Sidebar se reduce en PC */
-        @@media (min-width: 993px) {
-            .sidebar.collapsed .user-card-header {
-                justify-content: center;
-                width: 100%;
-            }
-
-            .sidebar.collapsed .user-avatar-mini {
-                width: 38px; /* Crece un pelín para verse imponente solo como icono */
-                height: 38px;
-                font-size: 15px;
-            }
-        }
-
-        .btn-sidebar-logout {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+        .btn-logout {
             width: 100%;
-            padding: 8px 12px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            color: var(--iza-red);
+            background: var(--iza-white);
+            border: 1px solid #fecdd3;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
             transition: all 0.2s ease;
         }
 
-            .btn-sidebar-logout:hover {
-                background: #ef4444;
-                color: #ffffff;
-                border-color: #ef4444;
+            .btn-logout:hover {
+                color: var(--iza-white);
+                background: var(--iza-red);
+                border-color: var(--iza-red);
             }
 
-        /* --- CONTENIDO PRINCIPAL --- */
+        /* =========================
+                   CONTENIDO PRINCIPAL
+                ========================== */
+
         .main-content {
-            margin-left: 260px;
-            flex-grow: 1;
-            padding: 0;
             min-height: 100vh;
-            background-image: radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.15) 0px, transparent 50%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: 260px;
+            background: var(--iza-background);
+            transition: margin-left 0.3s ease;
         }
 
-        /* ========================================================================= */
-        /* 🔥 LÓGICA DE INTERFAZ MINI-SIDEBAR (CUANDO SE COLAXA EN PC)               */
-        /* ========================================================================= */
+        /* =========================
+                   MENÚ REDUCIDO EN PC
+                ========================== */
+
         @@media (min-width: 993px) {
             .sidebar.collapsed {
-                width: 80px;
+                width: 82px;
             }
-                /* Esconde el texto de la marca, dejando espacio para centrar el botón */
+
                 .sidebar.collapsed .sidebar-brand {
                     justify-content: center;
-                    padding: 16px;
+                    padding: 14px 8px;
                 }
 
-                    .sidebar.collapsed .sidebar-brand span {
-                        display: none;
-                    }
-                /* Esconde los textos del menú, dejando solo los logotipos */
+                .sidebar.collapsed .brand-text,
+                .sidebar.collapsed .menu-link span,
+                .sidebar.collapsed .badge-proximamente,
+                .sidebar.collapsed .user-details,
+                .sidebar.collapsed .btn-logout span {
+                    display: none;
+                }
+
+                .sidebar.collapsed .menu-toggle-pc {
+                    position: absolute;
+                    top: 22px;
+                    right: -14px;
+                    border: 1px solid var(--iza-border);
+                    background: var(--iza-white);
+                }
+
                 .sidebar.collapsed .sidebar-menu {
-                    padding: 20px 8px;
+                    padding: 20px 9px;
                 }
 
                 .sidebar.collapsed .menu-link {
@@ -242,240 +325,469 @@
                     gap: 0;
                 }
 
-                    .sidebar.collapsed .menu-link span {
-                        display: none;
+                    .sidebar.collapsed .menu-link i {
+                        min-width: auto;
                     }
-                /* Compactación radical de la tarjeta de usuario al modo icono */
-                .sidebar.collapsed .user-details {
-                    display: none;
+
+                .sidebar.collapsed .user-card {
+                    align-items: center;
+                    padding: 10px 7px;
                 }
 
-                .sidebar.collapsed .btn-sidebar-logout span {
-                    display: none;
+                .sidebar.collapsed .user-header {
+                    justify-content: center;
                 }
 
-                .sidebar.collapsed .btn-sidebar-logout {
-                    padding: 10px;
+                .sidebar.collapsed .btn-logout {
+                    width: 42px;
+                    height: 40px;
+                    padding: 0;
                 }
-                /* El contenido se auto-ajusta al tamaño del mini menú */
+
                 .sidebar.collapsed + .main-content {
-                    margin-left: 80px;
+                    margin-left: 82px;
                 }
         }
 
-        /* --- BOTOM NAV RESPONSIVE FIJO PARA CELULARES --- */
+        /* =========================
+                   NAVEGACIÓN MÓVIL
+                ========================== */
+
         .mobile-bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
+            z-index: 1050;
             width: 100%;
             height: 68px;
-            background: #0f172a;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 1050;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            background: var(--iza-white);
+            border-top: 1px solid var(--iza-border);
+            box-shadow: 0 -5px 20px rgba(23, 32, 51, 0.08);
         }
 
-        .nav-item-btn {
+        .nav-mobile-item {
             flex: 1;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
-            font-size: 11px;
-            font-weight: 500;
+            gap: 3px;
+            color: var(--iza-muted);
+            background: transparent;
+            border: none;
             text-decoration: none;
-            transition: all 0.2s ease;
+            font-size: 0.66rem;
+            font-weight: 650;
         }
 
-            .nav-item-btn i {
-                font-size: 22px;
-                line-height: 1;
+            .nav-mobile-item i {
+                font-size: 1.25rem;
             }
 
-            .nav-item-btn:hover, .nav-item-btn.active {
-                color: #3b82f6;
+            .nav-mobile-item:hover,
+            .nav-mobile-item.active {
+                color: var(--iza-red);
             }
 
-            .nav-item-btn.text-danger:hover {
-                color: #ef4444 !important;
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1035;
+            display: none;
+            background: rgba(15, 23, 42, 0.42);
+        }
+
+            .sidebar-overlay.show {
+                display: block;
             }
 
-        /* --- CONFIGURACIONES MÓVILES (DISPOSITIVOS MEDIANOS Y CHICOS) --- */
         @@media (max-width: 992px) {
             body {
-                padding-bottom: 68px; /* Evita que el bottom-nav tape información útil */
+                padding-bottom: 68px;
             }
 
             .sidebar {
-                transform: translateX(-100%); /* Arranca escondido en móviles */
+                transform: translateX(-100%);
             }
 
                 .sidebar.open {
-                    transform: translateX(0); /* Despliega flotando en celulares */
+                    transform: translateX(0);
                 }
 
             .main-content {
-                margin-left: 0 !important;
+                margin-left: 0;
             }
+        }
+
+        /* =========================
+                   MODAL
+                ========================== */
+
+        .logout-modal-content {
+            background: var(--iza-white);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 55px rgba(23, 32, 51, 0.18);
+        }
+
+        .logout-modal-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--iza-red);
+            background: var(--iza-red-soft);
+            border-radius: 50%;
+            font-size: 1.55rem;
         }
     </style>
 </head>
+
 <body>
 
+    <!-- MENÚ LATERAL -->
     <aside class="sidebar" id="sidebar">
+
         <div class="sidebar-brand">
-            <span>E&E Aluminios</span>
-            <button class="menu-toggle-pc d-none d-lg-block" id="menuTogglePc">
+
+            <div class="brand-content">
+
+                <div class="brand-icon">
+                    <i class="bi bi-car-front-fill"></i>
+                </div>
+
+                <div class="brand-text">
+                    <div class="brand-name">Iza Motors</div>
+                    <div class="brand-subtitle">Panel del cliente</div>
+                </div>
+
+            </div>
+
+            <button type="button"
+                    class="menu-toggle-pc d-none d-lg-flex"
+                    id="menuTogglePc"
+                    aria-label="Reducir menú">
+
                 <i class="bi bi-chevron-left"></i>
             </button>
+
         </div>
 
         <ul class="sidebar-menu">
+
+            <!-- INICIO -->
             <li>
-                <a href="@Url.Action("WebPrincipal", "Cliente")" class="menu-link" id="linkWeb">
-                    <i class="bi bi-house"></i>
-                    <span>Panel principal</span>
+                <a href="@Url.Action("WebPrincipal", "Cliente")"
+                   class="menu-link"
+                   id="linkInicio">
+
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>Inicio</span>
                 </a>
             </li>
+
+            <!-- CATÁLOGO -->
             <li>
-                <a href="@Url.Action("MiPerfil", "Cliente")" class="menu-link" id="linkPerfil">
+                <a href="@Url.Action("Index", "ProductoPublic")"
+                   class="menu-link"
+                   id="linkCatalogo">
+
+                    <i class="bi bi-tools"></i>
+                    <span>Catálogo de repuestos</span>
+                </a>
+            </li>
+
+            <!-- SERVICIOS -->
+            <li>
+                <a href="@Url.Action("MisPedidos", "Cliente")"
+                   class="menu-link"
+                   id="linkServicios">
+
+                    <i class="bi bi-wrench-adjustable-circle-fill"></i>
+                    <span>Mis servicios</span>
+                </a>
+            </li>
+
+            <!-- PERFIL NO DISPONIBLE -->
+            <li>
+                <div class="menu-link menu-link-disabled"
+                     title="Funcionalidad próximamente disponible">
+
                     <i class="bi bi-person-gear"></i>
-                    <span>Mi Perfil</span>
-                </a>
+
+                    <span>Mi perfil</span>
+
+                    <small class="badge-proximamente">
+                        Próximamente
+                    </small>
+                </div>
             </li>
-            <li>
-                <a href="@Url.Action("MisPedidos", "Cliente")" class="menu-link" id="linkPedidos">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Mis Pedidos</span>
-                </a>
-            </li>
+
         </ul>
 
+        <!-- USUARIO Y CIERRE DE SESIÓN -->
         <div class="sidebar-footer">
-            <div class="user-logout-card">
-                <div class="d-flex align-items-center gap-2 user-card-header">
-                    <div class="user-avatar-mini">
-                        @(Context.Session.GetString("USER_NAME")?.Substring(0, 1).ToUpper() ?? "U")
+
+            <div class="user-card">
+
+                <div class="user-header">
+
+                    <div class="user-avatar">
+                        @inicialUsuario
                     </div>
+
                     <div class="user-details">
-                        <div class="user-name" title="@Context.Session.GetString("USER_NAME")">
-                            @Context.Session.GetString("USER_NAME")
+
+                        <div class="user-name"
+                             title="@nombreUsuario">
+                            @nombreUsuario
                         </div>
-                        <div class="user-role">Panel de Cliente</div>
+
+                        <div class="user-role">
+                            Cliente de Iza Motors
+                        </div>
+
                     </div>
                 </div>
 
-                <button type="button" class="btn-sidebar-logout" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                <button type="button"
+                        class="btn-logout"
+                        data-bs-toggle="modal"
+                        data-bs-target="#logoutModal">
+
                     <i class="bi bi-box-arrow-left"></i>
-                    <span>Cerrar Sesión</span>
+                    <span>Cerrar sesión</span>
                 </button>
+
             </div>
         </div>
+
     </aside>
 
+    <div id="sidebarOverlay"
+         class="sidebar-overlay">
+    </div>
+
+    <!-- CONTENIDO -->
     <main class="main-content">
         @RenderBody()
     </main>
 
-    <div class="mobile-bottom-nav d-flex d-lg-none">
-        <a href="@Url.Action("MisPedidos", "Cliente")" class="nav-item-btn" id="btnMovilPedidos">
-            <i class="bi bi-box-seam"></i>
-            <span>Pedidos</span>
+    <!-- NAVEGACIÓN INFERIOR MÓVIL -->
+    <nav class="mobile-bottom-nav d-lg-none">
+
+        <a href="@Url.Action("WebPrincipal", "Cliente")"
+           class="nav-mobile-item"
+           id="btnMovilInicio">
+
+            <i class="bi bi-house-door-fill"></i>
+            <span>Inicio</span>
         </a>
 
-        <button type="button" class="nav-item-btn" id="menuToggleMobile">
+        <a href="@Url.Action("Index", "ProductoPublic")"
+           class="nav-mobile-item"
+           id="btnMovilCatalogo">
+
+            <i class="bi bi-tools"></i>
+            <span>Catálogo</span>
+        </a>
+
+        <a href="@Url.Action("MisPedidos", "Cliente")"
+           class="nav-mobile-item"
+           id="btnMovilServicios">
+
+            <i class="bi bi-wrench-adjustable"></i>
+            <span>Servicios</span>
+        </a>
+
+        <button type="button"
+                class="nav-mobile-item"
+                id="menuToggleMobile">
+
             <i class="bi bi-list"></i>
             <span>Menú</span>
         </button>
 
-        <button type="button" class="nav-item-btn text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
+        <button type="button"
+                class="nav-mobile-item"
+                data-bs-toggle="modal"
+                data-bs-target="#logoutModal">
+
             <i class="bi bi-box-arrow-right"></i>
             <span>Salir</span>
         </button>
-    </div>
 
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
-            <div class="modal-content" style="background-color: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px;">
+    </nav>
+
+    <!-- MODAL CERRAR SESIÓN -->
+    <div class="modal fade"
+         id="logoutModal"
+         tabindex="-1"
+         aria-labelledby="logoutModalLabel"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered"
+             style="max-width: 390px;">
+
+            <div class="modal-content logout-modal-content">
+
                 <div class="modal-body text-center p-4">
-                    <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; color: #ef4444; font-size: 24px;">
-                        <i class="bi bi-exclamation-triangle"></i>
+
+                    <div class="logout-modal-icon">
+                        <i class="bi bi-box-arrow-right"></i>
                     </div>
-                    <h5 class="modal-title text-white fw-bold mb-2" id="logoutModalLabel">¿Cerrar Sesión?</h5>
-                    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 24px;">¿Estás seguro de que deseas salir del sistema? Tendrás que volver a ingresar tus credenciales.</p>
+
+                    <h5 id="logoutModalLabel"
+                        class="fw-bold mb-2"
+                        style="color: var(--iza-text);">
+                        ¿Cerrar sesión?
+                    </h5>
+
+                    <p class="mb-4"
+                       style="color: var(--iza-muted);
+                              font-size: 0.9rem;">
+                        Tendrás que volver a ingresar tus datos para acceder al panel.
+                    </p>
 
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn w-50 p-2.5 fw-semibold text-white" data-bs-dismiss="modal" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; font-size: 14px;">
+
+                        <button type="button"
+                                class="btn btn-light w-50 py-2 fw-semibold"
+                                data-bs-dismiss="modal">
                             Cancelar
                         </button>
-                        <a href="@Url.Action("Logout", "Login")" class="btn w-50 p-2.5 fw-semibold text-white" style="background: #ef4444; border: none; border-radius: 10px; font-size: 14px; text-decoration: none; display: flex; align-items: center; justify-content: center;">
-                            Sí, Salir
+
+                        <a href="@Url.Action("Logout", "Login")"
+                           class="btn w-50 py-2 fw-semibold text-white"
+                           style="background: var(--iza-red);
+                                  border: none;">
+                            Sí, salir
                         </a>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
     <script>
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.querySelector('.main-content');
+        const sidebar =
+            document.getElementById("sidebar");
 
-        const menuTogglePc = document.getElementById('menuTogglePc');
-        const menuToggleMobile = document.getElementById('menuToggleMobile');
-        const mobileMenuIcon = menuToggleMobile ? menuToggleMobile.querySelector('i') : null;
+        const sidebarOverlay =
+            document.getElementById("sidebarOverlay");
 
-        // 💻 INTERACCIÓN PC: Colapso a modo Mini-Iconos
+        const menuTogglePc =
+            document.getElementById("menuTogglePc");
+
+        const menuToggleMobile =
+            document.getElementById("menuToggleMobile");
+
+        const mobileMenuIcon =
+            menuToggleMobile
+                ? menuToggleMobile.querySelector("i")
+                : null;
+
+        // Reducir menú en escritorio
         if (menuTogglePc) {
-            menuTogglePc.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
+            menuTogglePc.addEventListener("click", function () {
+                sidebar.classList.toggle("collapsed");
 
-                const pcIcon = menuTogglePc.querySelector('i');
-                if (sidebar.classList.contains('collapsed')) {
-                    pcIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
-                } else {
-                    pcIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
+                const icono =
+                    menuTogglePc.querySelector("i");
+
+                if (sidebar.classList.contains("collapsed")) {
+                    icono.classList.replace(
+                        "bi-chevron-left",
+                        "bi-chevron-right"
+                    );
+                }
+                else {
+                    icono.classList.replace(
+                        "bi-chevron-right",
+                        "bi-chevron-left"
+                    );
                 }
             });
         }
 
-        // 📱 INTERACCIÓN MÓVIL: Control de despliegue desde abajo
+        // Abrir menú en celular
         if (menuToggleMobile) {
-            menuToggleMobile.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-                if (sidebar.classList.contains('open')) {
-                    mobileMenuIcon.classList.replace('bi-list', 'bi-x-lg');
-                    menuToggleMobile.classList.add('active');
-                } else {
-                    mobileMenuIcon.classList.replace('bi-x-lg', 'bi-list');
-                    menuToggleMobile.classList.remove('active');
+            menuToggleMobile.addEventListener("click", function () {
+                sidebar.classList.toggle("open");
+                sidebarOverlay.classList.toggle("show");
+
+                if (sidebar.classList.contains("open")) {
+                    mobileMenuIcon.classList.replace(
+                        "bi-list",
+                        "bi-x-lg"
+                    );
+                }
+                else {
+                    mobileMenuIcon.classList.replace(
+                        "bi-x-lg",
+                        "bi-list"
+                    );
                 }
             });
         }
 
-        // 🗺️ DETECTOR DE URL AUTOMÁTICO PARA FOCOS DE BOTONES
-        const currentUrl = window.location.pathname.toLowerCase();
+        // Cerrar menú móvil al tocar el fondo
+        sidebarOverlay.addEventListener("click", function () {
+            sidebar.classList.remove("open");
+            sidebarOverlay.classList.remove("show");
 
-        document.querySelectorAll('.menu-link').forEach(link => link.classList.remove('active'));
-        document.querySelectorAll('.nav-item-btn').forEach(btn => btn.classList.remove('active'));
+            mobileMenuIcon?.classList.replace(
+                "bi-x-lg",
+                "bi-list"
+            );
+        });
+
+        // Marcar ruta activa
+        const currentUrl =
+            window.location.pathname.toLowerCase();
 
         if (currentUrl.includes("webprincipal")) {
-            document.getElementById("linkWeb")?.classList.add("active");
-        } else if (currentUrl.includes("miperfil")) {
-            document.getElementById("linkPerfil")?.classList.add("active");
-        } else if (currentUrl.includes("mispedidos") || currentUrl.includes("verpedido")) {
-            document.getElementById("linkPedidos")?.classList.add("active");
-            document.getElementById("btnMovilPedidos")?.classList.add("active");
-        } else if (currentUrl.includes("miscotizaciones")) {
-            document.getElementById("linkCotizaciones")?.classList.add("active");
+            document
+                .getElementById("linkInicio")
+                ?.classList.add("active");
+
+            document
+                .getElementById("btnMovilInicio")
+                ?.classList.add("active");
+        }
+        else if (
+            currentUrl.includes("productopublic")
+        ) {
+            document
+                .getElementById("linkCatalogo")
+                ?.classList.add("active");
+
+            document
+                .getElementById("btnMovilCatalogo")
+                ?.classList.add("active");
+        }
+        else if (
+            currentUrl.includes("mispedidos") ||
+            currentUrl.includes("verpedido")
+        ) {
+            document
+                .getElementById("linkServicios")
+                ?.classList.add("active");
+
+            document
+                .getElementById("btnMovilServicios")
+                ?.classList.add("active");
         }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

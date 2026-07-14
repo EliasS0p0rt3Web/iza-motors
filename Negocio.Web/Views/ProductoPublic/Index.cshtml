@@ -1,462 +1,313 @@
-﻿@{
-    ViewData["Title"] = "Productos";
+﻿@using Microsoft.EntityFrameworkCore
+@inject Negocio.Web.Data.NegocioDbContext _context
+
+@{
+    ViewData["Title"] = "Categorías de Repuestos";
     Layout = "_LayoutProductos";
+
+    var areasRegistradas = await _context.Productos
+        .AsNoTracking()
+        .Where(p => p.Activo && p.Area != null)
+        .Select(p => p.Area)
+        .ToListAsync();
+
+    var categorias = areasRegistradas
+        .Where(area => !string.IsNullOrWhiteSpace(area))
+        .Select(area => area.Trim().ToUpperInvariant())
+        .Distinct()
+        .OrderBy(area => area)
+        .ToList();
 }
-
-@* 1. HERO: Buscador Premium con Accesibilidad *@
-<section class="productos-hero pt-4 pb-4">
-    <div class="container text-center">
-        <h1 class="fw-bold productos-title mb-4">Nuestros <span class="text-gradient">Productos</span></h1>
-
-        <div class="search-box-container mx-auto" style="max-width: 500px; position: relative;">
-            <div class="input-group search-shadow rounded-pill overflow-hidden bg-white focus-ring-container">
-                <span class="input-group-text bg-white border-0 ps-4">
-                    <i class="bi bi-search text-muted"></i>
-                </span>
-                <input type="text" id="buscadorProductos"
-                       class="form-control form-control-lg border-0 ps-2 py-3 shadow-none"
-                       placeholder="¿Qué estás buscando hoy?"
-                       autocomplete="off"
-                       aria-expanded="false"
-                       aria-haspopup="listbox"
-                       aria-controls="listaResultados">
-            </div>
-            <div id="listaResultados" class="position-absolute w-100 bg-white shadow-lg rounded-4 mt-2 p-2 text-start border"
-                 role="listbox"
-                 style="display:none; z-index: 1000; max-height: 350px; overflow-y: auto;">
-            </div>
-        </div>
-    </div>
-</section>
-
-<style>
-    /* Efecto Focus premium para el buscador */
-    .focus-ring-container {
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .focus-ring-container:focus-within {
-            border-color: #cbd5e1 !important;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1) !important;
-        }
-
-    .search-shadow {
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
-        border: 1px solid #f1f5f9 !important;
-    }
-
-    .hover-bg:hover, .item-seleccionado {
-        background: #f8fafc !important;
-        outline: none;
-    }
-
-    /* Animación del Skeleton Loading */
-    .skeleton-item {
-        padding: 0.5rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .skeleton-img {
-        width: 35px;
-        height: 35px;
-        border-radius: 8px;
-        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-        background-size: 200% 100%;
-        animation: skeleton-blink 1.5s infinite;
-    }
-
-    .skeleton-text-1, .skeleton-text-2 {
-        height: 12px;
-        border-radius: 4px;
-        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-        background-size: 200% 100%;
-        animation: skeleton-blink 1.5s infinite;
-    }
-
-    .skeleton-text-1 {
-        width: 140px;
-        margin-bottom: 6px;
-    }
-
-    .skeleton-text-2 {
-        width: 70px;
-    }
-
-    @@keyframes skeleton-blink {
-        0%
-
-    {
-        background-position: 200% 0;
-    }
-
-    100% {
-        background-position: -200% 0;
-    }
-
-    }
-</style>
-
-@* 2. CONTENEDOR: Tarjetas con lazy loading *@
-<div class="container-fluid px-3 px-md-4 mb-5">
-    <div class="row g-3 g-lg-4">
-
-        @* CARTA 1: ALUMINIO *@
-        <div class="col-12 col-lg-4">
-            <a asp-action="Categoria" asp-route-area="ALUMINIO" class="modern-card aluminio-card">
-                <div class="card-content">
-                    <div class="category-image-container">
-                        <img src="~/img/ALUMINIO.jpg" alt="Aluminio" class="img-category" loading="lazy" onerror="this.src='/img/placeholder.jpg';" />
-                        <div class="image-overlay"></div>
-                    </div>
-                    <h3 class="category-title mt-4">ALUMINIO</h3>
-                    <p class="category-desc text-truncate-2">Tubos, Reglas, Cantoneras y varillas de alta resistencia.</p>
-                </div>
-                <div class="card-footer">
-                    <span class="category-link text-uppercase small fw-bold">Explorar catálogo</span>
-                    <div class="arrow-circle">→</div>
-                </div>
-            </a>
-        </div>
-
-        @* CARTA 2: ACCESORIOS *@
-        <div class="col-12 col-lg-4">
-            <a asp-action="Categoria" asp-route-area="ACCESORIOS" class="modern-card accesorios-card">
-                <div class="card-content">
-                    <div class="category-image-container">
-                        <img src="~/img/ACCESORIOS.jpg" alt="Accesorios" class="img-category" loading="lazy" onerror="this.src='/img/placeholder.jpg';" />
-                        <div class="image-overlay"></div>
-                    </div>
-                    <h3 class="category-title mt-4">ACCESORIOS</h3>
-                    <p class="category-desc text-truncate-2">Complementos y piezas esenciales para instalación.</p>
-                </div>
-                <div class="card-footer">
-                    <span class="category-link text-uppercase small fw-bold">Ver accesorios</span>
-                    <div class="arrow-circle">→</div>
-                </div>
-            </a>
-        </div>
-
-        @* CARTA 3: ARC *@
-        <div class="col-12 col-lg-4">
-            <a asp-action="Categoria" asp-route-area="ARC" class="modern-card arc-card">
-                <div class="card-content">
-                    <div class="category-image-container">
-                        <img src="~/img/ARC.jpg" alt="ARC" class="img-category" loading="lazy" onerror="this.src='/img/placeholder.jpg';" />
-                        <div class="image-overlay"></div>
-                    </div>
-                    <h3 class="category-title mt-4">ARC</h3>
-                    <p class="category-desc text-truncate-2">Especialidades: Acerados, Rieles y Tubos Cromados.</p>
-                </div>
-                <div class="card-footer">
-                    <span class="category-link text-uppercase small fw-bold">Ver especialidades</span>
-                    <div class="arrow-circle">→</div>
-                </div>
-            </a>
-        </div>
-    </div>
-</div>
 
 <style>
     :root {
-        --primary-font: 'Inter', system-ui, -apple-system, sans-serif;
-        --card-bg: #ffffff;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --accent-blue: #2563eb;
-        --accent-green: #16a34a;
-        --accent-orange: #ea580c;
-        --transition-base: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        --iza-rojo: #c8102e;
+        --iza-rojo-oscuro: #990f24;
+        --iza-rojo-claro: #fff1f3;
+        --iza-blanco: #ffffff;
+        --iza-fondo: #f8fafc;
+        --iza-borde: #e2e8f0;
+        --iza-texto: #172033;
+        --iza-gris: #64748b;
     }
 
-    .container-fluid {
-        padding-left: initial;
-        padding-right: initial;
+    body {
+        background: var(--iza-fondo);
     }
 
-    .productos-hero {
-        padding: 2.5rem 0;
-        background: #ffffff;
+    .categorias-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 3rem 1rem 5rem;
     }
 
-    .productos-title {
-        font-size: clamp(2.2rem, 5vw, 3.5rem);
-        letter-spacing: -0.03em;
-        color: var(--text-main);
+    .categorias-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .categorias-title {
+        color: var(--iza-texto);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
         margin-bottom: 0.5rem;
     }
 
-    .text-gradient {
-        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    /* Control de textos largos en móviles */
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .modern-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 480px;
-        padding: 2rem;
-        background: var(--card-bg);
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        text-decoration: none;
-        transition: var(--transition-base);
-        height: 100%;
-    }
-
-        .modern-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-            border-color: #cbd5e1;
+        .categorias-title span {
+            color: var(--iza-rojo);
         }
 
-    .category-image-container {
-        width: 100%;
-        aspect-ratio: 16/9;
-        border-radius: 16px;
-        overflow: hidden;
-        position: relative;
-        background: #f1f5f9;
+    .categorias-subtitle {
+        color: var(--iza-gris);
+        margin-bottom: 1.8rem;
     }
 
-    .img-category {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.6s ease;
-    }
-
-    .modern-card:hover .img-category {
-        transform: scale(1.1);
-    }
-
-    .category-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--text-main);
-    }
-
-    .category-desc {
-        font-size: 0.95rem;
-        color: var(--text-muted);
-        line-height: 1.5;
-    }
-
-    .card-footer {
+    .buscador-categorias {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-top: 1.5rem;
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        background: var(--iza-blanco);
+        border: 2px solid var(--iza-borde);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(23, 32, 51, 0.05);
+        transition: 0.25s ease;
     }
 
-    .category-link {
-        color: var(--text-main);
-        letter-spacing: 0.5px;
+        .buscador-categorias:focus-within {
+            border-color: var(--iza-rojo);
+            box-shadow: 0 8px 26px rgba(200, 16, 46, 0.13);
+        }
+
+        .buscador-categorias i {
+            color: var(--iza-rojo);
+            font-size: 1.2rem;
+        }
+
+    .buscador-input {
+        width: 100%;
+        padding: 1rem;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--iza-texto);
     }
 
-    .arrow-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #f1f5f9;
+    .categoria-card {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        height: 100%;
+        padding: 1.5rem;
+        color: inherit;
+        text-decoration: none;
+        background: var(--iza-blanco);
+        border: 1px solid var(--iza-borde);
+        border-radius: 18px;
+        box-shadow: 0 7px 22px rgba(23, 32, 51, 0.05);
+        transition: 0.25s ease;
+    }
+
+        .categoria-card:hover {
+            color: inherit;
+            border-color: var(--iza-rojo);
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(200, 16, 46, 0.12);
+        }
+
+    .categoria-icono {
+        width: 65px;
+        height: 65px;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: var(--transition-base);
+        color: var(--iza-blanco);
+        background: var(--iza-rojo);
+        border-radius: 18px;
+        font-size: 1.8rem;
     }
 
-    .aluminio-card:hover {
-        border-bottom: 4px solid var(--accent-blue);
+    .categoria-info {
+        flex-grow: 1;
     }
 
-    .accesorios-card:hover {
-        border-bottom: 4px solid var(--accent-green);
+    .categoria-nombre {
+        color: var(--iza-texto);
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
     }
 
-    .arc-card:hover {
-        border-bottom: 4px solid var(--accent-orange);
+    .categoria-descripcion {
+        color: var(--iza-gris);
+        font-size: 0.88rem;
+        margin: 0;
     }
 
-    .aluminio-card:hover .arrow-circle {
-        background: var(--accent-blue);
-        color: white;
+    .categoria-flecha {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--iza-rojo);
+        background: var(--iza-rojo-claro);
+        border-radius: 50%;
+        transition: 0.25s ease;
     }
 
-    .accesorios-card:hover .arrow-circle {
-        background: var(--accent-green);
-        color: white;
+    .categoria-card:hover .categoria-flecha {
+        color: var(--iza-blanco);
+        background: var(--iza-rojo);
     }
 
-    .arc-card:hover .arrow-circle {
-        background: var(--accent-orange);
-        color: white;
+    .mensaje-vacio {
+        padding: 2rem;
+        color: var(--iza-gris);
+        background: var(--iza-blanco);
+        border: 1px dashed var(--iza-borde);
+        border-radius: 18px;
+        text-align: center;
     }
 
-    @@media (max-width: 768px) {
-        .modern-card
+    @@media (max-width: 576px) {
+        .categorias-container {
+            padding-top: 2rem;
+        }
 
-    {
-        min-height: 400px;
-        padding: 1.5rem;
-    }
+        .categoria-card {
+            padding: 1.2rem;
+        }
 
-    }
-
-    /* Asegura que la imagen del buscador sea grande, cuadrada y no se estire feo */
-    .style-img-buscador {
-        object-fit: cover;
-        border-radius: 12px;
-        border: 1px solid #f1f5f9;
-    }
-
-    /* Fix para que los textos largos no rompan el contenedor flexible */
-    .min-w-0 {
-        min-width: 0;
+        .categoria-icono {
+            width: 55px;
+            height: 55px;
+        }
     }
 </style>
 
-<script>
-    const input = document.getElementById('buscadorProductos');
-    const lista = document.getElementById('listaResultados');
-    let debounceTimer;
-    let indexSeleccionado = -1;
+<div class="categorias-container">
 
-    // Generador de Skeleton Screen
-    function mostrarSkeleton() {
-        let skeletonHtml = '';
-        for (let i = 0; i < 3; i++) {
-            skeletonHtml += `
-                <div class="skeleton-item border-bottom">
-                    <div class="skeleton-img"></div>
-                    <div class="ms-3">
-                        <div class="skeleton-text-1"></div>
-                        <div class="skeleton-text-2"></div>
-                    </div>
-                </div>`;
+    <header class="categorias-header">
+
+        <h1 class="categorias-title">
+            Categorías de <span>Repuestos</span>
+        </h1>
+
+        <p class="categorias-subtitle">
+            Selecciona una categoría para consultar sus repuestos disponibles.
+        </p>
+
+        <div class="buscador-categorias">
+            <i class="bi bi-search"></i>
+
+            <input type="text"
+                   id="filtroCategorias"
+                   class="buscador-input"
+                   placeholder="Buscar categoría..."
+                   autocomplete="off" />
+        </div>
+
+    </header>
+
+    <div class="row g-3" id="contenedorCategorias">
+
+        @if (!categorias.Any())
+        {
+            <div class="col-12">
+                <div class="mensaje-vacio">
+                    <i class="bi bi-tools fs-2 d-block mb-2"></i>
+                    No existen categorías con repuestos activos.
+                </div>
+            </div>
         }
-        lista.innerHTML = skeletonHtml;
-        lista.style.display = 'block';
-    }
+        else
+        {
+            foreach (var categoria in categorias)
+            {
+                <div class="col-12 col-md-6 categoria-item"
+                     data-categoria="@categoria">
 
-    // Escapado básico anti-XSS para inyección HTML
-    function escaparHtml(cadena) {
-        if (!cadena) return '';
-        return cadena.replace(/&/g, "&amp;")
-                     .replace(/</g, "&lt;")
-                     .replace(/>/g, "&gt;")
-                     .replace(/"/g, "&quot;")
-                     .replace(/'/g, "&#039;");
-    }
+                    <a asp-action="Categoria"
+                       asp-route-area="@categoria"
+                       class="categoria-card">
 
-    input.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        indexSeleccionado = -1;
-        const val = this.value.trim();
+                        <div class="categoria-icono">
+                            <i class="bi bi-tools"></i>
+                        </div>
 
-        if (val.length < 2) {
-            lista.style.display = 'none';
-            input.setAttribute('aria-expanded', 'false');
-            return;
-        }
+                        <div class="categoria-info">
+                            <h2 class="categoria-nombre">
+                                @categoria
+                            </h2>
 
-        mostrarSkeleton();
-        input.setAttribute('aria-expanded', 'true');
+                            <p class="categoria-descripcion">
+                                Ver repuestos de esta categoría.
+                            </p>
+                        </div>
 
-        // Debounce de 300ms
-        debounceTimer = setTimeout(() => {
-            fetch(`/ProductoPublic/Buscar?termino=${encodeURIComponent(val)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        lista.innerHTML = '<p class="p-3 text-muted m-0 small">No hay resultados.</p>';
-                    } else {
-                            lista.innerHTML = data.map((p, index) => {
-                                const descEscapada = escaparHtml(p.descripcion);
-                                const areaEscapada = escaparHtml(p.area);
-                                const imgUrl = p.imagenUrl ? escaparHtml(p.imagenUrl) : '/img/placeholder.jpg';
+                        <div class="categoria-flecha">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
 
-                                return `
-                                    <a href="/ProductoPublic/ProductoDetalle?area=${areaEscapada}&nombre=${encodeURIComponent(p.descripcion)}"
-                                       class="d-flex align-items-center p-2 text-decoration-none border-bottom hover-bg buscador-item"
-                                       role="option"
-                                       id="opcion-${index}">
+                    </a>
 
-                                        <div class="flex-shrink-0" style="width: 100px; height: 100px;">
-                                            <img src="${imgUrl}"
-                                                 class="w-100 h-100 style-img-buscador"
-                                                 alt="${descEscapada}">
-                                        </div>
-
-                                        <div class="ms-3 flex-grow-1 min-w-0">
-                                            <div class="text-dark fw-bold text-truncate text-uppercase mb-1"
-                                                 style="font-size: 0.9rem; letter-spacing: -0.01em;">
-                                                 ${descEscapada}
-                                            </div>
-                                            <div class="text-primary fw-bold" style="font-size: 0.85rem;">
-                                                 S/ ${Number(p.precioVenta).toFixed(2)}
-                                            </div>
-                                        </div>
-
-                                    </a>
-                                `;
-                            }).join('');
-                    }
-                })
-                .catch(() => {
-                    lista.innerHTML = '<p class="p-3 text-danger m-0 small">Error al cargar productos.</p>';
-                });
-        }, 300);
-    });
-
-    // Control de navegación por teclado (Flechas y Enter)
-    input.addEventListener('keydown', function(e) {
-        const items = lista.querySelectorAll('.buscador-item');
-        if (items.length === 0) return;
-
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            indexSeleccionado = (indexSeleccionado + 1) % items.length;
-            actualizarSeleccionTeclado(items);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            indexSeleccionado = (indexSeleccionado - 1 + items.length) % items.length;
-            actualizarSeleccionTeclado(items);
-        } else if (e.key === 'Enter') {
-            if (indexSeleccionado > -1 && items[indexSeleccionado]) {
-                e.preventDefault();
-                items[indexSeleccionado].click();
+                </div>
             }
         }
-    });
 
-    function actualizarSeleccionTeclado(items) {
-        items.forEach((item, index) => {
-            if (index === indexSeleccionado) {
-                item.classList.add('item-seleccionado');
-                input.setAttribute('aria-activedescendant', `opcion-${index}`);
-                // Auto-scroll si el elemento sale del contenedor visible
-                item.scrollIntoView({ block: 'nearest' });
-            } else {
-                item.classList.remove('item-seleccionado');
+        <div id="mensajeSinResultados"
+             class="col-12 d-none">
+
+            <div class="mensaje-vacio">
+                <i class="bi bi-search fs-2 d-block mb-2"></i>
+                No se encontró esa categoría.
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const filtroCategorias =
+        document.getElementById("filtroCategorias");
+
+    const elementosCategorias =
+        document.querySelectorAll(".categoria-item");
+
+    const mensajeSinResultados =
+        document.getElementById("mensajeSinResultados");
+
+    filtroCategorias.addEventListener("input", function () {
+        const textoBuscado =
+            this.value.trim().toUpperCase();
+
+        let categoriasVisibles = 0;
+
+        elementosCategorias.forEach(elemento => {
+            const categoria =
+                elemento.dataset.categoria.toUpperCase();
+
+            const coincide =
+                categoria.includes(textoBuscado);
+
+            elemento.classList.toggle(
+                "d-none",
+                !coincide
+            );
+
+            if (coincide) {
+                categoriasVisibles++;
             }
         });
-    }
 
-    // Cerrar buscador al hacer clic fuera
-    document.addEventListener('click', (e) => {
-        if(!input.contains(e.target) && !lista.contains(e.target)) {
-            lista.style.display = 'none';
-            input.setAttribute('aria-expanded', 'false');
-        }
+        mensajeSinResultados.classList.toggle(
+            "d-none",
+            categoriasVisibles > 0
+        );
     });
 </script>

@@ -2,273 +2,504 @@
 
 @{
     Layout = "_LayoutCliente";
-    ViewData["Title"] = "Mis Pedidos";
+    ViewData["Title"] = "Mis Servicios";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+@section Styles {
+    <style>
+        :root {
+            --iza-red: #c8102e;
+            --iza-red-dark: #980f24;
+            --iza-red-soft: #fff1f3;
+            --iza-white: #ffffff;
+            --iza-background: #f7f8fa;
+            --iza-border: #e5e7eb;
+            --iza-text: #172033;
+            --iza-muted: #64748b;
+        }
 
-<div class="py-4 px-3 py-md-5 w-100 style-container" style="min-height: 100vh; background-color: #0f172a; overflow-x: hidden;">
-    <div class="container-fluid px-0 mx-auto" style="max-width: 1200px;">
+        .servicios-container {
+            min-height: 100vh;
+            padding: 2.5rem 1rem 5rem;
+            background: var(--iza-background);
+        }
 
-        @* ENCABEZADO *@
-        <div class="row mb-4 gy-2 mx-0">
-            <div class="col-12 px-0">
-                <h2 class="fw-bold text-white m-0 d-flex align-items-center flex-wrap" style="font-size: clamp(20px, 4vw, 24px); letter-spacing: -0.02em;">
-                    <i class="bi bi-calendar-check text-primary me-2"></i> Historial de Reservas
-                </h2>
-                <p class="text-muted small m-0 mt-2" style="color: #94a3b8 !important; font-size: 14px; line-height: 1.4;">
-                    Monitorea en tiempo real el estado de tus cotizaciones a medida y reservas de catálogo antes de la validación técnica.
-                </p>
-            </div>
-        </div>
+        .servicios-content {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
 
-        @* TABLA DE PEDIDOS *@
-        <div class="card shadow-lg border-0 rounded-4 w-100" style="background-color: #ffffff; overflow: hidden;">
-            <div class="card-body p-0">
-                <div class="table-responsive w-100 m-0 p-0" style="max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                    <table class="table table-hover align-middle mb-0 w-100" style="color: #1e293b; border-collapse: collapse; table-layout: fixed;">
+        .servicios-header {
+            margin-bottom: 1.8rem;
+        }
 
-                        <thead style="background-color: #f8fafc; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        .servicios-title {
+            color: var(--iza-text);
+            font-size: clamp(1.7rem, 4vw, 2.25rem);
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
+
+            .servicios-title i {
+                color: var(--iza-red);
+            }
+
+        .servicios-subtitle {
+            color: var(--iza-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .servicios-card {
+            overflow: hidden;
+            background: var(--iza-white);
+            border: 1px solid var(--iza-border);
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(23, 32, 51, 0.06);
+        }
+
+        .servicios-table {
+            width: 100%;
+            margin: 0;
+        }
+
+            .servicios-table thead th {
+                padding: 1rem;
+                color: var(--iza-muted);
+                background: #fafafa;
+                border-bottom: 1px solid var(--iza-border);
+                font-size: 0.72rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                white-space: nowrap;
+            }
+
+            .servicios-table tbody td {
+                padding: 1rem;
+                color: var(--iza-text);
+                border-bottom: 1px solid #f1f5f9;
+                vertical-align: middle;
+                font-size: 0.88rem;
+            }
+
+            .servicios-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .servicios-table tbody tr:hover {
+                background: #fffafa;
+            }
+
+        .codigo-servicio {
+            color: var(--iza-red);
+            font-weight: 800;
+        }
+
+        .fecha-principal {
+            color: var(--iza-text);
+            font-weight: 650;
+        }
+
+        .fecha-hora {
+            color: var(--iza-muted);
+            font-size: 0.75rem;
+        }
+
+        .importe-servicio {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .estado-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 10px;
+            border-radius: 30px;
+            font-size: 0.72rem;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .estado-pendiente {
+            color: #a16207;
+            background: #fef9c3;
+        }
+
+        .estado-confirmado {
+            color: #1d4ed8;
+            background: #dbeafe;
+        }
+
+        .estado-proceso {
+            color: #7c3aed;
+            background: #ede9fe;
+        }
+
+        .estado-listo {
+            color: #15803d;
+            background: #dcfce7;
+        }
+
+        .estado-entregado {
+            color: #334155;
+            background: #e2e8f0;
+        }
+
+        .estado-cancelado {
+            color: #b91c1c;
+            background: #fee2e2;
+        }
+
+        .estado-default {
+            color: #475569;
+            background: #f1f5f9;
+        }
+
+        .btn-detalle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 12px;
+            color: var(--iza-red);
+            background: var(--iza-white);
+            border: 1px solid var(--iza-red);
+            border-radius: 9px;
+            font-size: 0.78rem;
+            font-weight: 750;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+            .btn-detalle:hover {
+                color: var(--iza-white);
+                background: var(--iza-red);
+            }
+
+        .sin-servicios {
+            padding: 4rem 1.5rem;
+            text-align: center;
+        }
+
+        .sin-servicios-icon {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: var(--iza-red);
+            background: var(--iza-red-soft);
+            border-radius: 50%;
+            font-size: 2rem;
+        }
+
+        .sin-servicios h3 {
+            color: var(--iza-text);
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .sin-servicios p {
+            color: var(--iza-muted);
+            font-size: 0.88rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .btn-catalogo {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 16px;
+            color: var(--iza-white);
+            background: var(--iza-red);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 750;
+            text-decoration: none;
+        }
+
+            .btn-catalogo:hover {
+                color: var(--iza-white);
+                background: var(--iza-red-dark);
+            }
+
+        @@media (max-width: 767px) {
+            .servicios-container {
+                padding-top: 1.5rem;
+            }
+
+            .servicios-table,
+            .servicios-table tbody,
+            .servicios-table tr,
+            .servicios-table td {
+                display: block;
+                width: 100%;
+            }
+
+                .servicios-table thead {
+                    display: none;
+                }
+
+                .servicios-table tbody {
+                    padding: 0.8rem;
+                }
+
+                    .servicios-table tbody tr {
+                        margin-bottom: 0.9rem;
+                        padding: 0.8rem;
+                        background: var(--iza-white);
+                        border: 1px solid var(--iza-border);
+                        border-radius: 14px;
+                    }
+
+                        .servicios-table tbody tr:last-child {
+                            margin-bottom: 0;
+                        }
+
+                    .servicios-table tbody td {
+                        position: relative;
+                        min-height: 42px;
+                        padding: 0.55rem 0.5rem 0.55rem 42%;
+                        border-bottom: 1px dashed var(--iza-border);
+                        display: flex;
+                        align-items: center;
+                    }
+
+                        .servicios-table tbody td::before {
+                            position: absolute;
+                            left: 0.5rem;
+                            width: 36%;
+                            color: var(--iza-muted);
+                            font-size: 0.68rem;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                        }
+
+                        .servicios-table tbody td:nth-of-type(1)::before {
+                            content: "Código";
+                        }
+
+                        .servicios-table tbody td:nth-of-type(2)::before {
+                            content: "Fecha";
+                        }
+
+                        .servicios-table tbody td:nth-of-type(3)::before {
+                            content: "Importe";
+                        }
+
+                        .servicios-table tbody td:nth-of-type(4)::before {
+                            content: "Estado";
+                        }
+
+                        .servicios-table tbody td:last-child {
+                            display: block;
+                            padding: 0.85rem 0 0;
+                            border-bottom: none;
+                            text-align: center;
+                        }
+
+                            .servicios-table tbody td:last-child::before {
+                                display: none;
+                            }
+
+            .btn-detalle {
+                width: 100%;
+            }
+
+            .sin-servicios {
+                padding: 3rem 1rem;
+            }
+        }
+    </style>
+}
+
+<div class="servicios-container">
+    <div class="servicios-content">
+
+        <!-- ENCABEZADO -->
+        <header class="servicios-header">
+            <h1 class="servicios-title">
+                <i class="bi bi-wrench-adjustable-circle-fill me-2"></i>
+                Mis servicios
+            </h1>
+
+            <p class="servicios-subtitle">
+                Consulta tus solicitudes y revisa el estado actual de cada atención.
+            </p>
+        </header>
+
+        <!-- LISTADO -->
+        <div class="servicios-card">
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="servicios-table">
+
+                        <thead>
                             <tr>
-                                <th class="ps-3 ps-sm-4 py-3 text-nowrap" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; font-weight: 700; width: 25%;">Código</th>
-                                <th class="py-3 text-nowrap" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; font-weight: 700; width: 27%;">Fecha de Orden</th>
-                                <th class="py-3 d-none d-sm-table-cell text-nowrap" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; font-weight: 700; width: 20%;">Total</th>
-                                <th class="py-3 text-nowrap" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; font-weight: 700; width: 28%;">Estado actual</th>
-                                <th class="text-center py-3 pe-3 pe-sm-4 text-nowrap" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; font-weight: 700; width: 20%;">Acciones</th>
+                                <th>Código</th>
+                                <th>Fecha de solicitud</th>
+                                <th>Importe</th>
+                                <th>Estado actual</th>
+                                <th class="text-center">Acción</th>
                             </tr>
                         </thead>
 
-                        <tbody class="border-0">
-                            @if (Model != null && Model.Any())
+                        <tbody>
+                            @foreach (var item in Model)
                             {
-                                foreach (var item in Model)
-                                {
-                                    <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.04); transition: background-color 0.2s ease;">
-                                        <td class="ps-3 ps-sm-4 fw-bold text-dark py-3 text-truncate" style="font-size: 13px;">
-                                            <span class="text-primary">#</span>@item.CodigoReserva
-                                        </td>
+                                var estado = item.Estado?.Trim().ToUpperInvariant();
 
-                                        <td class="py-3" style="color: #334155; font-weight: 500; font-size: 13px;">
-                                            <span class="d-block text-nowrap">@item.FechaRegistro.ToString("dd/MM/yyyy")</span>
-                                            <span class="d-block text-muted small" style="font-size: 11px;">@item.FechaRegistro.ToString("hh:mm tt")</span>
-                                            <div class="d-sm-none text-dark fw-bold mt-1" style="font-size: 13px;">
-                                                S/ @item.Total.ToString("N2")
-                                            </div>
-                                        </td>
-
-                                        <td class="fw-bold text-dark d-none d-sm-table-cell py-3 text-nowrap" style="font-size: 14px;">
-                                            S/ @item.Total.ToString("N2")
-                                        </td>
-
-                                        <td class="py-3">
-                                            @switch (item.Estado?.ToUpper())
-                                            {
-                                                case "PENDIENTE":
-                                                    <span class="badge px-2 py-1 rounded-pill" style="background-color: rgba(234, 179, 8, 0.1); color: #a16207; border: 1px solid rgba(234, 179, 8, 0.15); font-weight: 600; font-size: 11px;">Pendiente</span>
-                                                    break;
-                                                case "EN_PRODUCCION":
-                                                case "PRODUCCION":
-                                                    <span class="badge px-2 py-1 rounded-pill text-nowrap" style="background-color: rgba(14, 165, 233, 0.1); color: #0369a1; border: 1px solid rgba(14, 165, 233, 0.15); font-weight: 600; font-size: 11px;">En Producción</span>
-                                                    break;
-                                                case "LISTO":
-                                                    <span class="badge px-2 py-1 rounded-pill text-nowrap" style="background-color: rgba(34, 197, 94, 0.1); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.15); font-weight: 600; font-size: 11px;">Listo</span>
-                                                    break;
-                                                case "ENTREGADO":
-                                                    <span class="badge px-2 py-1 rounded-pill text-nowrap" style="background-color: rgba(15, 23, 42, 0.1); color: #0f172a; border: 1px solid rgba(15, 23, 42, 0.15); font-weight: 600; font-size: 11px;">Entregado</span>
-                                                    break;
-                                                case "CANCELADO":
-                                                    <span class="badge px-2 py-1 rounded-pill text-nowrap" style="background-color: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.15); font-weight: 600; font-size: 11px;">Cancelado</span>
-                                                    break;
-                                                default:
-                                                    <span class="badge px-2 py-1 rounded-pill text-nowrap" style="background-color: rgba(100, 116, 139, 0.1); color: #475569; border: 1px solid rgba(100, 116, 139, 0.15); font-weight: 600; font-size: 11px;">@item.Estado</span>
-                                                    break;
-                                            }
-                                        </td>
-
-                                        <td class="text-center py-3 pe-3 pe-sm-4">
-                                            @* 🔥 BOTÓN BLINDADO CONTRA SUBMITS FANTASMAS: Cambiado a enlace limpio con tipo botón *@
-                                            <a asp-controller="Cliente" asp-action="VerPedido" asp-route-id="@item.ReservaId"
-                                               class="btn btn-sm btn-outline-primary px-3 py-1 fw-semibold d-inline-flex align-items-center justify-content-center item-btn-detalle"
-                                               style="border-radius: 6px; font-size: 12px; transition: all 0.2s;">
-                                                <i class="bi bi-eye-fill"></i>
-                                                <span class="d-none d-md-inline ms-1.5">Detalles</span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
                                 <tr>
-                                    <td colspan="5" class="text-center py-5 px-3 custom-colspan">
-                                        <div class="py-4 mx-auto" style="max-width: 100%;">
-                                            <i class="bi bi-folder-x d-block mb-3 text-muted" style="font-size: 40px; opacity: 0.6;"></i>
-                                            <h6 class="fw-bold text-secondary mb-1" style="font-size: 15px;">Sin registros</h6>
-                                            <p class="text-muted small m-0" style="font-size: 13px; line-height: 1.4;">No tienes órdenes o reservas procesadas en este momento.</p>
+                                    <!-- CÓDIGO -->
+                                    <td>
+                                        <span class="codigo-servicio">
+                                            #@item.CodigoReserva
+                                        </span>
+                                    </td>
+
+                                    <!-- FECHA -->
+                                    <td>
+                                        <div>
+                                            <div class="fecha-principal">
+                                                @item.FechaRegistro.ToString("dd/MM/yyyy")
+                                            </div>
+
+                                            <div class="fecha-hora">
+                                                @item.FechaRegistro.ToString("hh:mm tt")
+                                            </div>
                                         </div>
+                                    </td>
+
+                                    <!-- IMPORTE -->
+                                    <td>
+                                        <span class="importe-servicio">
+                                            S/ @item.Total.ToString("N2")
+                                        </span>
+                                    </td>
+
+                                    <!-- ESTADO -->
+                                    <td>
+                                        @switch (estado)
+                                        {
+                                            case "PENDIENTE":
+                                                <span class="estado-badge estado-pendiente">
+                                                    <i class="bi bi-clock-fill"></i>
+                                                    Pendiente
+                                                </span>
+                                                break;
+
+                                            case "CONFIRMADO":
+                                            case "CONFIRMADA":
+                                                <span class="estado-badge estado-confirmado">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                    Confirmado
+                                                </span>
+                                                break;
+
+                                            case "EN_PRODUCCION":
+                                            case "PRODUCCION":
+                                            case "EN_PROCESO":
+                                            case "EN_REPARACION":
+                                                <span class="estado-badge estado-proceso">
+                                                    <i class="bi bi-tools"></i>
+                                                    En atención
+                                                </span>
+                                                break;
+
+                                            case "LISTO":
+                                            case "LISTO_PARA_ENTREGA":
+                                                <span class="estado-badge estado-listo">
+                                                    <i class="bi bi-car-front-fill"></i>
+                                                    Listo para entrega
+                                                </span>
+                                                break;
+
+                                            case "ENTREGADO":
+                                            case "CERRADO":
+                                                <span class="estado-badge estado-entregado">
+                                                    <i class="bi bi-check2-all"></i>
+                                                    Entregado
+                                                </span>
+                                                break;
+
+                                            case "CANCELADO":
+                                            case "CANCELADA":
+                                                <span class="estado-badge estado-cancelado">
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    Cancelado
+                                                </span>
+                                                break;
+
+                                            default:
+                                                <span class="estado-badge estado-default">
+                                                    <i class="bi bi-info-circle-fill"></i>
+                                                    @(string.IsNullOrWhiteSpace(item.Estado)
+                                                                                        ? "Sin estado"
+                                                                                        : item.Estado)
+                                </span>
+                                                                break;
+                                        }
+                                    </td>
+
+                                    <!-- ACCIÓN -->
+                                    <td class="text-center">
+                                        <a asp-controller="Cliente"
+                                           asp-action="VerPedido"
+                                           asp-route-id="@item.ReservaId"
+                                           class="btn-detalle">
+
+                                            <i class="bi bi-eye-fill"></i>
+                                            Ver detalle
+                                        </a>
                                     </td>
                                 </tr>
                             }
                         </tbody>
+
                     </table>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="sin-servicios">
+
+                    <div class="sin-servicios-icon">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+
+                    <h3>No tienes servicios registrados</h3>
+
+                    <p>
+                        Tus próximas solicitudes y atenciones aparecerán en esta sección.
+                    </p>
+
+                    <a asp-controller="ProductoPublic"
+                       asp-action="Index"
+                       class="btn-catalogo">
+
+                        <i class="bi bi-tools"></i>
+                        Ver catálogo de repuestos
+                    </a>
+
+                </div>
+            }
+
         </div>
     </div>
 </div>
 
-<style>
-    /* 1. EFECTO CEBRA PARA PANTALLAS GRANDES (PC y Tablets) */
-    /* Filas impares: Blancas */
-    .table tbody tr:nth-child(odd) {
-        background-color: #ffffff !important;
-    }
-
-    /* Filas pares: Gris/Plomo muy suave y moderno (Slate 50) */
-    .table tbody tr:nth-child(even) {
-        background-color: #f8fafc !important;
-    }
-
-    /* Línea sutil abajo de cada fila para marcar aún más la separación */
-    .table tbody tr {
-        border-bottom: 1px solid #f1f5f9 !important;
-        transition: background-color 0.15s ease;
-    }
-
-        /* Efecto Hover: Resalta la fila con un plomo un toque más oscuro al pasar el mouse */
-        .table tbody tr:hover {
-            background-color: #f1f5f9 !important;
-        }
-
-    /* Quitamos el border-none que bloqueaba los estilos de Bootstrap */
-    .table th, .table td {
-        border-style: none !important;
-        padding-top: 14px !important;
-        padding-bottom: 14px !important;
-    }
-
-
-    /* 2. CORRECCIÓN RESPONSIVA (PANTALLAS MEDIANAS) */
-    @@media (max-width: 992px) {
-        .style-container table.table
-
-    {
-        table-layout: auto !important;
-    }
-
-    .style-container th,
-    .style-container td {
-        width: auto !important;
-    }
-
-    }
-
-
-    /* 3. TRANSFORMACIÓN EXTREMA PARA CELULARES (Smartphones) */
-    @@media (max-width: 768px) {
-        .style-container table.table, .style-container thead, .style-container tbody, .style-container th, .style-container td, .style-container tr
-
-    {
-        display: block !important;
-    }
-
-    /* Ocultar cabecera en móvil */
-    .style-container thead tr {
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-    }
-
-    /* En móvil, las filas pares e impares se vuelven tarjetas independientes */
-    .style-container tbody tr:nth-child(odd),
-    .style-container tbody tr:nth-child(even) {
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        margin-bottom: 16px !important;
-        padding: 14px !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    /* Mantenemos el patrón intercalado también en las tarjetas de celular si deseas */
-    .style-container tbody tr:nth-child(even) {
-        background-color: #f8fafc !important; /* Tarjeta medio ploma */
-    }
-
-    .style-container tbody tr:nth-child(odd) {
-        background-color: #ffffff !important; /* Tarjeta blanca */
-    }
-
-    .style-container td {
-        border: none !important;
-        position: relative !important;
-        padding-left: 40% !important;
-        text-align: left !important;
-        white-space: normal !important;
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
-        display: flex !important;
-        align-items: center;
-    }
-
-        /* Inyección de texto para los títulos en móvil */
-        .style-container td:nth-of-type(1):before {
-            content: "Código:";
-        }
-
-        .style-container td:nth-of-type(2):before {
-            content: "Fecha:";
-        }
-
-        .style-container td:nth-of-type(4):before {
-            content: "Estado:";
-        }
-
-        .style-container td:before {
-            position: absolute !important;
-            left: 12px !important;
-            width: 35% !important;
-            font-weight: 700 !important;
-            color: #64748b !important;
-            text-transform: uppercase !important;
-            font-size: 11px !important;
-            letter-spacing: 0.05em !important;
-        }
-
-        /* Botón de acciones abajo expandido */
-        .style-container td:last-child {
-            padding-left: 0 !important;
-            text-align: center !important;
-            margin-top: 8px !important;
-            border-top: 1px dashed #e2e8f0 !important;
-            padding-top: 12px !important;
-            display: block !important;
-        }
-
-            .style-container td:last-child:before {
-                display: none !important;
-            }
-
-    .style-container .item-btn-detalle {
-        width: 100% !important;
-    }
-
-        .style-container .item-btn-detalle span {
-            display: inline !important;
-            margin-left: 6px !important;
-        }
-
-    }
-</style>
-
-
-@* 🛠️ SCRIPT ANTIBUGS VISUALES *@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Desactivamos de forma contundente cualquier overlay de carga en esta vista de listado
-        const globalOverlay = document.getElementById("loadingOverlay");
-        if (globalOverlay) {
-            globalOverlay.style.display = "none";
+        const loadingOverlay =
+            document.getElementById("loadingOverlay");
+
+        if (loadingOverlay) {
+            loadingOverlay.style.display = "none";
         }
     });
 </script>

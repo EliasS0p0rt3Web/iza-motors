@@ -1,168 +1,436 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.EntityFrameworkCore
+
 @inject IHttpContextAccessor HttpContextAccessor
+@inject Negocio.Web.Data.NegocioDbContext _context
 
 @{
     bool abierto = ViewData["Abierto"] as bool? ?? true;
-    var sessionRol = HttpContextAccessor.HttpContext?.Session.GetString("ROL");
-    var sessionUser = HttpContextAccessor.HttpContext?.Session.GetString("USER");
+
+    var sessionRol =
+        HttpContextAccessor.HttpContext?.Session.GetString("ROL");
+
+    var sessionUser =
+        HttpContextAccessor.HttpContext?.Session.GetString("USER");
+
+    /*
+     * Obtener las categorías que realmente existen
+     * en la tabla Producto.
+     */
+    var categoriasRegistradas = await _context.Productos
+        .AsNoTracking()
+        .Where(producto => producto.Activo)
+        .Select(producto => producto.Area)
+        .ToListAsync();
+
+    var categorias = categoriasRegistradas
+        .Where(area => !string.IsNullOrWhiteSpace(area))
+        .Select(area => area.Trim().ToUpperInvariant())
+        .Distinct()
+        .OrderBy(area => area)
+        .ToList();
 }
 
-<!-- TOP BAR CORPORATIVA OPTIMIZADA -->
+<!-- TOP BAR -->
 <div class="topbar-sticky py-2 px-2 px-sm-3 px-md-4 shadow-sm w-100">
+
     <div class="d-flex justify-content-between align-items-center w-100">
 
-        <!-- 1️⃣ LADO IZQUIERDO: MARCA CORPORATIVA CON SUBTEXTO DE ESTADO -->
+        <!-- MARCA -->
         <div class="d-flex align-items-center">
-            <a href="#inicio" class="d-flex align-items-center text-decoration-none transition-transform" style="margin: 0;" title="E&E Aluminios">
-                <!-- Ícono visible solo en PC -->
-                <img src="/img/iza.ico" alt="Logo E&E Aluminios" class="d-none d-md-inline" style="height: 28px; width: auto; object-fit: contain;" />
 
-                <!-- Contenedor de Textos -->
-                <div class="d-flex flex-column ms-0 ms-md-2" style="line-height: 1.1;">
-                    <span class="text-white fw-bold" style="font-size: clamp(0.85rem, 2vw, 0.95rem); letter-spacing: 0.5px; white-space: nowrap; font-family: 'Inter', sans-serif;">
+            <a href="#inicio"
+               class="d-flex align-items-center text-decoration-none transition-transform"
+               style="margin: 0;"
+               title="Iza Motors">
+
+                <img src="/img/iza.ico"
+                     alt="Logo de Iza Motors"
+                     class="d-none d-md-inline"
+                     style="height: 28px;
+                            width: auto;
+                            object-fit: contain;" />
+
+                <div class="d-flex flex-column ms-0 ms-md-2"
+                     style="line-height: 1.1;">
+
+                    <span class="text-white fw-bold"
+                          style="font-size: clamp(0.85rem, 2vw, 0.95rem);
+                                 letter-spacing: 0.5px;
+                                 white-space: nowrap;
+                                 font-family: 'Inter', sans-serif;">
                         Iza Motors
                     </span>
-                    <span class="d-flex align-items-center mt-1" style="font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.55);">
-                        <span class="dot @(abierto ? "bg-success" : "bg-danger")" style="width: 6px; height: 6px; margin-right: 5px; box-shadow: none;"></span>
-                        @(abierto ? "Taller Abierta" : "Taller cerrado")
+
+                    <span class="d-flex align-items-center mt-1"
+                          style="font-size: 0.58rem;
+                                 font-weight: 700;
+                                 text-transform: uppercase;
+                                 letter-spacing: 0.5px;
+                                 color: rgba(255,255,255,0.55);">
+
+                        <span class="dot @(abierto ? "bg-success" : "bg-danger")"
+                              style="width: 6px;
+                                     height: 6px;
+                                     margin-right: 5px;
+                                     box-shadow: none;">
+                        </span>
+
+                        @(abierto ? "Taller abierto" : "Taller cerrado")
                     </span>
+
                 </div>
             </a>
         </div>
 
-        <!-- 2️⃣ SECCIÓN CENTRAL: SÓLO LAS PESTAÑAS DE TEXTO PARA PC -->
+        <!-- MENÚ DE ESCRITORIO -->
         <div class="d-none d-xl-flex justify-content-center gap-2 central-nav-tabs flex-grow-1 mx-3">
-           
 
-            <!-- Dropdown Productos -->
+            <!-- PRODUCTOS -->
             <div class="dropdown h-100 d-flex align-items-center">
-                <a href="#" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none dropdown-toggle" id="dropdownProductosPC" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span>Products</span>
+
+                <a href="#"
+                   class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none dropdown-toggle"
+                   id="dropdownProductosPC"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+
+                    <span>Productos</span>
                 </a>
-                <ul class="dropdown-menu shadow mt-0" aria-labelledby="dropdownProductosPC" style="background-color: #0b1d33; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 0;">
-                    <li><a class="dropdown-item text-light py-2" href="/ProductoPublic/Categoria?area=ALUMINIO"><i class="bi bi-circle-fill me-2 text-primary" style="font-size: 0.6rem;"></i> Aluminio</a></li>
-                    <li><a class="dropdown-item text-light py-2" href="/ProductoPublic/Categoria?area=ACCESORIOS"><i class="bi bi-circle-fill me-2 text-success" style="font-size: 0.6rem;"></i> Accesorios</a></li>
-                    <li><a class="dropdown-item text-light py-2" href="/ProductoPublic/Categoria?area=ARC"><i class="bi bi-circle-fill me-2 text-warning" style="font-size: 0.6rem;"></i> Especialidades ARC</a></li>
+
+                <ul class="dropdown-menu shadow mt-0"
+                    aria-labelledby="dropdownProductosPC"
+                    style="background-color: #0b1d33;
+                           border: 1px solid rgba(255,255,255,0.1);
+                           padding: 0.5rem 0;">
+
+                    @if (categorias.Any())
+                    {
+                        foreach (var categoria in categorias)
+                        {
+                            <li>
+                                <a asp-controller="ProductoPublic"
+                                   asp-action="Categoria"
+                                   asp-route-area="@categoria"
+                                   class="dropdown-item text-light py-2">
+
+                                    <i class="bi bi-gear-wide-connected me-2 text-danger"
+                                       style="font-size: 0.85rem;">
+                                    </i>
+
+                                    @categoria
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>
+                            <span class="dropdown-item text-white-50 py-2">
+                                No hay categorías disponibles
+                            </span>
+                        </li>
+                    }
+
                 </ul>
             </div>
 
-            <a href="#trabajos-reales" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none"><span>Proyectos</span></a>
-            <a href="#como-trabajamos" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none"><span>¿Cómo pedir?</span></a>
-            <a href="#envios" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none"><span>Entregas</span></a>
-            <a href="#preguntas" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none"><span>Dudas</span></a>
-            <a href="#cotizar" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none"><span>Cotizador</span></a>
-            <a href="#contacto" class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none"><span>Contacto</span></a>
+            <a href="#trabajos-reales"
+               class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none">
+                <span>Proyectos</span>
+            </a>
+
+            <a href="#como-trabajamos"
+               class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none">
+                <span>¿Cómo pedir?</span>
+            </a>
+
+            <a href="#envios"
+               class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none">
+                <span>Modalidades de atención</span>
+            </a>
+
+            <a href="#preguntas"
+               class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none">
+                <span>Dudas</span>
+            </a>
+
+            <a href="#contacto"
+               class="nav-link-tab d-flex align-items-center justify-content-center px-3 text-decoration-none">
+                <span>Contacto</span>
+            </a>
+
         </div>
 
-        <!-- 3️⃣ LADO DERECHO UNIFICADO: BUSCADOR, LOGIN Y HAMBURGUESA (MÓVIL/TABLET) -->
+        <!-- BUSCADOR, CUENTA Y MENÚ MÓVIL -->
         <div class="d-flex align-items-center gap-2 gap-sm-3">
 
-            <!-- Buscador Mockup -->
+            <!-- BUSCADOR -->
             <div class="search-mockup position-relative">
-                <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
-                <input type="text" id="buscadorTop" class="ms-1 ms-sm-2" placeholder="Buscar..." autocomplete="off">
-                <div id="listaResultadosTop" class="position-absolute shadow-lg rounded-3 mt-2"></div>
+
+                <i class="bi bi-search text-white-50"
+                   style="font-size: 0.8rem;">
+                </i>
+
+                <input type="text"
+                       id="buscadorTop"
+                       class="ms-1 ms-sm-2"
+                       placeholder="Buscar..."
+                       autocomplete="off" />
+
+                <div id="listaResultadosTop"
+                     class="position-absolute shadow-lg rounded-3 mt-2">
+                </div>
+
             </div>
 
-            <!-- Botón de Cuenta / Login -->
+            <!-- CUENTA -->
             @if (string.IsNullOrEmpty(sessionRol) || sessionRol != "CLIENTE")
             {
-                <a href="/Login/Index" class="btn-login-lock d-flex align-items-center justify-content-center" title="Ingresar a mi cuenta" style="height: 32px; width: 32px; margin: 0;">
-                    <i class="bi bi-person m-0" style="font-size: 1.1rem;"></i>
+                <a href="/Login/Index"
+                   class="btn-login-lock d-flex align-items-center justify-content-center"
+                   title="Ingresar a mi cuenta"
+                   style="height: 32px;
+                              width: 32px;
+                              margin: 0;">
+
+                    <i class="bi bi-person m-0"
+                       style="font-size: 1.1rem;">
+                    </i>
                 </a>
             }
             else
             {
                 <div class="dropdown">
-                    <button class="btn-login-lock d-flex align-items-center justify-content-center border-0 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Mi Cuenta" style="height: 32px; width: 32px; margin: 0; background: #10b981;">
+
+                    <button class="btn-login-lock d-flex align-items-center justify-content-center border-0 dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            title="Mi cuenta"
+                            style="height: 32px;
+                                       width: 32px;
+                                       margin: 0;
+                                       background: #10b981;">
+
                         <i class="bi bi-person-fill m-0 text-white"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow" style="background-color: #0b1d33; border: 1px solid rgba(255,255,255,0.1);">
-                        <li class="px-3 py-1"><span class="text-white-50 small">Hola, <strong>@sessionUser</strong></span></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
-                        <li><a class="dropdown-item text-light" href="/Cliente/MisPedidos"><i class="bi bi-box-seam me-2 text-success"></i> Mis Pedidos</a></li>
-                        <li><a class="dropdown-item text-light" href="/Cliente/MiPerfil"><i class="bi bi-gear me-2 text-info"></i> Mi Perfil</a></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
-                        <li><a class="dropdown-item text-danger fw-bold" href="/Login/Logout"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow"
+                        style="background-color: #0b1d33;
+                                   border: 1px solid rgba(255,255,255,0.1);">
+
+                        <li class="px-3 py-1">
+                            <span class="text-white-50 small">
+                                Hola, <strong>@sessionUser</strong>
+                            </span>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider"
+                                style="border-color: rgba(255,255,255,0.1);" />
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-light"
+                               href="/Cliente/MisPedidos">
+
+                                <i class="bi bi-box-seam me-2 text-success"></i>
+                                Mis Pedidos
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-light"
+                               href="/Cliente/MiPerfil">
+
+                                <i class="bi bi-gear me-2 text-info"></i>
+                                Mi Perfil
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider"
+                                style="border-color: rgba(255,255,255,0.1);" />
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-danger fw-bold"
+                               href="/Login/Logout">
+
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Cerrar Sesión
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
             }
 
-            <!-- Botón Hamburguesa (Se activa automáticamente gracias al CSS que pusimos antes) -->
-            <button class="btn-menu-burger d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMovilLateral" aria-controls="menuMovilLateral" style="height: 32px; width: 38px; margin: 0;">
+            <!-- HAMBURGUESA -->
+            <button class="btn-menu-burger d-xl-none"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#menuMovilLateral"
+                    aria-controls="menuMovilLateral"
+                    style="height: 32px;
+                           width: 38px;
+                           margin: 0;">
+
                 <i class="bi bi-list"></i>
             </button>
 
         </div>
-
     </div>
 </div>
 
-<!-- 📦 MENÚ LATERAL DESPLEGABLE (OFFCANVAS) PARA MÓVILES -->
-<div class="offcanvas offcanvas-start menu-movil-dark" tabindex="-1" id="menuMovilLateral" aria-labelledby="menuMovilLateralLabel">
-    <div class="offcanvas-header border-bottom border-secondary border-opacity-20">
-        <h5 class="offcanvas-title fw-bold text-white" id="menuMovilLateralLabel">
-            <i class="bi bi-grid-fill text-success me-2"></i> Menú E&E
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-        <div class="list-group list-group-flush">
-          
+<!-- MENÚ LATERAL PARA MÓVILES -->
+<div class="offcanvas offcanvas-start menu-movil-dark"
+     tabindex="-1"
+     id="menuMovilLateral"
+     aria-labelledby="menuMovilLateralLabel">
 
-            <a href="#subcatProductos" class="list-group-item list-group-item-action menu-movil-item d-flex align-items-center justify-content-between w-100" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="subcatProductos">
-                <span><i class="bi bi-box-seam me-3 text-success"></i> Productos</span>
+    <div class="offcanvas-header border-bottom border-secondary border-opacity-20">
+
+        <h5 class="offcanvas-title fw-bold text-white"
+            id="menuMovilLateralLabel">
+
+            <i class="bi bi-grid-fill text-danger me-2"></i>
+            Menú Iza Motors
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="offcanvas"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <div class="offcanvas-body p-0">
+
+        <div class="list-group list-group-flush">
+
+            <!-- PRODUCTOS -->
+            <a href="#subcatProductos"
+               class="list-group-item list-group-item-action menu-movil-item d-flex align-items-center justify-content-between w-100"
+               data-bs-toggle="collapse"
+               role="button"
+               aria-expanded="false"
+               aria-controls="subcatProductos">
+
+                <span>
+                    <i class="bi bi-box-seam me-3 text-danger"></i>
+                    Productos
+                </span>
+
                 <i class="bi bi-chevron-down small opacity-50"></i>
             </a>
-            <div class="collapse bg-dark bg-opacity-25" id="subcatProductos">
+
+            <div class="collapse bg-dark bg-opacity-25"
+                 id="subcatProductos">
+
                 <div class="list-group list-group-flush">
-                    <a href="/ProductoPublic/Categoria?area=ALUMINIO" class="list-group-item list-group-item-action menu-movil-subitem"><i class="bi bi-circle-fill me-2 text-primary"></i> Aluminio</a>
-                    <a href="/ProductoPublic/Categoria?area=ACCESORIOS" class="list-group-item list-group-item-action menu-movil-subitem"><i class="bi bi-circle-fill me-2 text-success"></i> Accesorios</a>
-                    <a href="/ProductoPublic/Categoria?area=ARC" class="list-group-item list-group-item-action menu-movil-subitem"><i class="bi bi-circle-fill me-2 text-warning"></i> Especialidades ARC</a>
+
+                    @if (categorias.Any())
+                    {
+                        foreach (var categoria in categorias)
+                        {
+                            <a asp-controller="ProductoPublic"
+                               asp-action="Categoria"
+                               asp-route-area="@categoria"
+                               class="list-group-item list-group-item-action menu-movil-subitem">
+
+                                <i class="bi bi-gear-wide-connected me-2 text-danger"></i>
+                                @categoria
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <span class="list-group-item menu-movil-subitem text-white-50">
+                            No hay categorías disponibles
+                        </span>
+                    }
+
                 </div>
             </div>
 
-            <a href="#trabajos-reales" class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+            <!-- PROYECTOS -->
+            <a href="#trabajos-reales"
+               class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <span><i class="bi bi-images me-3 text-success"></i> Nuestros Proyectos</span>
+
+                    <span>
+                        <i class="bi bi-images me-3 text-danger"></i>
+                        Nuestros Proyectos
+                    </span>
+
                     <i class="bi bi-chevron-right small opacity-50"></i>
                 </div>
             </a>
 
-            <a href="#como-trabajamos" class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+            <!-- CÓMO COMPRAR -->
+            <a href="#como-trabajamos"
+               class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <span><i class="bi bi-patch-check me-3 text-success"></i> ¿Cómo comprar?</span>
+
+                    <span>
+                        <i class="bi bi-patch-check me-3 text-danger"></i>
+                        ¿Como funciona?
+                    </span>
+
                     <i class="bi bi-chevron-right small opacity-50"></i>
                 </div>
             </a>
 
-            <a href="#envios" class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+            <!-- MODALIDADES DE ATENCIÓN -->
+            <a href="#envios"
+               class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <span><i class="bi bi-truck me-3 text-success"></i> Tipos de entrega</span>
+
+                    <span>
+                        <i class="bi bi-shop me-3 text-danger"></i>
+                        Modalidades de atención
+                    </span>
+
                     <i class="bi bi-chevron-right small opacity-50"></i>
                 </div>
             </a>
 
-            <a href="#preguntas" class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+            <!-- PREGUNTAS -->
+            <a href="#preguntas"
+               class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <span><i class="bi bi-question-circle me-3 text-success"></i> Dudas comunes</span>
+
+                    <span>
+                        <i class="bi bi-question-circle me-3 text-danger"></i>
+                        Preguntas Frecuentes
+                    </span>
+
                     <i class="bi bi-chevron-right small opacity-50"></i>
                 </div>
             </a>
 
-            <a href="#cotizar" class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+            <!-- CONTACTO -->
+            <a href="#contacto"
+               class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
+
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <span><i class="bi bi-calculator me-3 text-success"></i> Cotizador Web</span>
+
+                    <span>
+                        <i class="bi bi-telephone me-3 text-danger"></i>
+                        Contacto
+                    </span>
+
                     <i class="bi bi-chevron-right small opacity-50"></i>
                 </div>
             </a>
 
-            <a href="#contacto" class="list-group-item list-group-item-action menu-movil-item btn-scroll-movil">
-                <div class="d-flex align-items-center justify-content-between w-100">
-                    <span><i class="bi bi-telephone me-3 text-success"></i> Contacto</span>
-                    <i class="bi bi-chevron-right small opacity-50"></i>
-                </div>
-            </a>
         </div>
     </div>
 </div>

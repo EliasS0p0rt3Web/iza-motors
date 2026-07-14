@@ -1,767 +1,234 @@
 ﻿@{
     ViewData["Title"] = "Panel de Inicio";
     Layout = "_LayoutSistema";
+
     var rol = Context.Session.GetString("ROL");
-    var usuario = Context.Session.GetString("USUARIO") ?? "Equipo";
+    var usuario =
+        Context.Session.GetString("USER_NAME")
+        ?? Context.Session.GetString("USER")
+        ?? "Usuario";
 }
 
-@using Microsoft.EntityFrameworkCore
-@inject Negocio.Web.Data.NegocioDbContext _context
-@{
-    var config = await _context.ConfiguracionesTienda.FirstOrDefaultAsync(x => x.Id == 1);
-    bool estaAbierto = config?.EstaAbierto ?? true;
-    var sugerenciasPendientesCount = await _context.SugerenciasSistema.CountAsync(x => !x.Revisado);
-}
-
-
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet">
 
 <style>
-    /* --- CONFIGURACIÓN BASE PREMIUM --- */
     .dashboard-container {
         font-family: 'Inter', sans-serif;
-        max-width: 98%;
+        max-width: 1200px;
         margin: 0 auto;
-        padding-bottom: 60px;
+        padding: 2rem 1rem 5rem;
     }
 
-    .fw-800 {
-        font-weight: 800 !important;
-    }
-
-    .section-title-pro {
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* --- TARJETAS DE MÉTRICAS (KPIs) FINTECH --- */
-    .kpi-card {
-        background: #ffffff;
-        border-radius: 24px;
-        padding: 1.5rem;
-        border: 1px solid #f1f5f9;
-        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: all 0.3s ease;
-    }
-
-        .kpi-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(15, 23, 42, 0.06);
-        }
-
-    .kpi-label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .kpi-value {
-        font-size: 2rem;
+    .dashboard-title {
         font-weight: 800;
         color: #0f172a;
-        margin-top: 0.5rem;
-        margin-bottom: 0;
-        line-height: 1.2;
     }
 
-    .kpi-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
+    .dashboard-subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
     }
 
-    /* --- TARJETAS DE ACCIÓN PRINCIPAL --- */
+    .section-title {
+        color: #475569;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        margin-bottom: 1rem;
+    }
+
     .action-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        padding: 1.25rem;
+        border-radius: 18px;
+        padding: 1.4rem;
         text-decoration: none;
         display: flex;
         align-items: center;
         gap: 1rem;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.02);
+        height: 100%;
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+        transition: all 0.25s ease;
     }
 
         .action-card:hover {
             transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
             border-color: #cbd5e1;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
         }
 
     .action-icon {
-        width: 54px;
-        height: 54px;
+        width: 55px;
+        height: 55px;
         border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.75rem;
+        color: #ffffff;
+        font-size: 1.6rem;
         flex-shrink: 0;
     }
 
-    .action-text h6 {
+    .action-card h5 {
         color: #0f172a;
+        font-size: 1rem;
         font-weight: 800;
-        margin: 0 0 0.2rem 0;
-        font-size: 1.05rem;
+        margin-bottom: 0.25rem;
     }
 
-    .action-text p {
+    .action-card p {
         color: #64748b;
-        font-size: 0.8rem;
-        font-weight: 600;
+        font-size: 0.82rem;
         margin: 0;
-        line-height: 1.2;
     }
 
-    /* --- BADGE ANIMADO DE RESERVAS --- */
-    .badge-premium {
-        background: #ef4444;
-        color: white;
-        font-weight: 800;
-        padding: 5px 12px;
-        border-radius: 50px;
-        font-size: 0.8rem;
-        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
-        border: 2px solid #ffffff;
-        animation: pulseBadge 2s infinite;
+    .icon-blue {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
     }
 
-    @@keyframes pulseBadge {
-        0%
-
-    {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    .icon-green {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
     }
 
-    70% {
-        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    .icon-orange {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
     }
 
-    100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-    }
-
-    }
-
-    /* --- HIGHLIGHT CARD (REPORTES) --- */
-    .highlight-card {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        border-radius: 24px;
-        padding: 1.5rem;
-        color: #ffffff;
-        text-decoration: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
-    }
-
-        .highlight-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
-            color: #ffffff;
-        }
-
-    /* 🚀 ESTILO PREMIUM PARA EL SWITCH DEL ESTADO */
-    .status-panel-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        padding: 1rem 1.25rem;
-        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.02);
-    }
-
-    .form-check-input:checked {
-        background-color: #16a34a !important;
-        border-color: #16a34a !important;
+    .icon-purple {
+        background: linear-gradient(135deg, #7c3aed, #8b5cf6);
     }
 </style>
 
-<div class="dashboard-container py-4">
+<div class="dashboard-container">
 
-    <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom">
-        <div>
-            <h2 class="fw-800 text-dark mb-1">
-                ¡Hola, @(Context.Session.GetString("USER_NAME") ?? "Cliente")!
-            </h2>
-        </div>
-        <div class="text-end d-none d-md-block">
-            <h5 class="fw-bold text-dark mb-0">@DateTime.Now.ToString("dddd, dd MMMM", new System.Globalization.CultureInfo("es-PE")).ToUpper()</h5>
-            <small class="text-muted fw-bold">@DateTime.Now.ToString("yyyy")</small>
-        </div>
+    <!-- ENCABEZADO -->
+    <div class="mb-5">
+        <h2 class="dashboard-title mb-1">
+            Bienvenido, @usuario
+        </h2>
+
+        <p class="dashboard-subtitle mb-0">
+            Panel de gestión del sistema web Iza Motors.
+        </p>
     </div>
 
-    <div class="status-panel-card mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <div class="kpi-icon-wrapper shadow-sm" id="iconEstadoColor" style="background: @(estaAbierto ? "#dcfce3" : "#fee2e2"); color: @(estaAbierto ? "#16a34a" : "#ef4444");">
-                    <i class="bi bi-shop"></i>
-                </div>
-                <div>
-                    <h6 class="mb-0 fw-800 text-dark">Atención en Tienda Física (Cantagallo)</h6>
-                    <small class="fw-bold @(estaAbierto ? "text-success" : "text-danger")" id="lblEstadoTexto">
-                        @(estaAbierto ? "LOCAL FÍSICO: ABIERTO" : "LOCAL FÍSICO: CERRADO (WEB ACTIVA)")
-                    </small>
-                </div>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="switchEstadoTienda" style="width: 2.8em; height: 1.5em; cursor: pointer;" @(estaAbierto ? "checked" : "")>
-            </div>
-        </div>
-    </div>
-
-    @if (ViewBag.AlertasSemanales != null && ((List<Negocio.Web.Models.Entities.PeriodoSemanal>)ViewBag.AlertasSemanales).Count > 0)
-    {
-        var listaAlertas = (List<Negocio.Web.Models.Entities.PeriodoSemanal>)ViewBag.AlertasSemanales;
-        var pendientesSueldo = listaAlertas.Where(p => p.EstadoMiSueldo != "PAGADO").ToList();
-        var pendientesCaja = listaAlertas.Where(p => p.EstadoCajaJefe != "RETIRADO").ToList();
-
-        <div class="mb-5">
-            <h5 class="section-title-pro" style="color: #475569; letter-spacing: 0.5px;">
-                <i class="bi bi-bell-fill text-warning fs-5"></i> ACCESOS RÁPIDOS DE FIN DE SEMANA (MÁX. 4 RECIENTES)
-            </h5>
-
-            <div class="row g-3">
-                <!-- 👤 COLUMNA IZQUIERDA: ACORDEÓN DE SUELDOS -->
-                <div class="col-12 col-md-6">
-                    <div class="accordion shadow-sm" id="accordionSueldos" style="border-radius: 16px; overflow: hidden;">
-                        <div class="accordion-item border-warning">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button bg-white text-dark fw-800" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSueldos" aria-expanded="true" style="font-size: 0.9rem; padding: 1.25rem;">
-                                    <span class="me-2">👤</span> PAGOS DE SUELDO POR CONFIRMAR
-                                    <span class="badge bg-warning text-dark ms-2 fw-bold" style="font-size: 0.75rem;">@pendientesSueldo.Count</span>
-                                </button>
-                            </h2>
-                            <div id="collapseSueldos" class="accordion-collapse collapse show" data-bs-parent="#accordionSueldos">
-                                <div class="accordion-body bg-light p-2 d-flex flex-column gap-2">
-                                    @if (pendientesSueldo.Count == 0)
-                                    {
-                                        <div class="text-center text-muted small py-3 fw-semibold">¡Estás al día con tus sueldos! 🎉</div>
-                                    }
-                                    @foreach (var item in pendientesSueldo)
-                                    {
-                                        <div class="col-12" id="alertaSueldo_@item.IdPeriodoSemanal">
-                                            <div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded-4 shadow-xs" style="border-left: 4px solid #eab308 !important;">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold text-dark" style="font-size:0.85rem;">📅 @item.FechaInicio.ToString("dd/MM") al @item.FechaFin.ToString("dd/MM")</h6>
-                                                    <small class="text-muted fw-semibold">Deuda: <strong class="text-danger">S/ @item.SueldoSaldoPendiente.ToString("F2")</strong></small>
-                                                </div>
-                                                <!-- 🌟 LLAMA A TU FUNCIÓN ORIGINAL SIN TOCAR LA LOGICA -->
-                                                <button class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="marcarSueldoPagadoCompleto(@item.IdPeriodoSemanal, @item.SueldoSaldoPendiente)" style="border-radius:10px; font-size:0.75rem;">
-                                                    <i class="bi bi-check2-circle"></i> Sí, pagó
-                                                </button>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 💵 COLUMNA DERECHA: ACORDEÓN DE CAJAS -->
-                <div class="col-12 col-md-6">
-                    <div class="accordion shadow-sm" id="accordionCajas" style="border-radius: 16px; overflow: hidden;">
-                        <div class="accordion-item border-info">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button bg-white text-dark fw-800" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCajas" aria-expanded="true" style="font-size: 0.9rem; padding: 1.25rem;">
-                                    <span class="me-2">💵</span> RETIROS DE CAJA TIENDA PENDIENTES
-                                    <span class="badge bg-info text-white ms-2 fw-bold" style="font-size: 0.75rem;">@pendientesCaja.Count</span>
-                                </button>
-                            </h2>
-                            <div id="collapseCajas" class="accordion-collapse collapse show" data-bs-parent="#accordionCajas">
-                                <div class="accordion-body bg-light p-2 d-flex flex-column gap-2">
-                                    @if (pendientesCaja.Count == 0)
-                                    {
-                                        <div class="text-center text-muted small py-3 fw-semibold">Todo el efectivo ha sido retirado de tienda. 👍</div>
-                                    }
-                                    @foreach (var item in pendientesCaja)
-                                    {
-                                        <div class="col-12" id="alertaCaja_@item.IdPeriodoSemanal">
-                                            <div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded-4 shadow-xs" style="border-left: 4px solid #06b6d4 !important;">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold text-dark" style="font-size:0.85rem;">📅 @item.FechaInicio.ToString("dd/MM") al @item.FechaFin.ToString("dd/MM")</h6>
-                                                    <small class="text-muted fw-semibold">En Caja: <strong class="text-info">S/ @item.CajaSaldoPendiente.ToString("F2")</strong></small>
-                                                </div>
-                                                <!-- 🌟 LLAMA A TU FUNCIÓN ORIGINAL SIN TOCAR LA LOGICA -->
-                                                <button class="btn btn-sm btn-info text-white fw-bold px-3 shadow-sm" onclick="marcarCajaRetiradaCompleta(@item.IdPeriodoSemanal, @item.CajaSaldoPendiente)" style="border-radius:10px; font-size:0.75rem;">
-                                                    <i class="bi bi-cash-stack"></i> Sí, retiró
-                                                </button>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
-    <h5 class="section-title-pro">
-        <i class="bi bi-grid-1x2-fill text-primary fs-5"></i> Operaciones en Planta
+    <!-- ACCESOS PRINCIPALES -->
+    <h5 class="section-title">
+        <i class="bi bi-grid-fill me-2"></i>
+        Accesos principales
     </h5>
 
-    <div class="row g-3 mb-5">
-        <div class="col-12 col-md-3">
-            <a asp-controller="Venta" asp-action="SeleccionTipoVenta" class="action-card">
-                <div class="action-icon" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); color: white;">
-                    <i class="bi bi-cart-plus-fill"></i>
-                </div>
-                <div class="action-text">
-                    <h6>Vender</h6>
-                    <p>Registrar nueva orden</p>
-                </div>
-            </a>
-        </div>
+    <div class="row g-3">
 
-        <div class="col-12 col-md-3">
-            <a asp-controller="Stock" asp-action="Index" class="action-card">
-                <div class="action-icon" style="background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%); color: white;">
-                    <i class="bi bi-box-seam-fill"></i>
-                </div>
-                <div class="action-text">
-                    <h6>Stock</h6>
-                    <p>Consultar inventario</p>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-12 col-md-3">
-            <a asp-controller="Reserva" asp-action="Admin" class="action-card position-relative">
-                @if (ViewBag.ReservasPendientes > 0)
-                {
-                    <span class="badge badge-premium position-absolute top-0 end-0 translate-middle-y me-3">
-                        @ViewBag.ReservasPendientes Pendientes
-                    </span>
-                }
-                <div class="action-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); color: white;">
-                    <i class="bi bi-calendar-check-fill"></i>
-                </div>
-                <div class="action-text">
-                    <h6>Reservas</h6>
-                    <p>Gestión de entregas</p>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-12 col-md-3">
-            <a asp-controller="Gasto" asp-action="Registrar" class="action-card">
-                <div class="action-icon" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white;">
-                    <i class="bi bi-receipt"></i>
-                </div>
-                <div class="action-text">
-                    <h6>Gasto</h6>
-                    <p>Salida de efectivo</p>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <h5 class="section-title-pro mt-4">
-        <i class="bi bi-lightning-charge-fill text-warning fs-5"></i> Monitoreo Global Semanal
-    </h5>
-
-    <div class="row g-3 mb-5">
-        @if (Context.Session.GetString("ROL") == "JEFE")
+        @if (rol == "ADMINISTRADOR")
         {
-            <div class="col-12 col-md-4">
-                <div class="kpi-card p-4" style="border-left: 5px solid #dc2626;">
-                    <div>
-                        <span class="kpi-label text-danger">🚨 Sueldo Pendiente Acumulado</span>
-                        <h3 class="kpi-value mt-2 fw-800">S/ @(ViewBag.SueldoAcumuladoTotal != null ? ((decimal)ViewBag.SueldoAcumuladoTotal).ToString("F2") : "0.00")</h3>
-                        <small class="text-muted fw-bold d-block mt-2">Incluye saldo de apertura y cierres pasados</small>
+            <!-- VENTA DE REPUESTOS -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a asp-controller="Venta"
+                   asp-action="Registrar"
+                   class="action-card">
+
+                    <div class="action-icon icon-blue">
+                        <i class="bi bi-cart-plus-fill"></i>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-12 col-md-4">
-                <div class="kpi-card p-4" style="border-left: 5px solid #16a34a;">
                     <div>
-                        <span class="kpi-label text-success">💰 Efectivo Total Real en Tienda</span>
-                        <h3 class="kpi-value mt-2 fw-800">S/ @(ViewBag.CajaAcumuladaTotal != null ? ((decimal)ViewBag.CajaAcumuladaTotal).ToString("F2") : "0.00")</h3>
-                        <small class="text-muted fw-bold d-block mt-2">Efectivo circulante acumulado en Cantagallo</small>
-                    </div>
-                </div>
-            </div>
-        }
-
-        <div class="col-12 @(Context.Session.GetString("ROL") == "JEFE" ? "col-md-4" : "col-md-12")">
-            <div class="kpi-card p-4" style="border-left: 5px solid #2563eb; background: #f8fafc;">
-                <div class="h-100 d-flex flex-column justify-content-between">
-                    <div>
-                        <span class="kpi-label text-primary">⚡ Asistencia Automatizada</span>
-                        <h3 class="kpi-value mt-2 fw-800 text-primary">@ViewBag.DiasTrabajadosEnCurso / 6</h3>
-                        <small class="text-muted fw-bold d-block mt-1">Días laborados detectados en la semana en curso</small>
-                    </div>
-                    <div class="mt-2 pt-2 border-top">
-                        <span class="badge bg-primary text-white font-monospace small px-2">Semana Actual: @ViewBag.RangoSemanaActualTexto</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-12 @(Context.Session.GetString("ROL") == "JEFE" ? "col-md-3" : "col-md-4")">
-        <div class="kpi-card p-4" style="border-left: 5px solid #f59e0b; background: #fff;">
-            <div class="h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <span class="kpi-label" style="color: #d97706;">💡 Sugerencias del Sistema</span>
-                    <h3 class="kpi-value mt-2 fw-800">@sugerenciasPendientesCount</h3>
-                    <small class="text-muted fw-bold d-block mt-2">Opiniones de clientes pendientes por revisar</small>
-                </div>
-                <div class="mt-2 pt-2 border-top text-end">
-                    <a asp-controller="BuzonAdmin" asp-action="Index" class="btn btn-sm btn-light fw-bold text-warning border-0 p-0 backend-link" style="font-size: 0.8rem; background: transparent;">
-                        Ver buzón completo <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (rol == "ADMINISTRADOR" || rol == "JEFE")
-    {
-        <h5 class="section-title-pro">
-            <i class="bi bi-clipboard2-data-fill text-primary fs-5"></i> Administración y Reportes
-        </h5>
-
-        <div class="row g-3">
-            <div class="col-md-6">
-                <a asp-controller="Reporte" asp-action="Resumen" class="highlight-card h-100">
-                    <div>
-                        <small class="text-info" style="font-size: 0.75rem; font-weight: 800; letter-spacing: 1px;">ANÁLISIS FINANCIERO</small>
-                        <h4 class="fw-800 mb-1 mt-1">Reporte Semanal</h4>
-                        <p class="text-light opacity-75 mb-0" style="font-size: 0.85rem;">Métricas, gráficos y rendimiento global</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-arrow-right-circle-fill" style="font-size: 2.5rem;"></i>
+                        <h5>Nueva venta</h5>
+                        <p>Registrar una venta de repuestos.</p>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-6">
-                <div class="row g-3 h-100">
-                    <div class="col-6">
-                        <a asp-controller="Ingreso" asp-action="Index" class="action-card h-100" style="background: #f8fafc;">
-                            <div class="action-icon bg-white text-success shadow-sm" style="border: 1px solid #e2e8f0;">
-                                <i class="bi bi-truck"></i>
-                            </div>
-                            <div class="action-text">
-                                <h6>Ingresos</h6>
-                                <p>Mercadería</p>
-                            </div>
-                        </a>
+            <!-- INVENTARIO -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a asp-controller="Stock"
+                   asp-action="Index"
+                   class="action-card">
+
+                    <div class="action-icon icon-green">
+                        <i class="bi bi-box-seam-fill"></i>
                     </div>
 
-                    <div class="col-6">
-                        <a asp-controller="PedidoCompra" asp-action="Index" class="action-card h-100" style="background: #f8fafc;">
-                            <div class="action-icon bg-white text-dark shadow-sm" style="border: 1px solid #e2e8f0;">
-                                <i class="bi bi-cart-check-fill"></i>
-                            </div>
-                            <div class="action-text">
-                                <h6>Pedidos</h6>
-                                <p>Reabastecer</p>
-                            </div>
-                        </a>
+                    <div>
+                        <h5>Inventario</h5>
+                        <p>Consultar el stock disponible.</p>
                     </div>
-                </div>
+                </a>
             </div>
-        </div>
-    }
-</div>
 
-<div class="modal fade" id="modalPagoLibre" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px;">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="fw-800 text-dark"><i class="bi bi-wallet2 text-success me-2"></i> Registrar Pago de Sueldo Libre</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <!-- CITAS -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a asp-controller="Reserva"
+                   asp-action="Admin"
+                   class="action-card">
+
+                    <div class="action-icon icon-orange">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+
+                    <div>
+                        <h5>Citas</h5>
+                        <p>Revisar las citas registradas.</p>
+                    </div>
+                </a>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small uppercase">Monto Recibido (S/)</label>
-                    <input type="number" id="txtMontoPagoLibre" class="form-control" placeholder="0.00" step="0.01" style="border-radius: 12px; padding: 10px; font-weight: 700;">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small uppercase">Método de Pago (Informativo 🎯)</label>
-                    <select id="ddlMetodoPagoLibre" class="form-select" style="border-radius: 12px; padding: 10px; font-weight: 600;">
-                        <option value="YAPE">YAPE</option>
-                        <option value="EFECTIVO">EFECTIVO FISICO</option>
-                        <option value="TRANSFERENCIA">TRANSFERENCIA BANCARIA</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small uppercase">Observaciones / Detalles</label>
-                    <input type="text" id="txtObsPagoLibre" class="form-control" placeholder="Ej: Adelanto domingo por la noche" style="border-radius: 12px; padding: 10px;">
-                </div>
+
+            <!-- CLIENTES -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a asp-controller="Cliente"
+                   asp-action="Index"
+                   class="action-card">
+
+                    <div class="action-icon icon-purple">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+
+                    <div>
+                        <h5>Clientes</h5>
+                        <p>Consultar clientes registrados.</p>
+                    </div>
+                </a>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal" style="border-radius: 10px;">Cancelar</button>
-                <button type="button" onclick="enviarPagoLibre()" class="btn btn-dark fw-bold" style="border-radius: 10px; background: #0f172a;">Procesar Abono</button>
+        }
+        else if (rol == "JEFE")
+        {
+            <!-- CITAS PARA JEFE -->
+            <div class="col-12 col-md-6">
+                <a asp-controller="Reserva"
+                   asp-action="Admin"
+                   class="action-card">
+
+                    <div class="action-icon icon-orange">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+
+                    <div>
+                        <h5>Citas programadas</h5>
+                        <p>Consultar las atenciones del taller.</p>
+                    </div>
+                </a>
             </div>
-        </div>
+
+            <!-- STOCK PARA JEFE -->
+            <div class="col-12 col-md-6">
+                <a asp-controller="Stock"
+                   asp-action="Index"
+                   class="action-card">
+
+                    <div class="action-icon icon-green">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+
+                    <div>
+                        <h5>Stock de repuestos</h5>
+                        <p>Verificar la disponibilidad del inventario.</p>
+                    </div>
+                </a>
+            </div>
+        }
+
     </div>
+
 </div>
-
-<div class="modal fade" id="modalRetiroLibre" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px;">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="fw-800 text-dark"><i class="bi bi-cash-coin text-danger me-2"></i> Registrar Retiro de Caja Libre</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small uppercase">Monto Retirado de Caja (S/)</label>
-                    <input type="number" id="txtMontoRetiroLibre" class="form-control" placeholder="0.00" step="0.01" style="border-radius: 12px; padding: 10px; font-weight: 700;">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small uppercase">Motivo o Destino del Dinero</label>
-                    <input type="text" id="txtObsRetiroLibre" class="form-control" placeholder="Ej: Jefe retiró pasajes de la madrugada" style="border-radius: 12px; padding: 10px;">
-                </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal" style="border-radius: 10px;">Cancelar</button>
-                <button type="button" onclick="enviarRetiroLibre()" class="btn btn-danger fw-bold" style="border-radius: 10px;">Confirmar Salida</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- 🔄 MODAL DE CARGA GLOBAL (SPINNER PREMIUM) -->
-<div class="modal fade" id="modalCargandoSistema" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 300px;">
-        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 50px rgba(0,0,0,0.15);">
-            <div class="modal-body text-center p-4">
-                <div class="spinner-border text-dark mb-3" role="status" style="width: 3rem; height: 3rem;">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <h6 class="fw-800 text-dark mb-1">Procesando pago...</h6>
-                <p class="text-muted small mb-0">Actualizando cuentas en tiempo real</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const chkEstado = document.getElementById("switchEstadoTienda");
-            const lblTexto = document.getElementById("lblEstadoTexto");
-            const iconWrapper = document.getElementById("iconEstadoColor");
-
-            if (chkEstado) {
-                chkEstado.addEventListener("change", function () {
-                    const nuevoEstado = chkEstado.checked;
-
-                    chkEstado.disabled = true;
-
-                    const data = new FormData();
-                    data.append('estaAbierto', nuevoEstado);
-
-                    fetch('/Home/ActualizarEstadoTienda', {
-                        method: 'POST',
-                        body: data
-                    })
-                    .then(res => res.json())
-                    .then(res => {
-                        if (res.success) {
-                            if (nuevoEstado) {
-                                lblTexto.innerText = "LOCAL FÍSICO: ABIERTO";
-                                lblTexto.className = "fw-bold text-success";
-                                iconWrapper.style.background = "#dcfce3";
-                                iconWrapper.style.color = "#16a34a";
-                            } else {
-                                lblTexto.innerText = "LOCAL FÍSICO: CERRADO (WEB ACTIVA)";
-                                lblTexto.className = "fw-bold text-danger";
-                                iconWrapper.style.background = "#fee2e2";
-                                iconWrapper.style.color = "#ef4444";
-                            }
-                        } else {
-                            alert("Hubo un error al actualizar el estado.");
-                            chkEstado.checked = !nuevoEstado;
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error:", err);
-                        chkEstado.checked = !nuevoEstado;
-                    })
-                    .finally(() => {
-                        chkEstado.disabled = false;
-                    });
-                });
-            }
-        });
-
-        // =========================================================================
-        // 🚀 SCRIPTS COMUNICACIÓN AJAX CON EL CONTROLADOR PERIODO SEMANAL
-        // =========================================================================
-        function enviarPagoLibre() {
-            const monto = document.getElementById("txtMontoPagoLibre").value;
-            const metodo = document.getElementById("ddlMetodoPagoLibre").value;
-            const obs = document.getElementById("txtObsPagoLibre").value;
-
-            if(!monto || monto <= 0){ alert("Ingresa un monto válido."); return; }
-
-            const data = new FormData();
-            data.append("monto", monto);
-            data.append("metodoPago", metodo);
-            data.append("observaciones", obs);
-
-            fetch('/PeriodoSemanal/RegistrarPagoLibre', { method: 'POST', body: data })
-            .then(res => res.json())
-            .then(res => {
-                if(res.success) { location.reload(); }
-                else { alert(res.message); }
-            });
-        }
-
-        function enviarRetiroLibre() {
-            const monto = document.getElementById("txtMontoRetiroLibre").value;
-            const obs = document.getElementById("txtObsRetiroLibre").value;
-
-            if(!monto || monto <= 0){ alert("Ingresa un monto válido."); return; }
-
-            const data = new FormData();
-            data.append("monto", monto);
-            data.append("observaciones", obs);
-
-            fetch('/PeriodoSemanal/RegistrarRetiroCajaLibre', { method: 'POST', body: data })
-            .then(res => res.json())
-            .then(res => {
-                if(res.success) { location.reload(); }
-                else { alert(res.message); }
-            });
-        }
-
-        function marcarSueldoPagadoCompleto(id, monto) {
-            const modalCargaEl = document.getElementById('modalCargandoSistema');
-            modalCargaEl.querySelector('h6').innerText = "Procesando pago...";
-            modalCargaEl.querySelector('p').innerText = "Actualizando cuentas en tiempo real";
-
-            const modalCarga = new bootstrap.Modal(modalCargaEl);
-            modalCarga.show();
-
-            const tiempoInicio = Date.now();
-
-            const data = new FormData();
-            data.append("id", id);
-            data.append("monto", monto);
-
-            fetch('/PeriodoSemanal/RegistrarPagoEspecifico', { method: 'POST', body: data })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    const tiempoTranscurrido = Date.now() - tiempoInicio;
-                    const tiempoEsperaMinimo = 1500;
-                    const tiempoRestante = Math.max(0, tiempoEsperaMinimo - tiempoTranscurrido);
-
-                    setTimeout(() => {
-                        modalCarga.hide();
-
-                        const alertaContenedor = document.getElementById(`alertaSueldo_${id}`);
-                        if (alertaContenedor) {
-                            alertaContenedor.style.transition = "all 0.5s ease";
-                            alertaContenedor.style.opacity = "0";
-                            alertaContenedor.style.transform = "scale(0.95)";
-
-                            setTimeout(() => {
-                                alertaContenedor.remove();
-                                location.reload();
-                            }, 500);
-                        } else {
-                            location.reload();
-                        }
-
-                    }, tiempoRestante);
-                } else {
-                    modalCarga.hide();
-                    alert(res.message || "Hubo un error al procesar el pago.");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                modalCarga.hide();
-                alert("Error de conexión con el servidor.");
-            });
-        }
-
-        function marcarCajaRetiradaCompleta(id, monto) {
-            const modalCargaEl = document.getElementById('modalCargandoSistema');
-
-            modalCargaEl.querySelector('h6').innerText = "Procesando retiro...";
-            modalCargaEl.querySelector('p').innerText = "Actualizando saldos de caja en tienda";
-
-            const modalCarga = new bootstrap.Modal(modalCargaEl);
-            modalCarga.show();
-
-            const tiempoInicio = Date.now();
-
-            const data = new FormData();
-            data.append("id", id);
-            data.append("monto", monto);
-
-            fetch('/PeriodoSemanal/RegistrarRetiroCajaEspecifico', { method: 'POST', body: data })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    const tiempoTranscurrido = Date.now() - tiempoInicio;
-                    const tiempoEsperaMinimo = 1500;
-                    const tiempoRestante = Math.max(0, tiempoEsperaMinimo - tiempoTranscurrido);
-
-                    setTimeout(() => {
-                        modalCarga.hide();
-
-                        const alertaContenedor = document.getElementById(`alertaCaja_${id}`);
-                        if (alertaContenedor) {
-                            alertaContenedor.style.transition = "all 0.5s ease";
-                            alertaContenedor.style.opacity = "0";
-                            alertaContenedor.style.transform = "scale(0.95)";
-
-                            setTimeout(() => {
-                                alertaContenedor.remove();
-                                location.reload();
-                            }, 500);
-                        } else {
-                            location.reload();
-                        }
-
-                    }, tiempoRestante);
-                } else {
-                    modalCarga.hide();
-                    alert(res.message || "Hubo un error al procesar el retiro.");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                modalCarga.hide();
-                alert("Error de conexión con el servidor.");
-            });
-        }
-    </script>
-}

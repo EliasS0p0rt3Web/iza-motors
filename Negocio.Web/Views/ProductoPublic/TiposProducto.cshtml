@@ -1,115 +1,341 @@
-﻿@* Reemplaza la primera línea por esta (asegúrate que el namespace sea el correcto) *@
-@model List<Negocio.Web.Models.ViewModels.DescripcionImagen>
+﻿@model List<Negocio.Web.Models.ViewModels.DescripcionImagen>
 
 @{
-    ViewData["Title"] = ViewBag.Area;
+    ViewData["Title"] = ViewBag.Area ?? "Repuestos";
     Layout = "_LayoutProductos";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/productoPublic/catalogoFamilias.css" asp-append-version="true" />
-}
+<style>
+    :root {
+        --iza-red: #c8102e;
+        --iza-red-dark: #99152a;
+        --iza-red-soft: #fff1f3;
+        --iza-white: #ffffff;
+        --iza-background: #f8fafc;
+        --iza-border: #e2e8f0;
+        --iza-text: #172033;
+        --iza-muted: #64748b;
+    }
 
-@* 🚀 NAVBAR DE FILTROS: Diseño "Precision Flow" *@
-<div class="product-navbar-filter">
-    <div class="container-fluid px-lg-5">
-        <div class="filter-flex-container py-3">
+    body {
+        background: var(--iza-background);
+    }
 
-            @* Lado Izquierdo: Identificador de Sección + Navegación *@
-            <div class="filter-section-info">
-              
+    .catalogo-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2.5rem 1rem 5rem;
+    }
 
-                <div class="status-dot"></div>
-                <span class="badge-seccion">Catálogo / @ViewBag.Area</span>
-            </div>
+    .catalogo-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--iza-border);
+    }
 
-            @* Lado Derecho: El Filtrador Pro *@
-            <div class="filter-tool-box">
-                <div class="filter-label d-none d-md-block">
-                    <i class="bi bi-info-circle me-1"></i> Filtrado rápido
+    .catalogo-ruta {
+        color: var(--iza-red);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        margin-bottom: 0.5rem;
+    }
+
+    .catalogo-title {
+        color: var(--iza-text);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+        .catalogo-title span {
+            color: var(--iza-red);
+        }
+
+    .catalogo-description {
+        color: var(--iza-muted);
+        margin-bottom: 0;
+    }
+
+    .btn-volver {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--iza-red);
+        background: var(--iza-white);
+        border: 1px solid var(--iza-border);
+        border-radius: 10px;
+        padding: 0.65rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.25s ease;
+    }
+
+        .btn-volver:hover {
+            color: var(--iza-white);
+            background: var(--iza-red);
+            border-color: var(--iza-red);
+        }
+
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        color: inherit;
+        background: var(--iza-white);
+        border: 1px solid var(--iza-border);
+        border-radius: 20px;
+        text-decoration: none;
+        box-shadow: 0 7px 22px rgba(23, 32, 51, 0.05);
+        transition: 0.3s ease;
+    }
+
+        .product-card:hover {
+            color: inherit;
+            transform: translateY(-5px);
+            border-color: var(--iza-red);
+            box-shadow: 0 16px 35px rgba(200, 16, 46, 0.12);
+        }
+
+    .product-visual {
+        height: 210px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: var(--iza-red-soft);
+        border-bottom: 1px solid var(--iza-border);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.35s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .product-fallback {
+        width: 88px;
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--iza-white);
+        background: var(--iza-red);
+        border-radius: 24px;
+        font-size: 2.7rem;
+    }
+
+    .product-body {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 1.5rem;
+    }
+
+    .product-category {
+        color: var(--iza-red);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 0.55rem;
+    }
+
+    .product-name {
+        color: var(--iza-text);
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-description {
+        color: var(--iza-muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+
+    .product-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--iza-border);
+    }
+
+    .product-link {
+        color: var(--iza-red);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .product-arrow {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--iza-red);
+        background: var(--iza-red-soft);
+        border-radius: 50%;
+        transition: 0.25s ease;
+    }
+
+    .product-card:hover .product-arrow {
+        color: var(--iza-white);
+        background: var(--iza-red);
+    }
+
+    .empty-message {
+        padding: 3rem 1.5rem;
+        color: var(--iza-muted);
+        background: var(--iza-white);
+        border: 1px dashed var(--iza-border);
+        border-radius: 18px;
+        text-align: center;
+    }
+
+    @@media (max-width: 768px) {
+        .catalogo-container {
+            padding-top: 1.5rem;
+        }
+
+        .product-visual {
+            height: 180px;
+        }
+    }
+</style>
+
+<div class="catalogo-container">
+
+    <!-- ENCABEZADO -->
+    <header class="catalogo-header">
+
+        <div class="d-flex flex-column flex-md-row
+                    justify-content-between align-items-md-end gap-3">
+
+            <div>
+                <div class="catalogo-ruta">
+                    Catálogo / @(ViewBag.Area ?? "Repuestos")
                 </div>
-                <div class="custom-select-wrapper">
-                    <i class="bi bi-funnel filter-icon-main"></i>
-                    <select id="filtroRapido" class="form-select select-tech">
-                        <option value="TODOS"> Ver toda la línea</option>
-                        @if (ViewBag.Area == "ALUMINIO")
-                        {
-                            <option value="CORTINAS">Tubos para Cortina</option>
-                            <option value="PESADO"> Línea Pesada</option>
 
-                            @* --- AGREGA ESTA LÍNEA AQUÍ --- *@
-                            <option value="REGLAS">Reglas de Aluminio</option>
+                <h1 class="catalogo-title">
+                    Repuestos <span>@ViewBag.Area</span>
+                </h1>
 
-                            <option value="CANTONERAS">Cantoneras de aluminio</option>
-                        }
-                        else if (ViewBag.Area == "ACCESORIOS")
-                        {
-                            <option value="ACC_CORTINA">Accesorios Cortina</option>
-
-                            <option value="SEGURIDAD">Seguridad</option>
-                        }
-
-                        else if (ViewBag.Area == "ARC")
-                        {
-                            <option value="ARC_RODOPLAST">RODOPLAST DE ALUMINIO</option>
-                            <option value="ARC_TACERO">TUBO ACERADO</option>
-                            <option value="ARC_RIELCOR">RIEL DE CORTINA</option>
-                            <option value="ARC_CROMADO">TUBO CROMADO</option>
-                        }
-                    </select>
-                </div>
+                <p class="catalogo-description">
+                    Consulta los repuestos disponibles y sus características.
+                </p>
             </div>
-
         </div>
-    </div>
-</div>
+    </header>
 
-<div class="container-fluid px-lg-5 mb-5 mt-5">
-    <div class="row g-4" id="contenedorGrilla">
-        @foreach (var tipo in Model)
+    <!-- PRODUCTOS -->
+    <div class="row g-4">
+
+        @if (Model == null || !Model.Any())
         {
-            <div class="col-12 col-md-6 col-lg-4 item-animado">
-                @* 🚀 Usamos tipo.Nombre y tipo.Area para los links *@
-                <a asp-action="ProductoDetalle"
-                   asp-route-area="@tipo.Area"
-                   asp-route-nombre="@tipo.Descripcion"
-                   class="card h-100 modern-type-card">
+            <div class="col-12">
 
-                    <div class="type-visual">
-                        <div class="blueprint-bg"></div>
-                        <div class="visual-content">
-                            @* Intentamos cargar la imagen *@
-                            <img src="@Url.Content("~/img/public/" + tipo.ImagenUrl)"
-                                 class="product-real-img"
-                              
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                                 alt="@tipo.Descripcion" />
+                <div class="empty-message">
+                    <i class="bi bi-tools fs-1 d-block mb-3"></i>
 
-                            @* 🛡️ Este bloque es el que dice E&E ALUMINIOS *@
-                            <div class="fallback-icon" style="display:none; width: 100%;">
-                                <i class="bi bi-layers visual-icon" style="font-size: 3rem; color: #cbd5e1;"></i>
-                                <span class="visual-brand" style="display: block; font-weight: 900; letter-spacing: 2px; color: #94a3b8;">
-                                    E&E ALUMINIOS
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    No existen repuestos disponibles en esta categoría.
+                </div>
 
-                    <div class="card-body p-4 text-center">
-                        @* 📝 Mostramos el nombre de la familia *@
-                        <h5 class="type-title">@tipo.Descripcion</h5>
-                        <p class="type-desc">Consulta disponibilidad y medidas técnicas</p>
-                    </div>
-
-                    <div class="card-footer-action">
-                        <span class="btn-explore">Explorar detalles <i class="bi bi-chevron-right"></i></span>
-                    </div>
-                </a>
             </div>
         }
+        else
+        {
+            foreach (var tipo in Model)
+            {
+                var tieneImagen =
+                !string.IsNullOrWhiteSpace(tipo.ImagenUrl);
+
+                var rutaImagen = tieneImagen
+                ? Url.Content("~/img/public/" + tipo.ImagenUrl)
+                : null;
+
+                <div class="col-12 col-md-6 col-lg-4">
+
+                    <a asp-action="ProductoDetalle"
+                       asp-route-area="@tipo.Area"
+                       asp-route-nombre="@tipo.Descripcion"
+                       class="product-card">
+
+                        <!-- IMAGEN O ÍCONO -->
+                        <div class="product-visual">
+
+                            @if (tieneImagen)
+                            {
+                                <img src="@rutaImagen"
+                                     alt="@tipo.Descripcion"
+                                     class="product-image"
+                                     loading="lazy"
+                                     onerror="
+                                                     this.style.display='none';
+                                                     this.nextElementSibling.style.display='flex';
+                                                 " />
+
+                                <div class="product-fallback"
+                                     style="display:none;">
+
+                                    <i class="bi bi-gear-wide-connected"></i>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="product-fallback">
+                                    <i class="bi bi-gear-wide-connected"></i>
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- INFORMACIÓN -->
+                        <div class="product-body">
+
+                            <div class="product-category">
+                                @(tipo.Area ?? "Repuestos")
+                            </div>
+
+                            <h2 class="product-name">
+                                @tipo.Descripcion
+                            </h2>
+
+                            <p class="product-description">
+                                Consulta disponibilidad, precio y detalles del repuesto.
+                            </p>
+
+                            <div class="product-footer">
+
+                                <span class="product-link">
+                                    Ver detalles
+                                </span>
+
+                                <span class="product-arrow">
+                                    <i class="bi bi-chevron-right"></i>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+                </div>
+            }
+        }
+
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/js/productoPublic/catalogoFamilias.js" asp-append-version="true"></script>
-}
